@@ -1,82 +1,10 @@
-import React, { useState } from 'react'
-import { BarChart3, Leaf, Clock, Menu, X } from 'lucide-react'
+import React from 'react'
+import { BarChart3, Leaf, Clock } from 'lucide-react'
 
 const AgriVisionLanding = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   return (
-    <div className="min-h-screen bg-[#111814] text-[#E0E0E0] font-['Inter',sans-serif]">
-      {/* Navigation */}
-      <nav className="sticky top-0 z-50 bg-[#111814] border-b border-[#1A221E] px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <div className="flex items-center space-x-2">
-              <div className="w-6 h-6 bg-[#50FF9F] rounded-sm flex items-center justify-center">
-                <Leaf size={16} className="text-[#111814]" />
-              </div>
-              <span className="text-xl font-bold text-[#E0E0E0]">AgriVision</span>
-            </div>
-
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-8">
-              <a href="#dashboard" className="text-[#E0E0E0] hover:text-[#50FF9F] transition-colors duration-200">
-                Dashboard
-              </a>
-              <a href="#features" className="text-[#E0E0E0] hover:text-[#50FF9F] transition-colors duration-200">
-                Features
-              </a>
-              <a href="#pricing" className="text-[#E0E0E0] hover:text-[#50FF9F] transition-colors duration-200">
-                Pricing
-              </a>
-              <a href="#support" className="text-[#E0E0E0] hover:text-[#50FF9F] transition-colors duration-200">
-                Support
-              </a>
-            </div>
-
-            {/* Desktop CTA Button */}
-            <div className="hidden md:block">
-              <button className="bg-[#50FF9F] hover:bg-[#40E085] text-[#111814] font-semibold px-6 py-2 rounded-lg transition-colors duration-200">
-                Get Started
-              </button>
-            </div>
-
-            {/* Mobile menu button */}
-            <div className="md:hidden">
-              <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="text-[#E0E0E0] hover:text-[#50FF9F] transition-colors duration-200"
-              >
-                {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-              </button>
-            </div>
-          </div>
-
-          {/* Mobile Navigation */}
-          {isMenuOpen && (
-            <div className="md:hidden py-4 border-t border-[#1A221E]">
-              <div className="flex flex-col space-y-4">
-                <a href="#dashboard" className="text-[#E0E0E0] hover:text-[#50FF9F] transition-colors duration-200">
-                  Dashboard
-                </a>
-                <a href="#features" className="text-[#E0E0E0] hover:text-[#50FF9F] transition-colors duration-200">
-                  Features
-                </a>
-                <a href="#pricing" className="text-[#E0E0E0] hover:text-[#50FF9F] transition-colors duration-200">
-                  Pricing
-                </a>
-                <a href="#support" className="text-[#E0E0E0] hover:text-[#50FF9F] transition-colors duration-200">
-                  Support
-                </a>
-                <button className="bg-[#50FF9F] hover:bg-[#40E085] text-[#111814] font-semibold px-6 py-2 rounded-lg transition-colors duration-200 w-full mt-4">
-                  Get Started
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      </nav>
-
+    <div className="min-h-screen bg-background text-text-primary font-['Inter',sans-serif]">
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">        
         {/* Hero Content Container with Background Image */}
@@ -98,7 +26,7 @@ const AgriVisionLanding = () => {
               AgriVision uses advanced AI to provide accurate yield predictions, helping farmers 
               optimize their resources and maximize profits.
             </p>
-            <button className="bg-[#50FF9F] hover:bg-[#40E085] text-[#111814] font-bold px-10 py-5 rounded-lg text-xl transition-colors duration-200 shadow-lg">
+            <button className="bg-primary hover:bg-primary/80 text-primary-foreground font-bold px-10 py-5 rounded-lg text-xl transition-colors duration-200 shadow-lg">
               Get Started Now
             </button>
           </div>
@@ -109,10 +37,10 @@ const AgriVisionLanding = () => {
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-[#E0E0E0]">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-text-primary">
               Key Features
             </h2>
-            <p className="text-lg sm:text-xl text-[#A0A0A0] max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg sm:text-xl text-text-secondary max-w-2xl mx-auto leading-relaxed">
               AgriVision offers a range of features designed to help farmers make informed 
               decisions and improve their crop yields.
             </p>
@@ -121,36 +49,36 @@ const AgriVisionLanding = () => {
           {/* Features Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Accurate Predictions */}
-            <div className="bg-[#1A221E] p-8 rounded-xl border border-[#2A3229] hover:border-[#50FF9F]/30 transition-colors duration-200">
-              <div className="w-12 h-12 bg-[#2A3229] rounded-lg mx-auto mb-6 flex items-center justify-center">
-                <BarChart3 size={24} className="text-[#50FF9F]" />
+            <div className="bg-background-card p-8 rounded-xl border border-border hover:border-primary/30 transition-colors duration-200">
+              <div className="w-12 h-12 bg-border rounded-lg mx-auto mb-6 flex items-center justify-center">
+                <BarChart3 size={24} className="text-primary" />
               </div>
-              <h3 className="text-xl font-bold mb-4 text-[#E0E0E0] text-center">Accurate Predictions</h3>
-              <p className="text-[#A0A0A0] text-center leading-relaxed">
+              <h3 className="text-xl font-bold mb-4 text-text-primary text-center">Accurate Predictions</h3>
+              <p className="text-text-secondary text-center leading-relaxed">
                 Our AI models provide highly accurate yield predictions based on historical data, 
                 weather patterns, and soil conditions.
               </p>
             </div>
 
             {/* Crop-Specific Models */}
-            <div className="bg-[#1A221E] p-8 rounded-xl border border-[#2A3229] hover:border-[#50FF9F]/30 transition-colors duration-200">
-              <div className="w-12 h-12 bg-[#2A3229] rounded-lg mx-auto mb-6 flex items-center justify-center">
-                <Leaf size={24} className="text-[#50FF9F]" />
+            <div className="bg-background-card p-8 rounded-xl border border-border hover:border-primary/30 transition-colors duration-200">
+              <div className="w-12 h-12 bg-border rounded-lg mx-auto mb-6 flex items-center justify-center">
+                <Leaf size={24} className="text-primary" />
               </div>
-              <h3 className="text-xl font-bold mb-4 text-[#E0E0E0] text-center">Crop-Specific Models</h3>
-              <p className="text-[#A0A0A0] text-center leading-relaxed">
+              <h3 className="text-xl font-bold mb-4 text-text-primary text-center">Crop-Specific Models</h3>
+              <p className="text-text-secondary text-center leading-relaxed">
                 We offer specialized models for a variety of crops, ensuring precise predictions 
                 tailored to your specific needs.
               </p>
             </div>
 
             {/* Real-Time Insights */}
-            <div className="bg-[#1A221E] p-8 rounded-xl border border-[#2A3229] hover:border-[#50FF9F]/30 transition-colors duration-200">
-              <div className="w-12 h-12 bg-[#2A3229] rounded-lg mx-auto mb-6 flex items-center justify-center">
-                <Clock size={24} className="text-[#50FF9F]" />
+            <div className="bg-background-card p-8 rounded-xl border border-border hover:border-primary/30 transition-colors duration-200">
+              <div className="w-12 h-12 bg-border rounded-lg mx-auto mb-6 flex items-center justify-center">
+                <Clock size={24} className="text-primary" />
               </div>
-              <h3 className="text-xl font-bold mb-4 text-[#E0E0E0] text-center">Real-Time Insights</h3>
-              <p className="text-[#A0A0A0] text-center leading-relaxed">
+              <h3 className="text-xl font-bold mb-4 text-text-primary text-center">Real-Time Insights</h3>
+              <p className="text-text-secondary text-center leading-relaxed">
                 Get up-to-date insights and alerts on potential risks, allowing you to take 
                 proactive measures to protect your crops.
               </p>
@@ -162,14 +90,14 @@ const AgriVisionLanding = () => {
       {/* CTA Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
-          <div className="bg-[#1A221E] rounded-2xl p-8 sm:p-12 text-center border border-[#2A3229]">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-[#E0E0E0]">
+          <div className="bg-background-card rounded-2xl p-8 sm:p-12 text-center border border-border">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-text-primary">
               Ready to Boost Your Crop Yields?
             </h2>
-            <p className="text-lg sm:text-xl text-[#A0A0A0] mb-8 leading-relaxed">
+            <p className="text-lg sm:text-xl text-text-secondary mb-8 leading-relaxed">
               Join AgriVision today and start making smarter farming decisions.
             </p>
-            <button className="bg-[#50FF9F] hover:bg-[#40E085] text-[#111814] font-semibold px-8 py-4 rounded-lg text-lg transition-colors duration-200">
+            <button className="bg-primary hover:bg-primary/80 text-primary-foreground font-semibold px-8 py-4 rounded-lg text-lg transition-colors duration-200">
               Get Started for Free
             </button>
           </div>
@@ -177,24 +105,24 @@ const AgriVisionLanding = () => {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 px-4 sm:px-6 lg:px-8 border-t border-[#1A221E]">
+      <footer className="py-12 px-4 sm:px-6 lg:px-8 border-t border-background-card">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-8 mb-6">
-            <a href="#privacy" className="text-[#A0A0A0] hover:text-[#50FF9F] transition-colors duration-200">
+            <a href="#privacy" className="text-text-secondary hover:text-primary transition-colors duration-200">
               Privacy Policy
             </a>
-            <a href="#terms" className="text-[#A0A0A0] hover:text-[#50FF9F] transition-colors duration-200">
+            <a href="#terms" className="text-text-secondary hover:text-primary transition-colors duration-200">
               Terms of Service
             </a>
-            <a href="#contact" className="text-[#A0A0A0] hover:text-[#50FF9F] transition-colors duration-200">
+            <a href="#contact" className="text-text-secondary hover:text-primary transition-colors duration-200">
               Contact Us
             </a>
-            <a href="#about" className="text-[#A0A0A0] hover:text-[#50FF9F] transition-colors duration-200">
+            <a href="#about" className="text-text-secondary hover:text-primary transition-colors duration-200">
               About Us
             </a>
           </div>
           <div className="text-center">
-            <p className="text-sm text-[#A0A0A0]">
+            <p className="text-sm text-text-secondary">
               © 2024 AgriVision. All rights reserved.
             </p>
           </div>

@@ -11,9 +11,12 @@ const Button = ({
   const baseClasses = 'font-semibold rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2';
   
   const variants = {
-    primary: 'bg-green-500 hover:bg-green-600 text-white focus:ring-green-500',
-    secondary: 'bg-gray-600 hover:bg-gray-700 text-white focus:ring-gray-500',
-    outline: 'border-2 border-green-500 text-green-500 hover:bg-green-500 hover:text-white focus:ring-green-500'
+    primary: 'bg-primary hover:bg-primary/80 text-primary-foreground focus:ring-primary',
+    secondary: 'bg-background-card hover:bg-border text-text-primary focus:ring-border',
+    outline: 'border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground focus:ring-primary',
+    success: 'bg-status-success hover:bg-status-success/80 text-primary-foreground focus:ring-status-success',
+    error: 'bg-status-error hover:bg-status-error/80 text-white focus:ring-status-error',
+    warning: 'bg-status-warning hover:bg-status-warning/80 text-primary-foreground focus:ring-status-warning'
   };
 
   const sizes = {
