@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Card = ({ 
+export const Card = ({ 
   children, 
   className = '', 
   variant = 'default',
@@ -26,13 +26,13 @@ const Card = ({
   );
 };
 
-const CardHeader = ({ children, className = '' }) => (
+export const CardHeader = ({ children, className = '' }) => (
   <div className={`p-6 pb-4 ${className}`}>
     {children}
   </div>
 );
 
-const CardContent = ({ children, className = '' }) => (
+export const CardContent = ({ children, className = '' }) => (
   <div className={`p-6 pt-0 ${className}`}>
     {children}
   </div>
@@ -44,7 +44,7 @@ const CardFooter = ({ children, className = '' }) => (
   </div>
 );
 
-const CardTitle = ({ children, className = '' }) => (
+export const CardTitle = ({ children, className = '' }) => (
   <h3 className={`text-xl font-bold text-text-primary ${className}`}>
     {children}
   </h3>

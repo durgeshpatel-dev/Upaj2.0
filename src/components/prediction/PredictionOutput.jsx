@@ -1,5 +1,5 @@
 import React from 'react';
-import { TrendingUp, Leaf, Calendar, Droplets, Sun, AlertCircle } from 'lucide-react';
+import { TrendingUp, Leaf, AlertCircle } from 'lucide-react';
 
 const PredictionOutput = ({ prediction }) => {
   if (!prediction) {
@@ -72,90 +72,26 @@ const PredictionOutput = ({ prediction }) => {
         )}
       </div>
 
-      {/* Analysis Details */}
-      <div className="bg-background-card p-4 rounded-lg border border-border">
-        <h4 className="text-base font-semibold text-text-primary mb-3">Analysis Details</h4>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">{/* Weather Conditions */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between p-2 bg-background rounded border border-border">
-              <div className="flex items-center space-x-2">
-                <Sun size={14} className="text-status-warning" />
-                <span className="text-xs text-text-secondary">Weather Impact</span>
-              </div>
-              <span className="text-xs font-semibold text-status-success px-2 py-1 bg-status-success/10 rounded">Favorable</span>
-            </div>
-            
-            <div className="flex items-center justify-between p-2 bg-background rounded border border-border">
-              <div className="flex items-center space-x-2">
-                <Droplets size={14} className="text-primary" />
-                <span className="text-xs text-text-secondary">Soil Moisture</span>
-              </div>
-              <span className="text-xs font-semibold text-status-success px-2 py-1 bg-status-success/10 rounded">Optimal</span>
-            </div>
-          </div>
-
-          {/* Growing Conditions */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between p-2 bg-background rounded border border-border">
-              <div className="flex items-center space-x-2">
-                <Calendar size={14} className="text-text-secondary" />
-                <span className="text-xs text-text-secondary">Growing Season</span>
-              </div>
-              <span className="text-xs font-semibold text-status-warning px-2 py-1 bg-status-warning/10 rounded">Good</span>
-            </div>
-            
-            <div className="flex items-center justify-between p-2 bg-background rounded border border-border">
-              <div className="flex items-center space-x-2">
-                <Leaf size={14} className="text-status-success" />
-                <span className="text-xs text-text-secondary">Crop Health</span>
-              </div>
-              <span className="text-xs font-semibold text-status-success px-2 py-1 bg-status-success/10 rounded">Excellent</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Yield Breakdown */}
-        <div className="border-t border-border pt-3">
-          <h5 className="text-xs font-medium text-text-primary mb-2">Yield Breakdown</h5>
-          <div className="grid grid-cols-3 gap-4 text-center">
-            <div>
-              <div className="text-lg font-bold text-text-primary">{(prediction.yield * 0.7).toFixed(0)}</div>
-              <div className="text-xs text-text-secondary">Conservative</div>
-            </div>
-            <div>
-              <div className="text-lg font-bold text-primary">{prediction.yield}</div>
-              <div className="text-xs text-text-secondary">Expected</div>
-            </div>
-            <div>
-              <div className="text-lg font-bold text-text-primary">{(prediction.yield * 1.2).toFixed(0)}</div>
-              <div className="text-xs text-text-secondary">Optimistic</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
+     
       {/* Recommendations */}
-      <div className="bg-background-card p-6 rounded-lg border border-border">
-        <div className="flex items-center space-x-2 mb-4">
-          <AlertCircle size={18} className="text-primary" />
-          <h4 className="text-lg font-semibold text-text-primary">Recommendations</h4>
+      <div className="bg-background-card p-4 rounded-lg border border-border">
+        <div className="flex items-center space-x-2 mb-3">
+          <AlertCircle size={16} className="text-primary" />
+          <h4 className="text-base font-semibold text-text-primary">Recommendations</h4>
         </div>
         
-        <div className="space-y-3">
-          <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg">
-            <h5 className="text-sm font-semibold text-text-primary mb-2">🌱 Immediate Actions</h5>
-            <ul className="space-y-1 text-sm text-text-secondary">
+        <div className="space-y-2">
+          <div className="p-3 bg-primary/5 border border-primary/20 rounded">
+            <h5 className="text-xs font-semibold text-text-primary mb-1">🌱 Immediate Actions</h5>
+            <ul className="space-y-0.5 text-xs text-text-secondary">
               <li>• Monitor soil moisture levels daily</li>
               <li>• Check for early signs of pest activity</li>
-              <li>• Ensure adequate drainage in low-lying areas</li>
             </ul>
           </div>
           
-          <div className="p-4 bg-status-warning/5 border border-status-warning/20 rounded-lg">
-            <h5 className="text-sm font-semibold text-text-primary mb-2">⚠️ Watch Points</h5>
-            <ul className="space-y-1 text-sm text-text-secondary">
-              <li>• Weather forecast shows possible dry spell next week</li>
+          <div className="p-3 bg-status-warning/5 border border-status-warning/20 rounded">
+            <h5 className="text-xs font-semibold text-text-primary mb-1">⚠️ Watch Points</h5>
+            <ul className="space-y-0.5 text-xs text-text-secondary">
               <li>• Consider nitrogen application in weeks 3-4</li>
               <li>• Monitor for fungal diseases in humid conditions</li>
             </ul>

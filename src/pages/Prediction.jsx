@@ -4,7 +4,18 @@ import PredictionOutput from '../components/prediction/PredictionOutput';
 import YieldTrendChart from '../components/prediction/YieldTrendChart';
 
 const Prediction = () => {
-  const [prediction, setPrediction] = useState(null);
+  // Demo data for testing UI/UX
+  const demoData = {
+    yield: 125,
+    confidence: 87,
+    landArea: 4.5,
+    cropType: 'corn',
+    location: 'iowa',
+    soilType: 'loam',
+    plantingDate: '2024-04-15'
+  };
+
+  const [prediction, setPrediction] = useState(demoData); // Start with demo data
   const [isLoading, setIsLoading] = useState(false);
 
   const handlePredictionSubmit = (formData) => {
@@ -25,6 +36,14 @@ const Prediction = () => {
     }, 2000);
   };
 
+  const loadDemoData = () => {
+    setPrediction(demoData);
+  };
+
+  const clearPrediction = () => {
+    setPrediction(null);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Main Content */}
@@ -33,6 +52,25 @@ const Prediction = () => {
           {/* Left Column - Form */}
           <div className="xl:col-span-1 space-y-6">
             <PredictionForm onSubmit={handlePredictionSubmit} isLoading={isLoading} />
+            
+            {/* Demo Controls */}
+            <div className="bg-background-card p-4 rounded-lg border border-border">
+              <h3 className="text-sm font-semibold text-text-primary mb-3">Demo Controls</h3>
+              <div className="flex gap-2">
+                <button
+                  onClick={loadDemoData}
+                  className="flex-1 bg-primary hover:bg-primary/80 text-primary-foreground text-sm font-medium px-3 py-2 rounded transition-colors"
+                >
+                  Load Demo
+                </button>
+                <button
+                  onClick={clearPrediction}
+                  className="flex-1 bg-border hover:bg-text-secondary text-text-primary text-sm font-medium px-3 py-2 rounded transition-colors"
+                >
+                  Clear
+                </button>
+              </div>
+            </div>
             
             {/* How it Works Section */}
             <div className="bg-background-card p-6 rounded-lg border border-border">
