@@ -408,13 +408,13 @@ const PredictionForm = ({ onSubmit, isLoading = false, error = null }) => {
         </button>
 
         {/* Test API Button */}
-        <button
+        {/* <button
           type="button"
           onClick={testPredictionAPI}
           className="w-full font-semibold py-3 px-6 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-background-card flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white mt-4"
         >
           <span>🔧 Test Prediction API (Auto-fetch & Manual)</span>
-        </button>
+        </button> */}
       </form>
     </div>
   );

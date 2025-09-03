@@ -86,7 +86,7 @@ const Prediction = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Backend Status Banner */}
-      {!backendAvailable && (
+      {/* {!backendAvailable && (
         <div className="bg-status-warning/10 border-b border-status-warning/20 px-6 py-3">
           <div className="max-w-7xl mx-auto">
             <p className="text-status-warning text-sm text-center">
@@ -95,7 +95,7 @@ const Prediction = () => {
             </p>
           </div>
         </div>
-      )}
+      )} */}
 
       {/* Error Banner */}
       {error && (
