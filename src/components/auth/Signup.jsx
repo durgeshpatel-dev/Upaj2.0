@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card'
 import FormInput from '../ui/FormInput'
 import Button from '../Button'
 import { useAuth } from '../../context/AuthContext'
+import { authAPI } from '../../utils/api'
+import { initiateOAuth } from '../../utils/oauth'
 
 const Signup = () => {
   const navigate = useNavigate()
@@ -12,7 +14,10 @@ const Signup = () => {
     name: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    farmName: '',
+    location: '',
+    totalArea: ''
   })
   const [errors, setErrors] = useState({})
   const [isLoading, setIsLoading] = useState(false)
@@ -43,21 +48,80 @@ const Signup = () => {
       setIsLoading(false)
       return
     }
-
-    // Simulate account creation and redirect to verification
-    setTimeout(() => {
-      navigate('/verify-email', { 
-        state: { 
-          email: formData.email,
-          name: formData.name 
-        } 
-      })
+    if (!formData.farmName.trim()) {
+      setErrors({ farmName: 'Farm name is required' })
       setIsLoading(false)
-    }, 1500)
+      return
+    }
+    if (!formData.location.trim()) {
+      setErrors({ location: 'Location is required' })
+      setIsLoading(false)
+      return
+    }
+    if (!formData.totalArea || parseFloat(formData.totalArea) <= 0) {
+      setErrors({ totalArea: 'Please enter a valid total area' })
+      setIsLoading(false)
+      return
+    }
+
+    // Call backend API
+    try {
+      console.log('🚀 Calling signup API...');
+      const result = await authAPI.signup({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        farmDetails: {
+          farmName: formData.farmName,
+          location: formData.location,
+          totalArea: parseFloat(formData.totalArea)
+        }
+      })
+
+      console.log('📥 Signup API result:', result);
+
+      if (result.success) {
+        // Extract userId robustly from possible backend shapes
+        const data = result.data || {}
+        console.log('🔍 Signup response data:', data);
+        
+        const nestedUser = data.user || data.data || {}
+        console.log('🔍 Nested user object:', nestedUser);
+        
+        const userId = nestedUser.id || nestedUser._id || data.userId || data.id || data._id || null
+        console.log('👤 Extracted userId:', userId);
+        console.log('👤 userId type:', typeof userId);
+
+        // Redirect to verification page
+        console.log('🔄 Navigating to verify-email with state:', {
+          email: formData.email,
+          name: formData.name,
+          userId,
+          message: 'Please verify your email to complete registration.'
+        });
+        
+        navigate('/verify-email', { 
+          state: { 
+            email: formData.email,
+            name: formData.name,
+            userId,
+            message: 'Please verify your email to complete registration.'
+          } 
+        })
+      } else {
+        console.log('❌ Signup failed:', result.error);
+        setErrors({ general: result.error })
+      }
+    } catch (error) {
+      console.error('❌ Unexpected signup error:', error);
+      setErrors({ general: 'Signup failed. Please try again.' })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleGoogleSignup = () => {
-    alert('Google signup functionality will be implemented with Google OAuth')
+    window.location.href = 'http://localhost:5001/api/auth/google'
   }
 
   const handleInputChange = (field, value) => {
@@ -85,19 +149,22 @@ const Signup = () => {
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Google Sign Up Button */}
-          <Button
-            type="button"
-            onClick={handleGoogleSignup}
-            className="w-full bg-white hover:bg-gray-100 text-gray-900 font-semibold border border-gray-300 flex items-center justify-center gap-3"
-          >
-            <svg className="w-5 h-5" viewBox="0 0 24 24">
-              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-            </svg>
-            Continue with Google
-          </Button>
+          <div className="mb-6">
+            <Button
+              type="button"
+              onClick={handleGoogleSignup}
+              className="w-full bg-white hover:bg-gray-100 text-gray-900 font-semibold border border-gray-300 flex items-center justify-center gap-3"
+              disabled={isLoading}
+            >
+              <svg className="w-5 h-5" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+              </svg>
+              Continue with Google
+            </Button>
+          </div>
 
           {/* Divider */}
           <div className="relative">
@@ -151,6 +218,38 @@ const Signup = () => {
               error={errors.confirmPassword}
               placeholder="Confirm your password"
             />
+
+            {/* Farm Details Section */}
+            <div className="border-t border-border pt-4 mt-6">
+              <h3 className="text-lg font-medium text-text-primary mb-3">Farm Information</h3>
+              
+              <FormInput
+                label="Farm Name"
+                value={formData.farmName}
+                onChange={(e) => handleInputChange('farmName', e.target.value)}
+                error={errors.farmName}
+                placeholder="Enter your farm name"
+              />
+
+              <FormInput
+                label="Location"
+                value={formData.location}
+                onChange={(e) => handleInputChange('location', e.target.value)}
+                error={errors.location}
+                placeholder="District, State"
+              />
+
+              <FormInput
+                label="Total Area (acres)"
+                type="number"
+                step="0.1"
+                min="0"
+                value={formData.totalArea}
+                onChange={(e) => handleInputChange('totalArea', e.target.value)}
+                error={errors.totalArea}
+                placeholder="Enter total farm area"
+              />
+            </div>
 
             <div className="text-xs text-text-secondary">
               By creating an account, you agree to our{' '}

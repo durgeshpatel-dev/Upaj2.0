@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import AlertBanner from '../components/dashboard/AlertBanner';
@@ -7,11 +7,81 @@ import SoilCard from '../components/dashboard/SoilCard';
 import FarmMap from '../components/dashboard/FarmMap';
 import PastPredictionsTable from '../components/dashboard/PastPredictionsTable';
 import PredictionSummary from '../components/dashboard/PredictionSummary';
+import BackendStatusCard from '../components/ui/BackendStatusCard';
 import Button from '../components/Button';
-import useAuth from '../hooks/useAuth';
+import { useAuth } from '../context/AuthContext';
+import { predictionAPI } from '../utils/api';
 
 const Dashboard = () => {
   const { user, isAuthenticated } = useAuth();
+  const [predictions, setPredictions] = useState([]);
+  const [loadingPredictions, setLoadingPredictions] = useState(false);
+
+  // Fetch predictions once at dashboard level
+  useEffect(() => {
+    const fetchPredictions = async () => {
+      console.log('🔄 Dashboard: Starting prediction fetch...');
+      console.log('🔄 Dashboard: Auth status:', { isAuthenticated });
+      console.log('🔄 Dashboard: User data:', { user, userId: user?.id || user?._id });
+
+      if (!isAuthenticated) {
+        console.log('🚫 Dashboard: User not authenticated, skipping prediction fetch');
+        setPredictions([]);
+        setLoadingPredictions(false);
+        return;
+      }
+
+      // if (!backendAvailable) {
+      //   console.log('🚫 Dashboard: Backend not available, skipping prediction fetch');
+      //   setPredictions([]);
+      //   setLoadingPredictions(false);
+      //   return;
+      // }
+
+      if (!(user?.id || user?._id)) {
+        console.log('🚫 Dashboard: No user ID available, skipping prediction fetch');
+        setPredictions([]);
+        setLoadingPredictions(false);
+        return;
+      }
+
+      console.log('✅ Dashboard: All conditions met, proceeding with fetch');
+      setLoadingPredictions(true);
+      
+      try {
+        const userId = user.id || user._id;
+        console.log('📤 Dashboard: Calling getUserPredictions with userId:', userId);
+        
+        const result = await predictionAPI.getUserPredictions(userId);
+        
+        console.log('📥 Dashboard: API response received:', result);
+        console.log('📥 Dashboard: Response success:', result.success);
+        console.log('📥 Dashboard: Response data:', result.data);
+        
+        if (result.success) {
+          const predictionsArray = Array.isArray(result.data) ? result.data : [];
+          console.log('📊 Dashboard: Normalized predictions array:', predictionsArray);
+          console.log('📊 Dashboard: Array length:', predictionsArray.length);
+          setPredictions(predictionsArray);
+          console.log('✅ Dashboard: Predictions set successfully:', predictionsArray.length, 'items');
+        } else {
+          console.log('❌ Dashboard: API call failed:', result.error);
+          setPredictions([]);
+        }
+      } catch (error) {
+        console.error('❌ Dashboard: Unexpected error fetching predictions:', error);
+        console.error('❌ Dashboard: Error name:', error.name);
+        console.error('❌ Dashboard: Error message:', error.message);
+        console.error('❌ Dashboard: Error stack:', error.stack);
+        setPredictions([]);
+      } finally {
+        setLoadingPredictions(false);
+        console.log('🔄 Dashboard: Prediction fetch completed');
+      }
+    };
+
+    fetchPredictions();
+  }, [user, isAuthenticated]);
   
   return (
     <div className="min-h-screen bg-background text-text-primary">
@@ -49,14 +119,34 @@ const Dashboard = () => {
           Heads up! A frost is predicted for tonight. Consider taking preventive measures for sensitive crops.
         </AlertBanner>
 
+        {/* Backend Status Card - Enabled for debugging */}
+        <div className="mt-4">
+          <BackendStatusCard />
+        </div>
+
+        {/* Debug Information Card */}
+        {/* {process.env.NODE_ENV === 'development' && (
+          <div className="mt-4 p-4 bg-gray-100 dark:bg-gray-800 border rounded-lg">
+            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">Debug Info</h3>
+            <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
+              <div>Auth Status: {isAuthenticated ? '✅ Authenticated' : '❌ Not Authenticated'}</div>
+              <div>Backend Available: {backendAvailable ? '✅ Available' : '❌ Not Available'}</div>
+              <div>User ID: {user?.id || user?._id || 'Not Available'}</div>
+              <div>User Name: {user?.name || 'Not Available'}</div>
+              <div>Predictions Count: {predictions.length}</div>
+              <div>Loading: {loadingPredictions ? 'Yes' : 'No'}</div>
+            </div>
+          </div>
+        )} */}
+
         <div className="mt-4 grid gap-4 md:grid-cols-3">
-          <PredictionSummary />
+          <PredictionSummary predictions={predictions} loading={loadingPredictions} />
           <WeatherCard />
           <SoilCard />
         </div>
 
         <div className="mt-6 grid gap-4 md:grid-cols-2">
-          <PastPredictionsTable />
+          <PastPredictionsTable predictions={predictions} loading={loadingPredictions} />
           <FarmMap />
         </div>
       </main>

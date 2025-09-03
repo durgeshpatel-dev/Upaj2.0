@@ -1,10 +1,21 @@
 import React from 'react'
 import { Card, CardContent } from '../ui/Card'
 import { User } from 'lucide-react'
-import useAuth from '../../hooks/useAuth'
+import { useAuth } from '../../context/AuthContext'
 
 const ProfileCard = () => {
   const { user } = useAuth()
+
+  // Format the join date from user data
+  const formatJoinDate = (dateString) => {
+    if (!dateString) return '2024'
+    try {
+      const date = new Date(dateString)
+      return date.getFullYear().toString()
+    } catch {
+      return '2024'
+    }
+  }
 
   return (
     <Card className="border-border bg-background-card">
@@ -19,9 +30,11 @@ const ProfileCard = () => {
               aria-hidden
             />
           </div>
-          <h3 className="mt-4 text-text-primary font-semibold text-lg">{user?.name || 'Ethan Carter'}</h3>
+          <h3 className="mt-4 text-text-primary font-semibold text-lg">{user?.name || 'User'}</h3>
           <p className="text-sm text-text-secondary">Farmer</p>
-          <p className="text-xs text-text-secondary mt-1">Joined in {user?.joinedDate || '2022'}</p>
+          <p className="text-xs text-text-secondary mt-1">
+            Joined in {formatJoinDate(user?.createdAt || user?.joinedDate)}
+          </p>
         </div>
       </CardContent>
     </Card>

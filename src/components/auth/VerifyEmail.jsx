@@ -3,14 +3,34 @@ import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card'
 import Button from '../Button'
 import { useAuth } from '../../context/AuthContext'
+import { authAPI } from '../../utils/api'
 
 const VerifyEmail = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const { login } = useAuth()
   
+  // Debug: Log the entire location state
+  console.log('🔍 VerifyEmail component loaded');
+  console.log('📍 Location state:', location.state);
+  console.log('📍 Full location object:', location);
+  
   const email = location.state?.email || 'user@example.com'
   const name = location.state?.name || 'User'
+  // Accept multiple possible keys for user id coming from the signup response
+  const userId = location.state?.userId || location.state?.id || location.state?._id || location.state?.user?.id || location.state?.user?._id
+  const message = location.state?.message || 'Please verify your email to continue.'
+  
+  console.log('📧 Email extracted:', email);
+  console.log('👤 Name extracted:', name);
+  console.log('🆔 User ID extracted:', userId);
+  console.log('💬 Message extracted:', message);
+  console.log('🔍 Checking all possible userId locations:');
+  console.log('   - location.state?.userId:', location.state?.userId);
+  console.log('   - location.state?.id:', location.state?.id);
+  console.log('   - location.state?._id:', location.state?._id);
+  console.log('   - location.state?.user?.id:', location.state?.user?.id);
+  console.log('   - location.state?.user?._id:', location.state?.user?._id);
   
   const [verificationCode, setVerificationCode] = useState(['', '', '', '', '', ''])
   const [errors, setErrors] = useState({})
@@ -30,32 +50,55 @@ const VerifyEmail = () => {
     setErrors({})
     
     const code = verificationCode.join('')
+    console.log('🔍 Starting verification submit...');
+    console.log('📧 Email from state:', email);
+    console.log('👤 User ID from state:', userId);
+    console.log('🔢 Verification code:', code);
+    
     if (code.length !== 6) {
+      console.log('❌ Code length invalid:', code.length);
       setErrors({ verification: 'Please enter the complete 6-digit code' })
       setIsLoading(false)
       return
     }
 
-    // Simulate verification
-    setTimeout(() => {
-      const userData = {
-        name: name,
-        email: email,
-        phone: '+1 (555) 123-4567',
-        farmName: 'New Farm',
-        location: 'Your Location',
-        acreage: 100,
-        joinedDate: new Date().getFullYear().toString()
+    try {
+      // Check if we have userId, if not show error
+      if (!userId) {
+        console.log('❌ No userId found in state');
+        setErrors({ verification: 'Unable to verify OTP. Please try signing up again.' })
+        setIsLoading(false)
+        return
       }
+
+      console.log('📤 Calling authAPI.verifyOTP...');
+      const result = await authAPI.verifyOTP(email, code, userId)
+      console.log('📥 API result:', result);
       
-      login(userData, 'new-user-token-12345')
-      navigate('/dashboard', { 
-        state: { 
-          message: 'Welcome to AgriVision! Your account has been verified successfully.' 
-        } 
-      })
+      if (result.success) {
+        console.log('✅ Verification successful');
+        const data = result.data || {}
+        const user = data.user || data
+        const token = data.token || data.authToken || data.accessToken || null
+        console.log('👤 User data:', user);
+        console.log('🔑 Token present:', !!token);
+        
+        login(token, user)
+        navigate('/dashboard', { 
+          state: { 
+            message: 'Welcome to AgriVision! Your account has been verified successfully.' 
+          } 
+        })
+      } else {
+        console.log('❌ Verification failed:', result.error);
+        setErrors({ verification: result.error })
+      }
+    } catch (error) {
+      console.error('❌ Unexpected error in verification:', error);
+      setErrors({ verification: 'Verification failed. Please try again.' })
+    } finally {
       setIsLoading(false)
-    }, 1500)
+    }
   }
 
   const handleVerificationCodeChange = (index, value) => {
@@ -84,11 +127,31 @@ const VerifyEmail = () => {
     }
   }
 
-  const handleResendCode = () => {
+  const handleResendCode = async () => {
     if (resendCooldown === 0) {
       setResendCooldown(60)
-      // Simulate resending code
-      alert('Verification code resent to your email!')
+      
+      try {
+        // Check if we have userId, if not show error
+        if (!userId) {
+          setErrors({ verification: 'Unable to resend OTP. Please try signing up again.' })
+          setResendCooldown(0)
+          return
+        }
+
+        const result = await authAPI.resendOTP(email, userId)
+        if (result.success) {
+          // Show success message (you can add a toast notification here)
+          console.log('OTP resent successfully')
+          setErrors({}) // Clear any previous errors
+        } else {
+          setErrors({ verification: result.error })
+          setResendCooldown(0)
+        }
+      } catch (error) {
+        setErrors({ verification: 'Failed to resend OTP. Please try again.' })
+        setResendCooldown(0)
+      }
     }
   }
 

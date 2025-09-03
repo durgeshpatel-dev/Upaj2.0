@@ -1,0 +1,413 @@
+{
+  "cropOptimization": {
+    "wheat": {
+      "recommendedFertilizer": "NPK 12-32-16",
+      "bestPlantingTime": "October - November",
+      "irrigationSchedule": "Every 7-10 days",
+      "expectedHarvestTime": "March - April",
+      "avgGrowthPeriod": "120-150 days",
+      "optimalTemperature": "15-25°C",
+      "waterRequirement": "450-650 mm",
+      "soilType": ["Loamy", "Clay Loam", "Sandy Loam"],
+      "fertilizationStages": [
+        {
+          "stage": "Pre-sowing",
+          "fertilizer": "DAP",
+          "quantity": "125-150 kg/ha"
+        },
+        {
+          "stage": "First irrigation",
+          "fertilizer": "Urea",
+          "quantity": "87 kg/ha"
+        },
+        {
+          "stage": "Second irrigation",
+          "fertilizer": "Urea",
+          "quantity": "65 kg/ha"
+        }
+      ],
+      "irrigationStages": [
+        "Crown root initiation (20-25 days)",
+        "Tillering (40-45 days)",
+        "Jointing (60-65 days)",
+        "Flowering (90-95 days)",
+        "Milk stage (105-110 days)",
+        "Dough stage (120-125 days)"
+      ]
+    },
+    "rice": {
+      "recommendedFertilizer": "NPK 10-26-26",
+      "bestPlantingTime": "June - July",
+      "irrigationSchedule": "Continuous flooding",
+      "expectedHarvestTime": "October - November",
+      "avgGrowthPeriod": "110-140 days",
+      "optimalTemperature": "20-35°C",
+      "waterRequirement": "1200-1500 mm",
+      "soilType": ["Clay", "Clay Loam", "Silty Clay"],
+      "fertilizationStages": [
+        {
+          "stage": "Basal",
+          "fertilizer": "NPK 10-26-26",
+          "quantity": "100 kg/ha"
+        },
+        {
+          "stage": "Tillering (20-25 days)",
+          "fertilizer": "Urea",
+          "quantity": "110 kg/ha"
+        },
+        {
+          "stage": "Panicle initiation (45-50 days)",
+          "fertilizer": "Urea",
+          "quantity": "55 kg/ha"
+        }
+      ],
+      "irrigationStages": [
+        "Nursery stage - daily watering",
+        "Transplanting - 2-3 cm water",
+        "Tillering - 2-5 cm water",
+        "Flowering - continuous 5 cm water",
+        "Grain filling - intermittent irrigation",
+        "Maturity - drain 10 days before harvest"
+      ]
+    },
+    "maize": {
+      "recommendedFertilizer": "NPK 18-46-0",
+      "bestPlantingTime": "March - April, July - August",
+      "irrigationSchedule": "Every 5-7 days",
+      "expectedHarvestTime": "June - July, November - December",
+      "avgGrowthPeriod": "90-120 days",
+      "optimalTemperature": "21-27°C",
+      "waterRequirement": "500-800 mm",
+      "soilType": ["Loamy", "Sandy Loam", "Alluvial"],
+      "fertilizationStages": [
+        {
+          "stage": "Sowing",
+          "fertilizer": "NPK 18-46-0",
+          "quantity": "125 kg/ha"
+        },
+        {
+          "stage": "Knee high (30-35 days)",
+          "fertilizer": "Urea",
+          "quantity": "130 kg/ha"
+        },
+        {
+          "stage": "Pre-tasseling (45-50 days)",
+          "fertilizer": "Urea",
+          "quantity": "65 kg/ha"
+        }
+      ],
+      "irrigationStages": [
+        "Germination (0-10 days)",
+        "Vegetative growth (30-40 days)",
+        "Tasseling (50-60 days)",
+        "Silking (60-70 days)",
+        "Grain filling (70-90 days)",
+        "Maturity (90-120 days)"
+      ]
+    },
+    "sugarcane": {
+      "recommendedFertilizer": "NPK 17-17-17",
+      "bestPlantingTime": "February - April, October - November",
+      "irrigationSchedule": "Every 10-15 days",
+      "expectedHarvestTime": "12-18 months after planting",
+      "avgGrowthPeriod": "365-540 days",
+      "optimalTemperature": "20-30°C",
+      "waterRequirement": "1800-2500 mm",
+      "soilType": ["Clay Loam", "Loamy", "Alluvial"],
+      "fertilizationStages": [
+        {
+          "stage": "Planting",
+          "fertilizer": "NPK 17-17-17",
+          "quantity": "250 kg/ha"
+        },
+        {
+          "stage": "45 days",
+          "fertilizer": "Urea",
+          "quantity": "220 kg/ha"
+        },
+        {
+          "stage": "90 days",
+          "fertilizer": "Urea",
+          "quantity": "110 kg/ha"
+        }
+      ],
+      "irrigationStages": [
+        "Germination (0-45 days) - frequent light irrigation",
+        "Tillering (45-120 days) - regular irrigation",
+        "Grand growth (120-270 days) - heavy irrigation",
+        "Maturation (270-365 days) - reduced irrigation",
+        "Harvest (365+ days) - stop irrigation 2 months before"
+      ]
+    },
+    "cotton": {
+      "recommendedFertilizer": "NPK 14-35-14",
+      "bestPlantingTime": "April - May",
+      "irrigationSchedule": "Every 7-10 days",
+      "expectedHarvestTime": "September - December",
+      "avgGrowthPeriod": "160-200 days",
+      "optimalTemperature": "21-30°C",
+      "waterRequirement": "700-1300 mm",
+      "soilType": ["Black Cotton Soil", "Alluvial", "Sandy Loam"],
+      "fertilizationStages": [
+        {
+          "stage": "Sowing",
+          "fertilizer": "NPK 14-35-14",
+          "quantity": "100 kg/ha"
+        },
+        {
+          "stage": "45 days",
+          "fertilizer": "Urea",
+          "quantity": "110 kg/ha"
+        },
+        {
+          "stage": "90 days",
+          "fertilizer": "Urea",
+          "quantity": "55 kg/ha"
+        }
+      ],
+      "irrigationStages": [
+        "Sowing to germination (0-10 days)",
+        "Vegetative growth (45-65 days)",
+        "Flowering (65-95 days)",
+        "Boll development (95-140 days)",
+        "Boll opening (140-180 days)"
+      ]
+    },
+    "potato": {
+      "recommendedFertilizer": "NPK 19-19-19",
+      "bestPlantingTime": "October - November, January - February",
+      "irrigationSchedule": "Every 4-7 days",
+      "expectedHarvestTime": "January - March, April - May",
+      "avgGrowthPeriod": "90-120 days",
+      "optimalTemperature": "15-20°C",
+      "waterRequirement": "500-700 mm",
+      "soilType": ["Sandy Loam", "Loamy", "Well-drained"],
+      "fertilizationStages": [
+        {
+          "stage": "Planting",
+          "fertilizer": "NPK 19-19-19",
+          "quantity": "300 kg/ha"
+        },
+        {
+          "stage": "Earthing up (30 days)",
+          "fertilizer": "Urea",
+          "quantity": "90 kg/ha"
+        }
+      ],
+      "irrigationStages": [
+        "Planting to emergence (0-15 days)",
+        "Vegetative growth (15-45 days)",
+        "Tuber initiation (45-60 days)",
+        "Tuber bulking (60-90 days)",
+        "Maturation (90-120 days) - reduce irrigation"
+      ]
+    },
+    "onion": {
+      "recommendedFertilizer": "NPK 10-26-26",
+      "bestPlantingTime": "October - November, January - February",
+      "irrigationSchedule": "Every 3-5 days",
+      "expectedHarvestTime": "March - May, May - July",
+      "avgGrowthPeriod": "120-150 days",
+      "optimalTemperature": "13-24°C",
+      "waterRequirement": "350-550 mm",
+      "soilType": ["Sandy Loam", "Loamy", "Well-drained"],
+      "fertilizationStages": [
+        {
+          "stage": "Transplanting",
+          "fertilizer": "NPK 10-26-26",
+          "quantity": "100 kg/ha"
+        },
+        {
+          "stage": "30 days",
+          "fertilizer": "Urea",
+          "quantity": "100 kg/ha"
+        },
+        {
+          "stage": "60 days",
+          "fertilizer": "Urea",
+          "quantity": "50 kg/ha"
+        }
+      ],
+      "irrigationStages": [
+        "Transplanting (0-15 days) - frequent light irrigation",
+        "Vegetative growth (15-75 days) - regular irrigation",
+        "Bulb development (75-120 days) - moderate irrigation",
+        "Maturation (120-150 days) - reduce irrigation"
+      ]
+    },
+    "tomato": {
+      "recommendedFertilizer": "NPK 19-19-19",
+      "bestPlantingTime": "July - August, November - December",
+      "irrigationSchedule": "Every 2-3 days",
+      "expectedHarvestTime": "October - January, February - May",
+      "avgGrowthPeriod": "90-120 days",
+      "optimalTemperature": "18-25°C",
+      "waterRequirement": "400-600 mm",
+      "soilType": ["Loamy", "Sandy Loam", "Well-drained"],
+      "fertilizationStages": [
+        {
+          "stage": "Transplanting",
+          "fertilizer": "NPK 19-19-19",
+          "quantity": "200 kg/ha"
+        },
+        {
+          "stage": "Flowering (30 days)",
+          "fertilizer": "NPK 0-52-34",
+          "quantity": "50 kg/ha"
+        },
+        {
+          "stage": "Fruit development (60 days)",
+          "fertilizer": "NPK 13-0-45",
+          "quantity": "100 kg/ha"
+        }
+      ],
+      "irrigationStages": [
+        "Transplanting (0-15 days) - frequent light irrigation",
+        "Vegetative growth (15-45 days) - moderate irrigation",
+        "Flowering (45-65 days) - consistent irrigation",
+        "Fruit development (65-120 days) - adequate moisture"
+      ]
+    },
+    "cabbage": {
+      "recommendedFertilizer": "NPK 18-18-18",
+      "bestPlantingTime": "September - October, January - February",
+      "irrigationSchedule": "Every 3-4 days",
+      "expectedHarvestTime": "December - February, April - June",
+      "avgGrowthPeriod": "80-120 days",
+      "optimalTemperature": "15-20°C",
+      "waterRequirement": "380-500 mm",
+      "soilType": ["Loamy", "Clay Loam", "Well-drained"],
+      "fertilizationStages": [
+        {
+          "stage": "Transplanting",
+          "fertilizer": "NPK 18-18-18",
+          "quantity": "150 kg/ha"
+        },
+        {
+          "stage": "30 days",
+          "fertilizer": "Urea",
+          "quantity": "120 kg/ha"
+        },
+        {
+          "stage": "60 days",
+          "fertilizer": "Urea",
+          "quantity": "60 kg/ha"
+        }
+      ],
+      "irrigationStages": [
+        "Transplanting (0-15 days) - frequent irrigation",
+        "Vegetative growth (15-60 days) - regular irrigation",
+        "Head formation (60-100 days) - adequate moisture",
+        "Maturation (100-120 days) - reduce irrigation"
+      ]
+    },
+    "soybean": {
+      "recommendedFertilizer": "NPK 12-32-16",
+      "bestPlantingTime": "June - July",
+      "irrigationSchedule": "Every 7-10 days",
+      "expectedHarvestTime": "September - October",
+      "avgGrowthPeriod": "90-120 days",
+      "optimalTemperature": "20-30°C",
+      "waterRequirement": "450-700 mm",
+      "soilType": ["Loamy", "Sandy Loam", "Clay Loam"],
+      "fertilizationStages": [
+        {
+          "stage": "Sowing",
+          "fertilizer": "NPK 12-32-16",
+          "quantity": "75 kg/ha"
+        },
+        {
+          "stage": "Flowering (35-40 days)",
+          "fertilizer": "Urea",
+          "quantity": "25 kg/ha"
+        }
+      ],
+      "irrigationStages": [
+        "Germination (0-10 days)",
+        "Vegetative growth (10-40 days)",
+        "Flowering (40-60 days) - critical period",
+        "Pod development (60-90 days) - critical period",
+        "Maturation (90-120 days) - reduce irrigation"
+      ]
+    },
+    "mustard": {
+      "recommendedFertilizer": "NPK 18-46-0",
+      "bestPlantingTime": "October - November",
+      "irrigationSchedule": "Every 10-15 days",
+      "expectedHarvestTime": "February - March",
+      "avgGrowthPeriod": "120-140 days",
+      "optimalTemperature": "10-25°C",
+      "waterRequirement": "240-400 mm",
+      "soilType": ["Loamy", "Sandy Loam", "Clay Loam"],
+      "fertilizationStages": [
+        {
+          "stage": "Sowing",
+          "fertilizer": "NPK 18-46-0",
+          "quantity": "100 kg/ha"
+        },
+        {
+          "stage": "45 days",
+          "fertilizer": "Urea",
+          "quantity": "90 kg/ha"
+        }
+      ],
+      "irrigationStages": [
+        "Sowing to germination (0-10 days)",
+        "Vegetative growth (30-60 days)",
+        "Flowering (60-90 days)",
+        "Pod formation (90-120 days)",
+        "Maturation (120-140 days) - withhold irrigation"
+      ]
+    }
+  },
+  "soilSpecificRecommendations": {
+    "Loamy": {
+      "advantages": ["Good drainage", "High fertility", "Easy cultivation"],
+      "recommendations": ["Ideal for most crops", "Regular organic matter addition"],
+      "fertilizerAdjustment": "Standard NPK ratios work well"
+    },
+    "Clay": {
+      "advantages": ["High water retention", "Rich in nutrients"],
+      "recommendations": ["Improve drainage", "Add organic matter", "Avoid over-irrigation"],
+      "fertilizerAdjustment": "Reduce nitrogen by 10-15%"
+    },
+    "Sandy": {
+      "advantages": ["Good drainage", "Easy cultivation"],
+      "recommendations": ["Frequent irrigation", "Add organic matter", "Regular fertilization"],
+      "fertilizerAdjustment": "Increase all nutrients by 20-25%"
+    },
+    "Black Cotton": {
+      "advantages": ["High water retention", "Rich in nutrients"],
+      "recommendations": ["Good for cotton and sugarcane", "Control drainage"],
+      "fertilizerAdjustment": "Focus on potassium and phosphorus"
+    },
+    "Alluvial": {
+      "advantages": ["Fertile", "Good for cereals"],
+      "recommendations": ["Maintain organic content", "Balanced fertilization"],
+      "fertilizerAdjustment": "Standard ratios with potassium focus"
+    },
+    "Red": {
+      "advantages": ["Good drainage"],
+      "recommendations": ["Add lime to reduce acidity", "Increase organic matter"],
+      "fertilizerAdjustment": "Increase phosphorus by 25%"
+    }
+  },
+  "climateAdjustments": {
+    "summer": {
+      "irrigationMultiplier": 1.3,
+      "recommendations": ["Increase irrigation frequency", "Mulching recommended"]
+    },
+    "winter": {
+      "irrigationMultiplier": 0.7,
+      "recommendations": ["Reduce irrigation", "Watch for frost damage"]
+    },
+    "monsoon": {
+      "irrigationMultiplier": 0.3,
+      "recommendations": ["Ensure drainage", "Disease prevention"]
+    },
+    "postMonsoon": {
+      "irrigationMultiplier": 0.8,
+      "recommendations": ["Resume regular irrigation", "Soil testing recommended"]
+    }
+  }
+}

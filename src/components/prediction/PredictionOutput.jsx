@@ -1,105 +1,203 @@
 import React from 'react';
-import { TrendingUp, Leaf, AlertCircle } from 'lucide-react';
+import { TrendingUp, Leaf, AlertCircle, CheckCircle, Zap, BarChart, Thermometer, Droplet } from 'lucide-react';
+
+const StatCard = ({ icon, label, value, unit, colorClass = 'text-primary' }) => (
+        <div className="rounded-lg overflow-hidden">
+            <div className="p-4 bg-[#0f1a17] flex items-center justify-between space-x-4">
+                <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 rounded-full bg-[#12221d] flex items-center justify-center text-[#50FF9F]">
+                        {icon}
+                    </div>
+                    <div>
+                        <div className="text-text-secondary text-xs font-medium">{label}</div>
+                        <div className="text-lg font-bold text-[#50FF9F]">
+                            {value} <span className="text-sm font-normal text-text-secondary">{unit}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+);
+
+const InsightCard = ({ text }) => {
+    const parts = text.split(':');
+    const title = parts[0];
+    const content = parts.slice(1).join(':');
+
+    let Icon = BarChart;
+    let actionType = "Optimization";
+    // Unified dark base; we only vary accent color
+    let cardClass = "relative bg-[#121c19] p-4 rounded-lg border border-[#22312d]";
+    let accent = 'primary';
+    let badgeClass = "text-xs px-2 py-1 rounded-full font-medium bg-primary/10 text-primary";
+
+    const lower = title.toLowerCase();
+    if (lower.includes('temp')) {
+        Icon = Thermometer; actionType = "🌡️ Climate Optimization"; accent = 'orange';
+        badgeClass = "text-xs px-2 py-1 rounded-full font-medium bg-orange-500/10 text-orange-400";
+    } else if (lower.includes('soil')) {
+        Icon = Leaf; actionType = "🌱 Soil Enhancement"; accent = 'green';
+        badgeClass = "text-xs px-2 py-1 rounded-full font-medium bg-green-500/10 text-green-400";
+    } else if (lower.includes('fertilizer')) {
+        Icon = Droplet; actionType = "🧪 Nutrient Optimization"; accent = 'blue';
+        badgeClass = "text-xs px-2 py-1 rounded-full font-medium bg-blue-500/10 text-blue-400";
+    } else if (lower.includes('area')) {
+        actionType = "📏 Scale Optimization"; accent = 'purple';
+        badgeClass = "text-xs px-2 py-1 rounded-full font-medium bg-purple-500/10 text-purple-400";
+    }
+
+    const accentBar = {
+        primary: 'from-primary/40 via-primary/10 to-transparent',
+        orange: 'from-orange-400/40 via-orange-400/10 to-transparent',
+        green: 'from-green-400/40 via-green-400/10 to-transparent',
+        blue: 'from-blue-400/40 via-blue-400/10 to-transparent',
+        purple: 'from-purple-400/40 via-purple-400/10 to-transparent'
+    }[accent];
+
+    return (
+        <div className={`p-4 ${cardClass} rounded-lg flex items-start space-x-3`}>            
+            <div className={`absolute inset-y-0 left-0 w-1 rounded-l-lg bg-gradient-to-b ${accentBar}`}></div>
+            <Icon className="w-5 h-5 text-primary mt-1 flex-shrink-0" />
+            <div className="flex-1">
+                <div className="flex items-center justify-between mb-2">
+                    <h5 className="text-sm font-semibold text-text-primary">{title}</h5>
+                    <span className={badgeClass}>
+                        {actionType}
+                    </span>
+                </div>
+                <p className="text-sm text-text-secondary leading-relaxed tracking-wide">{content}</p>
+                <div className="mt-2">
+                    <span className="inline-block text-xs bg-[#0f2b22] text-[#50FF9F] px-2 py-1 rounded font-medium">Impact: Higher yield potential</span>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 
 const PredictionOutput = ({ prediction }) => {
-  if (!prediction) {
+    
+    
+    if (!prediction) {
+        return (
+            <div className="bg-background-card p-4 rounded-lg border border-border">
+                <h3 className="text-lg font-bold text-text-primary mb-3">Prediction Output</h3>
+                <div className="text-center py-6">
+                    <div className="w-16 h-16 bg-border rounded-full flex items-center justify-center mx-auto mb-3">
+                        <TrendingUp size={24} className="text-text-secondary" />
+                    </div>
+                    <p className="text-text-secondary text-base mb-1">No Prediction Yet</p>
+                    <p className="text-text-secondary text-xs">Fill out the form to see results</p>
+                </div>
+            </div>
+        );
+    }
+
+    // Handle different response structures
+    const responseData = prediction.data || prediction;
+    const { input, prediction: predData, insights, technical } = responseData;
+    
+    // Add safety checks for data structure
+    if (!predData || !input) {
+        return (
+            <div className="bg-background-card p-4 rounded-lg border border-border">
+                <h3 className="text-lg font-bold text-text-primary mb-3">Prediction Output</h3>
+                <div className="text-center py-6">
+                    <p className="text-status-error text-base mb-1">Error loading prediction data</p>
+                    <p className="text-text-secondary text-xs">Please try again</p>
+                </div>
+            </div>
+        );
+    }
+    const confidence =90 || 'Unknown';
+    const landArea = input.landArea || input.farmSize || 1;
+    const yieldPerHectare = predData.yield_kg_per_hectare || predData.yield_per_hectare || predData.yield_tons || 0;
+    const totalYieldKg = predData.yield_kg || (yieldPerHectare * landArea);
+    const totalYieldTons = (totalYieldKg / 1000).toFixed(2);
+    const yieldPerHectareTons = (yieldPerHectare / 1000).toFixed(2);
+    
+   
+      const getConfidenceColor = (level) => {
+        switch (level?.toLowerCase()) {
+            case 'high': return 'text-status-success';
+            case 'medium': return 'text-status-warning';
+            case 'low': return 'text-status-error';
+            default: return 'text-text-secondary';
+        }
+    };
+
+    // Display confidence score clamped to '90+' when >=90
+    const rawScore = Number(predData.confidence_score || 0);
+    const displayedScore = Number.isFinite(rawScore) ? (rawScore >= 90 ? '90+' : `${Math.round(rawScore)}%`) : (predData.confidence_score || 'N/A');
+
     return (
-      <div className="bg-background-card p-4 rounded-lg border border-border">
-        <h3 className="text-lg font-bold text-text-primary mb-3">Prediction Output</h3>
-        <div className="text-center py-6">
-          <div className="w-16 h-16 bg-border rounded-full flex items-center justify-center mx-auto mb-3">
-            <TrendingUp size={24} className="text-text-secondary" />
-          </div>
-          <p className="text-text-secondary text-base mb-1">No Prediction Yet</p>
-          <p className="text-text-secondary text-xs">Fill out the form to see results</p>
+        <div className="space-y-6">
+            {/* Main Prediction Card */}
+            <div className="bg-background-card p-6 rounded-lg border border-border">
+                <h3 className="text-2xl font-bold text-text-primary mb-4">Prediction Result</h3>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <StatCard
+                        icon={<TrendingUp size={20} />}
+                        label="Yield per Hectare"
+                        value={yieldPerHectareTons}
+                        unit="tons"
+                    />
+                    <StatCard
+                        icon={<Leaf size={20} />}
+                        label="Total Estimated Yield"
+                        value={totalYieldTons}
+                        unit={`tons for ${landArea} ha`}
+                        colorClass="text-status-success"
+                    />
+                </div>
+
+                <div className="bg-[#121c19] p-4 rounded-lg border border-[#22312d] flex justify-between items-center">
+                    <div className="flex items-center space-x-2">
+                        <CheckCircle className={`w-5 h-5 ${getConfidenceColor(predData.confidence_level)}`} />
+                        <span className="text-sm font-medium text-text-primary">Confidence Level:</span>
+                    </div>
+                    <div className="text-right">
+                        <div className={`font-bold text-lg ${getConfidenceColor(predData.confidence_level)}`}>
+                            {predData.confidence_level || 'Unknown'}
+                        </div>
+                        <div className="text-xs text-text-secondary">
+                            Score: {displayedScore}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Optimization Recommendations */}
+            {insights && insights.length > 0 && (
+                <div className="bg-background-card p-6 rounded-lg border border-border">
+                    <div className="flex items-center space-x-3 mb-6">
+                        <Zap size={20} className="text-primary" />
+                        <h4 className="text-xl font-bold text-text-primary">🚀 Yield Optimization Recommendations</h4>
+                    </div>
+                    <div className="text-sm text-text-secondary mb-4 bg-background rounded-lg p-3 border-l-4 border-primary/20">
+                        <strong>💡 Pro Tip:</strong> Implementing these optimizations could potentially increase your yield by 15-30% compared to current practices.
+                    </div>
+                    <div className="space-y-4">
+                        {insights.map((insight, index) => (
+                            <InsightCard key={index} text={insight} />
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Technical Details */}
+            {technical && (
+                <div className="p-4 rounded-lg border border-[#22312d] bg-[#0f1816] text-xs text-text-secondary">
+                    <p>
+                        <strong>Model:</strong> {technical.model_version} |
+                        <strong> Source:</strong> {technical.data_source} |
+                        <strong> Processing Time:</strong> {technical.processing_time_ms}ms
+                    </p>
+                </div>
+            )}
         </div>
-      </div>
     );
-  }
-
-  // Convert hectares to acres for calculation (1 hectare = 2.471 acres)
-  const totalYieldBushels = prediction.landArea ? (prediction.yield * prediction.landArea * 2.471).toFixed(1) : null;
-  const totalYieldTons = prediction.landArea ? ((prediction.yield * prediction.landArea * 2.471) * 0.0272).toFixed(2) : null;
-
-  return (
-    <div className="space-y-4">
-      {/* Main Prediction Card */}
-      <div className="bg-background-card p-4 rounded-lg border border-border">
-        <h3 className="text-lg font-bold text-text-primary mb-4">Prediction Output</h3>
-        
-        {/* Primary Yield Display */}
-        <div className="text-center p-4 bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl border border-primary/20 mb-4">
-          <div className="mb-2">
-            <span className="text-text-secondary text-sm font-medium">Estimated Yield</span>
-          </div>
-          <div className="flex items-baseline justify-center space-x-2 mb-2">
-            <span className="text-4xl font-bold text-primary">
-              {prediction.yield}
-            </span>
-            <span className="text-primary text-lg font-semibold">
-              bushels/acre
-            </span>
-          </div>
-          {prediction.confidence && (
-            <div className="flex items-center justify-center space-x-2">
-              <div className="w-2 h-2 bg-status-success rounded-full"></div>
-              <span className="text-xs text-text-secondary">Confidence: </span>
-              <span className="text-xs font-semibold text-status-success">{prediction.confidence}%</span>
-            </div>
-          )}
-        </div>
-
-        {/* Area and Total Yield */}
-        {prediction.landArea && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
-            <div className="bg-background p-3 rounded-lg border border-border">
-              <div className="flex items-center space-x-2 mb-2">
-                <Leaf size={16} className="text-primary" />
-                <span className="text-text-secondary text-xs font-medium">Farm Area</span>
-              </div>
-              <div className="text-lg font-bold text-text-primary">{prediction.landArea}</div>
-              <div className="text-text-secondary text-xs">hectares</div>
-            </div>
-            <div className="bg-background p-3 rounded-lg border border-border">
-              <div className="flex items-center space-x-2 mb-2">
-                <TrendingUp size={16} className="text-status-success" />
-                <span className="text-text-secondary text-xs font-medium">Total Expected</span>
-              </div>
-              <div className="text-lg font-bold text-status-success">{totalYieldBushels}</div>
-              <div className="text-text-secondary text-xs">bushels ({totalYieldTons} tons)</div>
-            </div>
-          </div>
-        )}
-      </div>
-
-     
-      {/* Recommendations */}
-      <div className="bg-background-card p-4 rounded-lg border border-border">
-        <div className="flex items-center space-x-2 mb-3">
-          <AlertCircle size={16} className="text-primary" />
-          <h4 className="text-base font-semibold text-text-primary">Recommendations</h4>
-        </div>
-        
-        <div className="space-y-2">
-          <div className="p-3 bg-primary/5 border border-primary/20 rounded">
-            <h5 className="text-xs font-semibold text-text-primary mb-1">🌱 Immediate Actions</h5>
-            <ul className="space-y-0.5 text-xs text-text-secondary">
-              <li>• Monitor soil moisture levels daily</li>
-              <li>• Check for early signs of pest activity</li>
-            </ul>
-          </div>
-          
-          <div className="p-3 bg-status-warning/5 border border-status-warning/20 rounded">
-            <h5 className="text-xs font-semibold text-text-primary mb-1">⚠️ Watch Points</h5>
-            <ul className="space-y-0.5 text-xs text-text-secondary">
-              <li>• Consider nitrogen application in weeks 3-4</li>
-              <li>• Monitor for fungal diseases in humid conditions</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
 };
 
 export default PredictionOutput;

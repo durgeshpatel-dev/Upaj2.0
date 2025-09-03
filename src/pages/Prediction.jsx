@@ -1,43 +1,82 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Brain } from 'lucide-react';
 import PredictionForm from '../components/prediction/PredictionForm';
 import PredictionOutput from '../components/prediction/PredictionOutput';
 import YieldTrendChart from '../components/prediction/YieldTrendChart';
+import { useAuth } from '../context/AuthContext';
+import { predictionAPI } from '../utils/api';
 
 const Prediction = () => {
-  // Demo data for testing UI/UX
-  const demoData = {
-    yield: 125,
-    confidence: 87,
-    landArea: 4.5,
-    cropType: 'corn',
-    location: 'iowa',
-    soilType: 'loam',
-    plantingDate: '2024-04-15'
-  };
+  const { user, backendAvailable } = useAuth();
 
-  const [prediction, setPrediction] = useState(demoData); // Start with demo data
+  const [prediction, setPrediction] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [pastPredictions, setPastPredictions] = useState([]);
 
-  const handlePredictionSubmit = (formData) => {
-    setIsLoading(true);
-    
-    // Simulate API call with sample data
-    setTimeout(() => {
-      setPrediction({
-        yield: Math.floor(Math.random() * (150 - 90) + 90), // Random yield between 90-150
-        confidence: Math.floor(Math.random() * (95 - 75) + 75), // Random confidence 75-95%
-        landArea: formData.landArea ? parseFloat(formData.landArea) : null,
-        cropType: formData.cropType,
-        location: formData.location,
-        soilType: formData.soilType,
-        plantingDate: formData.plantingDate
-      });
-      setIsLoading(false);
-    }, 2000);
+  // Load user's past predictions on component mount
+  useEffect(() => {
+    if (user && backendAvailable) {
+      loadPastPredictions();
+    }
+  }, [user, backendAvailable]);
+
+  const loadPastPredictions = async () => {
+    try {
+      const result = await predictionAPI.getUserPredictions(user.id || user._id);
+      if (result.success) {
+        setPastPredictions(result.data.predictions || []);
+      }
+    } catch (error) {
+      console.error('Failed to load past predictions:', error);
+    }
   };
 
-  const loadDemoData = () => {
-    setPrediction(demoData);
+  const handlePredictionSubmit = async (formData) => {
+    setIsLoading(true);
+    setError(null); // Clear any previous errors
+    setPrediction(null); // Clear any previous predictions
+    
+    console.log('🌾 Starting prediction submission...');
+    console.log('📋 Form data received:', formData);
+    
+    try {
+      // Prepare prediction data for backend API - matching exact backend format
+      const predictionData = {
+        cropType: formData.cropType,
+        farmSize: formData.farmSize,
+        soilType: formData.soilType,
+        rainfall: formData.rainfall,
+        temperature: formData.temperature,
+        humidity: formData.humidity,
+        season: formData.season,
+        location: formData.location,
+        fetchedFromAPIs: formData.fetchedFromAPIs,
+        plantingDate: formData.date,
+      };
+
+      console.log('📤 Sending prediction data to backend (matching API format):', predictionData);
+
+      const result = await predictionAPI.createPrediction(predictionData);
+      
+      console.log('📥 Prediction API result:', result);
+      
+      if (result.success) {
+        console.log('✅ Prediction successful');
+        setPrediction(result);
+        
+        // Reload past predictions to include the new one
+        loadPastPredictions();
+      } else {
+        console.log('❌ Prediction failed:', result.error);
+        setError(result.error);
+      }
+    } catch (error) {
+      console.error('❌ Unexpected prediction error:', error);
+      setError('Failed to generate prediction. Please try again.');
+    }
+    
+    setIsLoading(false);
   };
 
   const clearPrediction = () => {
@@ -46,30 +85,48 @@ const Prediction = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Backend Status Banner */}
+      {!backendAvailable && (
+        <div className="bg-status-warning/10 border-b border-status-warning/20 px-6 py-3">
+          <div className="max-w-7xl mx-auto">
+            <p className="text-status-warning text-sm text-center">
+              ⚠️ Backend server is not available. Running in demo mode. 
+              Please ensure your backend server is running on port 5001.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Error Banner */}
+      {error && (
+        <div className="bg-status-error/10 border-b border-status-error/20 px-6 py-3">
+          <div className="max-w-7xl mx-auto">
+            <p className="text-status-error text-sm text-center">
+              ❌ {error}
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
           {/* Left Column - Form */}
           <div className="xl:col-span-1 space-y-6">
-            <PredictionForm onSubmit={handlePredictionSubmit} isLoading={isLoading} />
+            <PredictionForm 
+              onSubmit={handlePredictionSubmit} 
+              isLoading={isLoading} 
+              error={error}
+            />
             
-            {/* Demo Controls */}
+            {/* Clear Prediction Button */}
             <div className="bg-background-card p-4 rounded-lg border border-border">
-              <h3 className="text-sm font-semibold text-text-primary mb-3">Demo Controls</h3>
-              <div className="flex gap-2">
-                <button
-                  onClick={loadDemoData}
-                  className="flex-1 bg-primary hover:bg-primary/80 text-primary-foreground text-sm font-medium px-3 py-2 rounded transition-colors"
-                >
-                  Load Demo
-                </button>
-                <button
-                  onClick={clearPrediction}
-                  className="flex-1 bg-border hover:bg-text-secondary text-text-primary text-sm font-medium px-3 py-2 rounded transition-colors"
-                >
-                  Clear
-                </button>
-              </div>
+              <button
+                onClick={clearPrediction}
+                className="w-full bg-border hover:bg-text-secondary text-text-primary text-sm font-medium px-3 py-2 rounded transition-colors"
+              >
+                Clear Prediction
+              </button>
             </div>
             
             {/* How it Works Section */}

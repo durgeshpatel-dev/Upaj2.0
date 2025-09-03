@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Bell, User, Leaf, MessageCircle, Menu, X, LogOut } from 'lucide-react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useTranslation } from '../context/TranslationContext';
 
 const Navbar = () => {
   const location = useLocation();
@@ -45,6 +46,19 @@ const Navbar = () => {
     navigate('/signup');
   };
 
+  // Handle navigation with authentication check
+  const handleNavigation = (path) => {
+    // List of protected routes
+    const protectedRoutes = ['/predict', '/prediction', '/dashboard', '/profile', '/community', '/chat'];
+    
+    if (protectedRoutes.includes(path) && !isAuthenticated) {
+      // Redirect to login if trying to access protected route without authentication
+      navigate('/login', { state: { from: { pathname: path } } });
+    } else {
+      navigate(path);
+    }
+  };
+
   return (
     <nav className="bg-background text-text-primary px-6 py-4 border-b border-border">
       <div className="flex items-center justify-between max-w-7xl mx-auto">
@@ -58,50 +72,114 @@ const Navbar = () => {
 
         {/* Navigation Links */}
         <div className="hidden md:flex items-center space-x-8">
-          <a 
-            href="/" 
+          <Link 
+            to="/" 
             className={`transition-colors ${
               isActive('/') ? 'text-primary font-medium' : 'text-text-secondary hover:text-primary'
             }`}
           >
             Home
-          </a>
-          <a 
-            href="/predict" 
-            className={`transition-colors ${
-              isActive('/predict') ? 'text-primary font-medium' : 'text-text-secondary hover:text-primary'
-            }`}
-          >
-            Predict
-          </a>
-          <a 
-            href="/dashboard" 
-            className={`transition-colors ${
-              isActive('/dashboard') ? 'text-primary font-medium' : 'text-text-secondary hover:text-primary'
-            }`}
-          >
-            Dashboard
-          </a>
-          <a 
-            href="/community" 
-            className={`transition-colors ${
-              isActive('/community') ? 'text-primary font-medium' : 'text-text-secondary hover:text-primary'
-            }`}
-          >
-            Community
-          </a>
-          <a 
-            href="/chat" 
-            className={`transition-colors ${
-              isActive('/chat') ? 'text-primary font-medium' : 'text-text-secondary hover:text-primary'
-            }`}
-          >
-            Chat Support
-          </a>
+          </Link>
+          
+          {/* Show protected links only if authenticated */}
+          {isAuthenticated ? (
+            <>
+              <Link 
+                to="/predict" 
+                className={`transition-colors ${
+                  isActive('/predict') ? 'text-primary font-medium' : 'text-text-secondary hover:text-primary'
+                }`}
+              >
+                Predict
+              </Link>
+              <Link 
+                to="/dashboard" 
+                className={`transition-colors ${
+                  isActive('/dashboard') ? 'text-primary font-medium' : 'text-text-secondary hover:text-primary'
+                }`}
+              >
+                Dashboard
+              </Link>
+              <Link 
+                to="/community" 
+                className={`transition-colors ${
+                  isActive('/community') ? 'text-primary font-medium' : 'text-text-secondary hover:text-primary'
+                }`}
+              >
+                Community
+              </Link>
+              <Link 
+                to="/chat" 
+                className={`transition-colors ${
+                  isActive('/chat') ? 'text-primary font-medium' : 'text-text-secondary hover:text-primary'
+                }`}
+              >
+                Chat Support
+              </Link>
+            </>
+          ) : (
+            <>
+              {/* Show login prompts for protected features when not authenticated */}
+              <button 
+                onClick={() => handleNavigation('/predict')}
+                className="text-text-secondary hover:text-primary transition-colors"
+              >
+                Predict
+              </button>
+              <button 
+                onClick={() => handleNavigation('/dashboard')}
+                className="text-text-secondary hover:text-primary transition-colors"
+              >
+                Dashboard
+              </button>
+              <button 
+                onClick={() => handleNavigation('/community')}
+                className="text-text-secondary hover:text-primary transition-colors"
+              >
+                Community
+              </button>
+              <button 
+                onClick={() => handleNavigation('/chat')}
+                className="text-text-secondary hover:text-primary transition-colors"
+              >
+                Chat Support
+              </button>
+            </>
+          )}
         </div>
 
         {/* Right side icons */}
         <div className="flex items-center space-x-4">
+          {/* Language selector */}
+          <div className="relative">
+            {/* useTranslation hook to read/set language */}
+            {/* eslint-disable-next-line react-hooks/rules-of-hooks */}
+            {(() => {
+              try {
+                const { language, setLanguage } = useTranslation();
+                return (
+                  <select
+                    value={language}
+                    onChange={(e) => setLanguage(e.target.value)}
+                    className="text-sm bg-background border border-border rounded px-2 py-1"
+                    aria-label="Language"
+                  >
+                    <option value="en">EN</option>
+                    <option value="mr">MR</option>
+                    <option value="hi">HI</option>
+                    <option value="bn">BN</option>
+                  </select>
+                );
+              } catch (e) {
+                return (
+                  <select disabled className="text-sm bg-background border border-border rounded px-2 py-1">
+                    <option>EN</option>
+                  </select>
+                );
+              }
+            })()}
+          </div>
+
           {/* Authentication buttons for home page */}
           {isActive('/') && !isAuthenticated && (
             <div className="hidden md:flex items-center space-x-3">
@@ -168,8 +246,8 @@ const Navbar = () => {
                 {showUserMenu && (
                   <div className="absolute right-0 mt-2 w-48 bg-background-card border border-border rounded-lg shadow-lg py-1 z-50">
                     <div className="px-4 py-2 border-b border-border">
-                      <p className="text-sm font-medium text-text-primary">{user?.name}</p>
-                      <p className="text-xs text-text-secondary">{user?.email}</p>
+                      <p className="text-sm font-medium text-text-primary">{user?.name || 'User'}</p>
+                      <p className="text-xs text-text-secondary">{user?.email || 'user@example.com'}</p>
                     </div>
                     <a
                       href="/profile"

@@ -23,7 +23,7 @@ const Profile = () => {
         </div>
 
         <div className="mt-8">
-          <PastPredictionsList />
+          {/* <PastPredictionsList /> */}
         </div>
       </main>
     </div>

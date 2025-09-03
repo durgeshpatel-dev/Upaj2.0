@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card'
 import FormInput from '../ui/FormInput'
 import Button from '../Button'
+import { authAPI } from '../../utils/api'
 
 const ForgotPassword = () => {
   const navigate = useNavigate()
@@ -31,11 +32,19 @@ const ForgotPassword = () => {
       return
     }
 
-    // Simulate sending reset email
-    setTimeout(() => {
-      setIsSubmitted(true)
+    try {
+      const result = await authAPI.forgotPassword(email)
+      
+      if (result.success) {
+        setIsSubmitted(true)
+      } else {
+        setErrors({ general: result.error })
+      }
+    } catch (error) {
+      setErrors({ general: 'Failed to send reset email. Please try again.' })
+    } finally {
       setIsLoading(false)
-    }, 1500)
+    }
   }
 
   const handleInputChange = (value) => {
