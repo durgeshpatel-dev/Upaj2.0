@@ -1,21 +1,86 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card';
 import { getCropOptimization, getSuitableCropsForSoil, getCurrentSeason } from '../utils/cropOptimizationUtils';
+import { locationAPI } from '../utils/api';
 import cropOptimizationData from '../data/cropOptimizationData.json';
+
 
 const CropOptimizationTest = () => {
   const [selectedCrop, setSelectedCrop] = useState('wheat');
   const [selectedSoil, setSelectedSoil] = useState('Loamy');
   const [optimizationData, setOptimizationData] = useState(null);
+  const [availableSoils, setAvailableSoils] = React.useState(Object.keys(cropOptimizationData.soilSpecificRecommendations || {}));
+
+
+
+  // Fetch soil list from backend API (by state/district) with fallback to local JSON
+  const [stateInput, setStateInput] = useState('');
+  const [districtInput, setDistrictInput] = useState('');
 
   useEffect(() => {
-    const currentSeason = getCurrentSeason();
-    const data = getCropOptimization(selectedCrop, selectedSoil, currentSeason);
-    setOptimizationData(data);
-  }, [selectedCrop, selectedSoil]);
+    let mounted = true;
+    const fetchSoils = async (stateParam, districtParam) => {
+      try {
+        const resp = await locationAPI.getSoilData(stateParam, districtParam);
+        if (!mounted) return;
+        if (resp?.success) {
+          const data = resp.data || [];
+          if (Array.isArray(data) && data.length > 0) {
+            const names = data.map(item => (typeof item === 'string' ? item : item.name || 'Unknown'));
+            setAvailableSoils(names);
+            if (!names.includes(selectedSoil)) setSelectedSoil(names[0] || selectedSoil);
+            return;
+          }
+          if (typeof data === 'object' && Object.keys(data).length > 0) {
+            // If backend returns object keyed by soil type
+            const names = Object.keys(data);
+            setAvailableSoils(names);
+            if (!names.includes(selectedSoil)) setSelectedSoil(names[0] || selectedSoil);
+            return;
+          }
+        }
+      } catch (e) {
+        // ignore and fallback
+      }
+
+      // Fallback to local JSON
+      const fallback = Object.keys(cropOptimizationData.soilSpecificRecommendations || {});
+      setAvailableSoils(fallback);
+      if (!fallback.includes(selectedSoil)) setSelectedSoil(fallback[0] || selectedSoil);
+    };
+
+    // initial fetch without location to let backend decide or fallback
+    fetchSoils();
+    return () => { mounted = false; };
+  }, []);
+
+  const handleFetchByLocation = async () => {
+    try {
+      const resp = await locationAPI.getSoilData(stateInput, districtInput);
+      if (resp?.success) {
+        const data = resp.data || [];
+        if (Array.isArray(data) && data.length > 0) {
+          const names = data.map(item => (typeof item === 'string' ? item : item.name || 'Unknown'));
+          setAvailableSoils(names);
+          if (!names.includes(selectedSoil)) setSelectedSoil(names[0] || selectedSoil);
+          return;
+        }
+        if (typeof data === 'object' && Object.keys(data).length > 0) {
+          const names = Object.keys(data);
+          setAvailableSoils(names);
+          if (!names.includes(selectedSoil)) setSelectedSoil(names[0] || selectedSoil);
+          return;
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
+    // fallback
+    const fallback = Object.keys(cropOptimizationData.soilSpecificRecommendations || {});
+    setAvailableSoils(fallback);
+  };
 
   const availableCrops = Object.keys(cropOptimizationData.cropOptimization);
-  const availableSoils = Object.keys(cropOptimizationData.soilSpecificRecommendations);
 
   return (
     <div className="min-h-screen bg-background text-text-primary p-6">
@@ -52,6 +117,19 @@ const CropOptimizationTest = () => {
                     <option key={soil} value={soil}>{soil}</option>
                   ))}
                 </select>
+              </div>
+            </div>
+            <div className="mt-4 grid grid-cols-3 gap-4 items-end">
+              <div>
+                <label className="block text-sm font-medium mb-2">State (optional)</label>
+                <input value={stateInput} onChange={(e) => setStateInput(e.target.value)} className="w-full p-2 border border-border rounded bg-background-card text-text-primary" placeholder="e.g. Karnataka" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">District (optional)</label>
+                <input value={districtInput} onChange={(e) => setDistrictInput(e.target.value)} className="w-full p-2 border border-border rounded bg-background-card text-text-primary" placeholder="e.g. Bengaluru Urban" />
+              </div>
+              <div>
+                <button onClick={handleFetchByLocation} className="w-full py-2 px-3 bg-primary text-white rounded">Fetch Soil</button>
               </div>
             </div>
           </CardContent>

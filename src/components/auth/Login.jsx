@@ -214,8 +214,8 @@ const Login = () => {
               {isLoading ? 'Signing in...' : 'Sign In'}
             </Button>
 
-            {/* Demo Login Button */}
-            <Button
+            {/* Demo Login Button For Debugging  */}
+            {/* <Button
               type="button"
               variant="outline"
               className="w-full mt-2"
@@ -223,7 +223,7 @@ const Login = () => {
               disabled={isLoading}
             >
               Demo Login
-            </Button>
+            </Button> */}
 
             {/* Test API Button */}
             {/* <Button

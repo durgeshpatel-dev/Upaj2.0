@@ -119,25 +119,9 @@ const Dashboard = () => {
           Heads up! A frost is predicted for tonight. Consider taking preventive measures for sensitive crops.
         </AlertBanner>
 
-        {/* Backend Status Card - Enabled for debugging */}
-        <div className="mt-4">
-          <BackendStatusCard />
-        </div>
+        
 
-        {/* Debug Information Card */}
-        {/* {process.env.NODE_ENV === 'development' && (
-          <div className="mt-4 p-4 bg-gray-100 dark:bg-gray-800 border rounded-lg">
-            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">Debug Info</h3>
-            <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
-              <div>Auth Status: {isAuthenticated ? '✅ Authenticated' : '❌ Not Authenticated'}</div>
-              <div>Backend Available: {backendAvailable ? '✅ Available' : '❌ Not Available'}</div>
-              <div>User ID: {user?.id || user?._id || 'Not Available'}</div>
-              <div>User Name: {user?.name || 'Not Available'}</div>
-              <div>Predictions Count: {predictions.length}</div>
-              <div>Loading: {loadingPredictions ? 'Yes' : 'No'}</div>
-            </div>
-          </div>
-        )} */}
+       
 
         <div className="mt-4 grid gap-4 md:grid-cols-3">
           <PredictionSummary predictions={predictions} loading={loadingPredictions} />

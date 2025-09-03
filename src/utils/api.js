@@ -460,32 +460,77 @@ export const userProfileAPI = {
   }
 };
 
-// Chat API functions
-export const chatAPI = {
-  // Send message
-  sendMessage: async (message) => {
+// Chatbot API functions
+export const chatbotAPI = {
+  // Ask a question to the AI chatbot
+  askQuestion: async (question, context = {}) => {
     try {
-      const response = await api.post('/chat/send', { message });
+      const response = await api.post('/chatbot/ask', { 
+        question,
+        context 
+      });
       return { success: true, data: response.data };
     } catch (error) {
-      console.error('Chat error:', error);
+      console.error('❌ Chatbot ask error:', error);
       return { 
         success: false, 
-        error: error.response?.data?.message || error.message || 'Failed to send message' 
+        error: error.response?.data?.message || error.message || 'Failed to ask question' 
       };
     }
   },
 
-  // Get chat history
+  // Get chat history for the user
   getChatHistory: async () => {
     try {
-      const response = await api.get('/chat/history');
+      const response = await api.get('/chatbot/history');
       return { success: true, data: response.data };
     } catch (error) {
-      console.error('Get chat history error:', error);
+      console.error('❌ Get chat history error:', error);
       return { 
         success: false, 
         error: error.response?.data?.message || error.message || 'Failed to get chat history' 
+      };
+    }
+  },
+
+  // Clear chat history for the user
+  clearChatHistory: async () => {
+    try {
+      const response = await api.delete('/chatbot/history');
+      return { success: true, data: response.data };
+    } catch (error) {
+      console.error('❌ Clear chat history error:', error);
+      return { 
+        success: false, 
+        error: error.response?.data?.message || error.message || 'Failed to clear chat history' 
+      };
+    }
+  },
+
+  // Get suggested questions based on user profile
+  getSuggestedQuestions: async () => {
+    try {
+      const response = await api.get('/chatbot/suggestions');
+      return { success: true, data: response.data };
+    } catch (error) {
+      console.error('❌ Get suggestions error:', error);
+      return { 
+        success: false, 
+        error: error.response?.data?.message || error.message || 'Failed to get suggestions' 
+      };
+    }
+  },
+
+  // Check chatbot service health
+  checkHealth: async () => {
+    try {
+      const response = await api.get('/chatbot/health');
+      return { success: true, data: response.data };
+    } catch (error) {
+      console.error('❌ Chatbot health check error:', error);
+      return { 
+        success: false, 
+        error: error.response?.data?.message || error.message || 'Failed to check health' 
       };
     }
   }
@@ -624,6 +669,32 @@ export const locationAPI = {
       return { 
         success: false, 
         error: error.response?.data?.message || error.message || 'Failed to fetch location data' 
+      };
+    }
+  },
+
+  getSoilData: async (state, district) => {
+    try {
+      const response = await api.post('/soil-data', { state, district });
+      return { success: true, data: response.data };
+    } catch (error) {
+      console.error('❌ Soil data fetch error:', error);
+      return {
+        success: false,
+        error: error.response?.data?.message || error.message || 'Failed to fetch soil data'
+      };
+    }
+  },
+
+  getSoilData: async (state, district) => {
+    try {
+      const response = await api.post('/soil-data', { state, district });
+      return { success: true, data: response.data };
+    } catch (error) {
+      console.error('❌ Soil data fetch error:', error);
+      return {
+        success: false,
+        error: error.response?.data?.message || error.message || 'Failed to fetch soil data'
       };
     }
   }

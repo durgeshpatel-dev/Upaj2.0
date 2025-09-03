@@ -3,8 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card'
 import Button from '../components/Button'
 import { ArrowLeft, Download, Calendar, MapPin, Wheat } from 'lucide-react'
-import { predictionAPI } from '../utils/api'
-import { getCropOptimization, getCurrentSeason } from '../utils/cropOptimizationUtils'
+import { predictionAPI, locationAPI } from '../utils/api'
+import { getCropOptimization, getCurrentSeason, getSuitableCropsForSoil } from '../utils/cropOptimizationUtils'
+import cropOptimizationData from '../data/cropOptimizationData.json'
 
 const ViewPrediction = () => {
   const { predictionId } = useParams()
@@ -40,18 +41,72 @@ const ViewPrediction = () => {
           console.log('- predictedYield:', predictionData?.predictedYield);
           console.log('- confidence:', predictionData?.confidence);
           
-          setPrediction(predictionData)
-          
-          // Get optimization data based on crop type and soil type
-          if (predictionData?.cropType) {
-            const currentSeason = getCurrentSeason();
-            const optimizationInfo = getCropOptimization(
-              predictionData.cropType, 
-              predictionData.soilType, 
-              currentSeason
-            );
-            setOptimizationData(optimizationInfo);
-            console.log('🌱 Optimization data loaded:', optimizationInfo);
+          // Try to fetch fresh soil data from backend (by state/district) and merge it
+          try {
+            let soilTypeForOptimization = predictionData.soilType || predictionData.soilData?.type || predictionData.soilData?.detailedType;
+            const location = predictionData.location;
+
+            if (location?.state || location?.district) {
+              const soilResp = await locationAPI.getSoilData(location.state, location.district);
+              if (soilResp?.success && soilResp.data) {
+                const apiSoilData = soilResp.data.data || soilResp.data; // Handle nested data object
+                
+                // Merge API data with existing prediction data
+                predictionData.soilData = { ...predictionData.soilData, ...apiSoilData };
+                
+                soilTypeForOptimization = apiSoilData.type || apiSoilData.detailedType || soilTypeForOptimization;
+                console.log('🌱 Fetched soil data from API and merged:', predictionData.soilData);
+              } else {
+                console.warn('⚠️ No soil data returned from API:', soilResp?.error);
+              }
+            }
+
+            // Fallback mechanism using local JSON data for any remaining missing fields
+            const finalSoilType = soilTypeForOptimization || predictionData.soilType;
+            if (finalSoilType) {
+                const normalizedSoilType = finalSoilType.charAt(0).toUpperCase() + finalSoilType.slice(1).toLowerCase();
+                const localSoilData = cropOptimizationData.soilSpecificRecommendations[normalizedSoilType];
+                
+                if (localSoilData) {
+                    if (!predictionData.soilData) predictionData.soilData = {};
+                    if (!predictionData.soilData.recommendations || predictionData.soilData.recommendations.length === 0) {
+                        predictionData.soilData.recommendations = localSoilData.recommendations;
+                    }
+                    if (!predictionData.soilData.fertilizerAdjustment) {
+                        predictionData.soilData.fertilizerAdjustment = localSoilData.fertilizerAdjustment;
+                    }
+                }
+
+                if (!predictionData.soilData.suitableCrops || predictionData.soilData.suitableCrops.length === 0) {
+                    const suitableCrops = getSuitableCropsForSoil(normalizedSoilType);
+                    if (suitableCrops.length > 0) {
+                        predictionData.soilData.suitableCrops = suitableCrops.map(c => c.name);
+                    }
+                }
+            }
+
+            setPrediction(predictionData);
+
+            // Get optimization data based on the final resolved crop and soil type
+            if (predictionData?.cropType) {
+              const currentSeason = getCurrentSeason();
+              const optimizationInfo = getCropOptimization(
+                predictionData.cropType,
+                finalSoilType,
+                currentSeason
+              );
+              setOptimizationData(optimizationInfo);
+              console.log('🌱 Optimization data loaded for:', { crop: predictionData.cropType, soil: finalSoilType });
+            }
+          } catch (e) {
+            console.error('❌ Error while fetching/merging soil data:', e);
+            // Fallback to original data if API or merging fails
+            setPrediction(predictionData);
+            if (predictionData?.cropType) {
+              const currentSeason = getCurrentSeason();
+              const optimizationInfo = getCropOptimization(predictionData.cropType, predictionData.soilType, currentSeason);
+              setOptimizationData(optimizationInfo);
+            }
           }
           
           setError(null)
@@ -617,88 +672,171 @@ const ViewPrediction = () => {
             </Card>
           )}
 
-          {/* Insights */}
+          {/* Soil Health Matrix & Projected Growth */}
           <Card>
             <CardHeader>
-              <CardTitle>AI Insights & Recommendations</CardTitle>
+              <CardTitle>Soil Health Matrix & Projected Growth</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3">
-                {prediction?.insights?.length > 0 ? (
-                  prediction.insights.map((insight, index) => (
-                    <div key={index} className="flex items-start space-x-2">
-                      <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                      <p className="text-text-primary text-sm">{insight}</p>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-text-secondary">No insights available</p>
-                )}
+              <div className="space-y-4">
+                {(() => {
+                  const safe = (v) => (v === null || v === undefined) ? null : v
+
+                  const pH = safe(prediction?.soilData?.properties?.pH)
+                  const nitrogen = safe(prediction?.soilData?.properties?.nitrogen)
+                  const organicCarbon = safe(prediction?.soilData?.properties?.organicCarbon)
+                  const cec = safe(prediction?.soilData?.properties?.cationExchangeCapacity) || safe(prediction?.soilData?.properties?.cec)
+                  const fertilityLabel = prediction?.soilData?.properties?.fertility || null
+
+                  const metricStatus = (name, value) => {
+                    if (value === null) return { status: 'Unknown', color: 'bg-background-card text-text-secondary' }
+                    switch (name) {
+                      case 'pH': {
+                        if (value >= 6 && value <= 7.5) return { status: 'Good', color: 'bg-status-success/20 text-status-success' }
+                        if (value >= 5.5 && value < 6 || value > 7.5 && value <= 8) return { status: 'Moderate', color: 'bg-status-warning/20 text-status-warning' }
+                        return { status: 'Poor', color: 'bg-status-error/20 text-status-error' }
+                      }
+                      case 'Nitrogen': {
+                        if (value >= 20) return { status: 'Good', color: 'bg-status-success/20 text-status-success' }
+                        if (value >= 10) return { status: 'Moderate', color: 'bg-status-warning/20 text-status-warning' }
+                        return { status: 'Poor', color: 'bg-status-error/20 text-status-error' }
+                      }
+                      case 'OrganicCarbon': {
+                        if (value >= 20) return { status: 'Good', color: 'bg-status-success/20 text-status-success' }
+                        if (value >= 10) return { status: 'Moderate', color: 'bg-status-warning/20 text-status-warning' }
+                        return { status: 'Poor', color: 'bg-status-error/20 text-status-error' }
+                      }
+                      case 'CEC': {
+                        if (value >= 15) return { status: 'Good', color: 'bg-status-success/20 text-status-success' }
+                        if (value >= 8) return { status: 'Moderate', color: 'bg-status-warning/20 text-status-warning' }
+                        return { status: 'Poor', color: 'bg-status-error/20 text-status-error' }
+                      }
+                      case 'Fertility': {
+                        if (!value) return { status: 'Unknown', color: 'bg-background-card text-text-secondary' }
+                        if (value.toLowerCase() === 'high') return { status: 'Good', color: 'bg-status-success/20 text-status-success' }
+                        if (value.toLowerCase() === 'medium') return { status: 'Moderate', color: 'bg-status-warning/20 text-status-warning' }
+                        return { status: 'Poor', color: 'bg-status-error/20 text-status-error' }
+                      }
+                      default:
+                        return { status: 'Unknown', color: 'bg-background-card text-text-secondary' }
+                    }
+                  }
+
+                  // compute a simple soil health score (0-100)
+                  const scoreParts = []
+                  const addScore = (val, weight) => { if (val === null) return 0; return Math.max(0, Math.min(1, val)) * weight }
+
+                  // pH: ideal range 6 - 7.5 => score 1 if inside, taper outside
+                  let pHscore = 0
+                  if (pH === null) pHscore = 0.6 // unknown -> neutral
+                  else if (pH >= 6 && pH <= 7.5) pHscore = 1
+                  else if (pH >= 5 && pH < 6) pHscore = (pH - 5) / 1
+                  else if (pH > 7.5 && pH <= 8.5) pHscore = 1 - ((pH - 7.5) / 1)
+                  else pHscore = 0
+                  scoreParts.push(addScore(pHscore, 0.25))
+
+                  // Nitrogen: map percent to 0-1 assuming 0-30 range
+                  scoreParts.push(addScore(nitrogen === null ? null : (Math.min(nitrogen, 30) / 30), 0.25))
+
+                  // Organic carbon: 0-30
+                  scoreParts.push(addScore(organicCarbon === null ? null : (Math.min(organicCarbon, 30) / 30), 0.2))
+
+                  // CEC
+                  scoreParts.push(addScore(cec === null ? null : (Math.min(cec, 30) / 30), 0.15))
+
+                  // Fertility label
+                  const fertilityScore = fertilityLabel ? (fertilityLabel.toLowerCase() === 'high' ? 1 : fertilityLabel.toLowerCase() === 'medium' ? 0.6 : 0.2) : 0.6
+                  scoreParts.push(addScore(fertilityScore, 0.15))
+
+                  const rawScore = scoreParts.reduce((s, v) => s + v, 0) // 0..1
+                  const soilHealthScore = Math.round(rawScore * 100)
+
+                  // Determine projected yield after applying recommendations
+                  // Base yield (total) prefer predictedYield, else compute from yieldPerHectare * landArea
+                  const baseYield = prediction?.predictedYield ?? (prediction?.yieldPerHectare && prediction?.landArea ? prediction.yieldPerHectare * prediction.landArea : null)
+
+                  // improvement potential: lower score -> higher improvement possible. Max improvement capped at 40%.
+                  const improvementFactor = baseYield ? Math.min(0.4, (100 - soilHealthScore) / 200) : 0
+                  const projectedYield = baseYield ? Math.round(baseYield * (1 + improvementFactor)) : null
+                  const improvementPercent = Math.round((improvementFactor) * 100)
+
+                  // Prepare matrix rows
+                  const matrixRows = [
+                    { label: 'pH', value: pH !== null ? pH : 'N/A', ...metricStatus('pH', pH) },
+                    { label: 'Nitrogen (%)', value: nitrogen !== null ? `${nitrogen}` : 'N/A', ...metricStatus('Nitrogen', nitrogen) },
+                    { label: 'Organic Carbon (%)', value: organicCarbon !== null ? `${organicCarbon}` : 'N/A', ...metricStatus('OrganicCarbon', organicCarbon) },
+                    { label: 'CEC', value: cec !== null ? `${cec}` : 'N/A', ...metricStatus('CEC', cec) },
+                    { label: 'Fertility', value: fertilityLabel || 'N/A', ...metricStatus('Fertility', fertilityLabel) }
+                  ]
+
+                  return (
+                    <>
+                      <div>
+                        <p className="text-text-secondary text-sm mb-2">Soil Health Score</p>
+                        <div className="flex items-center space-x-3">
+                          <div className="w-40 bg-background-card rounded-full h-4 overflow-hidden">
+                            <div className={`h-4 rounded-full bg-gradient-to-r ${soilHealthScore >= 70 ? 'from-status-success to-status-success/60' : soilHealthScore >= 40 ? 'from-status-warning to-status-warning/60' : 'from-status-error to-status-error/60'}`} style={{ width: `${soilHealthScore}%` }} />
+                          </div>
+                          <div className="text-text-primary font-medium">{soilHealthScore}%</div>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <h4 className="text-sm font-medium text-text-secondary mb-2">Soil Health Matrix</h4>
+                          <div className="space-y-2">
+                            {matrixRows.map((row, i) => (
+                              <div key={i} className="flex items-center justify-between p-2 bg-background-card rounded">
+                                <div>
+                                  <p className="text-text-secondary text-xs">{row.label}</p>
+                                  <p className="text-text-primary font-medium">{row.value}</p>
+                                </div>
+                                <div className={`px-2 py-1 rounded text-xs font-medium ${row.color}`}>{row.status}</div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div>
+                          <h4 className="text-sm font-medium text-text-secondary mb-2">Projected Growth After Applying Recommendations</h4>
+                          <div className="p-3 bg-background-card rounded space-y-2">
+                            <div className="flex justify-between items-center">
+                              <span className="text-text-secondary text-sm">Current estimated yield</span>
+                              <span className="text-text-primary font-medium">{baseYield ? `${Math.round(baseYield)} kg` : 'N/A'}</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span className="text-text-secondary text-sm">Estimated improvement</span>
+                              <span className="text-text-primary font-medium">{improvementPercent}%</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span className="text-text-secondary text-sm">Projected yield after applying recommendations</span>
+                              <span className="text-text-primary font-semibold">{projectedYield ? `${projectedYield} kg` : 'N/A'}</span>
+                            </div>
+
+                            <div className="mt-2 text-xs text-text-secondary">
+                              <p>Note: This is a simple estimate based on current soil health metrics. Actual results depend on implementation quality, weather and farm management.</p>
+                            </div>
+                          </div>
+
+                          {prediction?.soilData?.recommendations && prediction.soilData.recommendations.length > 0 && (
+                            <div className="mt-3">
+                              <p className="text-text-secondary text-sm mb-2">Top actionable recommendations</p>
+                              <ul className="list-inside list-disc text-text-primary text-sm space-y-1">
+                                {prediction.soilData.recommendations.slice(0, 4).map((rec, idx) => (
+                                  <li key={idx}>{rec}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  )
+                })()}
               </div>
             </CardContent>
           </Card>
 
-          {/* Prediction Metadata */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Prediction Information</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-text-secondary text-sm">Data Sources</p>
-                    <div className="flex flex-wrap gap-1 mt-1">
-                      {prediction?.fetchedFromAPIs && (
-                        <span className="px-2 py-1 bg-primary/20 text-primary text-xs rounded">API Data</span>
-                      )}
-                      {prediction?.soilData?.dataSource && (
-                        <span className="px-2 py-1 bg-status-success/20 text-status-success text-xs rounded">
-                          Soil: {prediction.soilData.dataSource}
-                        </span>
-                      )}
-                      {prediction?.weather?.dataSource && (
-                        <span className="px-2 py-1 bg-status-warning/20 text-status-warning text-xs rounded">
-                          Weather: {prediction.weather.dataSource}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-text-secondary text-sm">ML Model Used</p>
-                    <p className="text-text-primary font-medium">
-                      {prediction?.mlModelUsed ? 'Yes' : 'No'}
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-text-secondary text-sm">Created Date</p>
-                    <p className="text-text-primary font-medium">
-                      {formatDate(prediction?.createdAt)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-text-secondary text-sm">Last Updated</p>
-                    <p className="text-text-primary font-medium">
-                      {formatDate(prediction?.updatedAt)}
-                    </p>
-                  </div>
-                </div>
-
-                {prediction?.soilData?.searchMetadata?.dataAccuracy && (
-                  <div className="mt-3 p-2 bg-background-card rounded">
-                    <p className="text-text-secondary text-xs">
-                      Data Accuracy: <span className="font-medium text-text-primary">
-                        {prediction.soilData.searchMetadata.dataAccuracy}
-                      </span>
-                    </p>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </main>
     </div>

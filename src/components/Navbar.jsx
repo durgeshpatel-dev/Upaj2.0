@@ -3,11 +3,14 @@ import { Bell, User, Leaf, MessageCircle, Menu, X, LogOut } from 'lucide-react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from '../context/TranslationContext';
+import { Tr, SimpleLanguageSelector } from '../components/ui/SimpleTranslation';
+import { useUnifiedTranslation } from '../hooks/useUnifiedTranslation';
 
 const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
+  const { t } = useUnifiedTranslation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const userMenuRef = useRef(null);
@@ -78,7 +81,7 @@ const Navbar = () => {
               isActive('/') ? 'text-primary font-medium' : 'text-text-secondary hover:text-primary'
             }`}
           >
-            Home
+           <Tr>Home</Tr> 
           </Link>
           
           {/* Show protected links only if authenticated */}
@@ -90,7 +93,7 @@ const Navbar = () => {
                   isActive('/predict') ? 'text-primary font-medium' : 'text-text-secondary hover:text-primary'
                 }`}
               >
-                Predict
+                <Tr>Predict</Tr>
               </Link>
               <Link 
                 to="/dashboard" 
@@ -98,7 +101,7 @@ const Navbar = () => {
                   isActive('/dashboard') ? 'text-primary font-medium' : 'text-text-secondary hover:text-primary'
                 }`}
               >
-                Dashboard
+                <Tr>Dashboard</Tr>
               </Link>
               <Link 
                 to="/community" 
@@ -106,7 +109,7 @@ const Navbar = () => {
                   isActive('/community') ? 'text-primary font-medium' : 'text-text-secondary hover:text-primary'
                 }`}
               >
-                Community
+                <Tr>Community</Tr>
               </Link>
               <Link 
                 to="/chat" 
@@ -114,7 +117,7 @@ const Navbar = () => {
                   isActive('/chat') ? 'text-primary font-medium' : 'text-text-secondary hover:text-primary'
                 }`}
               >
-                Chat Support
+                <Tr>Chat Support</Tr>
               </Link>
             </>
           ) : (
@@ -124,25 +127,25 @@ const Navbar = () => {
                 onClick={() => handleNavigation('/predict')}
                 className="text-text-secondary hover:text-primary transition-colors"
               >
-                Predict
+                <Tr>Predict</Tr>
               </button>
               <button 
                 onClick={() => handleNavigation('/dashboard')}
                 className="text-text-secondary hover:text-primary transition-colors"
               >
-                Dashboard
+                <Tr>Dashboard</Tr>
               </button>
               <button 
                 onClick={() => handleNavigation('/community')}
                 className="text-text-secondary hover:text-primary transition-colors"
               >
-                Community
+                <Tr>Community</Tr>
               </button>
               <button 
                 onClick={() => handleNavigation('/chat')}
                 className="text-text-secondary hover:text-primary transition-colors"
               >
-                Chat Support
+                <Tr>Chat Support</Tr>
               </button>
             </>
           )}
@@ -152,32 +155,7 @@ const Navbar = () => {
         <div className="flex items-center space-x-4">
           {/* Language selector */}
           <div className="relative">
-            {/* useTranslation hook to read/set language */}
-            {/* eslint-disable-next-line react-hooks/rules-of-hooks */}
-            {(() => {
-              try {
-                const { language, setLanguage } = useTranslation();
-                return (
-                  <select
-                    value={language}
-                    onChange={(e) => setLanguage(e.target.value)}
-                    className="text-sm bg-background border border-border rounded px-2 py-1"
-                    aria-label="Language"
-                  >
-                    <option value="en">EN</option>
-                    <option value="mr">MR</option>
-                    <option value="hi">HI</option>
-                    <option value="bn">BN</option>
-                  </select>
-                );
-              } catch (e) {
-                return (
-                  <select disabled className="text-sm bg-background border border-border rounded px-2 py-1">
-                    <option>EN</option>
-                  </select>
-                );
-              }
-            })()}
+            <SimpleLanguageSelector />
           </div>
 
           {/* Authentication buttons for home page */}
@@ -187,13 +165,13 @@ const Navbar = () => {
                 onClick={handleLogin}
                 className="text-text-secondary hover:text-primary font-medium px-4 py-2 transition-colors"
               >
-                Sign In
+                <Tr>Sign In</Tr>
               </button>
               <button 
                 onClick={handleSignup}
                 className="bg-primary hover:bg-primary/80 text-primary-foreground font-semibold px-6 py-2 rounded-lg transition-colors duration-200"
               >
-                Get Started
+                <Tr>Get Started</Tr>
               </button>
             </div>
           )}
@@ -204,7 +182,7 @@ const Navbar = () => {
               onClick={() => navigate('/dashboard')}
               className="hidden md:block bg-primary hover:bg-primary/80 text-primary-foreground font-semibold px-6 py-2 rounded-lg transition-colors duration-200"
             >
-              Go to Dashboard
+              <Tr>Go to Dashboard</Tr>
             </button>
           )}
           
@@ -218,7 +196,7 @@ const Navbar = () => {
               </button>
               
               {/* Chat Support Icon */}
-              <a 
+              {/* <a 
                 href="/chat"
                 className={`p-2 transition-colors ${
                   isActive('/chat') 
@@ -228,7 +206,7 @@ const Navbar = () => {
                 title="Chat Support"
               >
                 <MessageCircle size={20} />
-              </a>
+              </a> */}
 
               {/* User Avatar with Dropdown */}
               <div className="relative" ref={userMenuRef}>
@@ -254,14 +232,14 @@ const Navbar = () => {
                       className="block px-4 py-2 text-sm text-text-secondary hover:text-primary hover:bg-primary/5 transition-colors"
                       onClick={() => setShowUserMenu(false)}
                     >
-                      Profile Settings
+                     <Tr>Profile Settings</Tr>
                     </a>
                     <a
                       href="/dashboard"
                       className="block px-4 py-2 text-sm text-text-secondary hover:text-primary hover:bg-primary/5 transition-colors"
                       onClick={() => setShowUserMenu(false)}
                     >
-                      Dashboard
+                     <Tr>Dashboard</Tr>
                     </a>
                     <button
                       onClick={handleLogout}
@@ -315,7 +293,7 @@ const Navbar = () => {
                   }`}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  Predict
+                  <Tr>Predict</Tr>
                 </a>
                 <a 
                   href="/dashboard" 
@@ -324,7 +302,7 @@ const Navbar = () => {
                   }`}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  Dashboard
+                  <Tr>Dashboard</Tr>
                 </a>
                 <a 
                   href="/community" 
@@ -333,7 +311,7 @@ const Navbar = () => {
                   }`}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  Community
+                  <Tr>Community</Tr>
                 </a>
                 <a 
                   href="/chat" 
@@ -342,7 +320,7 @@ const Navbar = () => {
                   }`}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  Chat Support
+                  <Tr>Chat Support</Tr>
                 </a>
                 <a 
                   href="/profile" 
@@ -351,7 +329,7 @@ const Navbar = () => {
                   }`}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  Profile
+                  <Tr>Profile</Tr>
                 </a>
                 
                 {/* Logout button in mobile menu */}
@@ -363,7 +341,7 @@ const Navbar = () => {
                   className="block w-full text-left text-status-error hover:text-status-error/80 transition-colors pt-4 border-t border-border"
                 >
                   <LogOut size={14} className="inline mr-2" />
-                  Sign Out
+                  <Tr>Logout</Tr>
                 </button>
               </>
             ) : (

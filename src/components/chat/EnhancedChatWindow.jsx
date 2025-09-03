@@ -1,11 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react'
 import MessageBubble from './MessageBubble'
-import InputBox from './InputBox'
+import EnhancedInputBox from './EnhancedInputBox'
+import HealthIndicator from './HealthIndicator'
 
 const EnhancedChatWindow = ({ 
   messages = [], 
   isLoading = false, 
-  onSendMessage 
+  onSendMessage,
+  currentLanguage = 'hi',
+  suggestedQuestions = []
 }) => {
   const [input, setInput] = useState("")
   const messagesEndRef = useRef(null)
@@ -17,8 +20,8 @@ const EnhancedChatWindow = ({
 
   const handleSendMessage = () => {
     if (!input.trim() || isLoading) return
-    
-    onSendMessage(input)
+  console.debug('[UI] handleSendMessage called with:', input)
+  onSendMessage(input)
     setInput("")
   }
 
@@ -27,10 +30,7 @@ const EnhancedChatWindow = ({
       {/* Header */}
       <div className="flex items-center justify-between mb-4 pb-2 border-b border-[#1F2A24]">
         <h3 className="text-sm font-medium text-white">Chat Assistant</h3>
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-          <span className="text-xs text-gray-400">Online</span>
-        </div>
+        <HealthIndicator />
       </div>
 
       {/* Messages */}
@@ -56,12 +56,16 @@ const EnhancedChatWindow = ({
       
       {/* Input */}
       <div className="mt-3 pt-3 border-t border-[#1F2A24]">
-        <InputBox
+        <EnhancedInputBox
           value={input}
           onChange={setInput}
           onSend={handleSendMessage}
-          placeholder="Type your farming question here..."
+          placeholder={currentLanguage === 'hi' 
+            ? "अपना कृषि प्रश्न यहां टाइप करें..." 
+            : "Type your farming question here..."
+          }
           disabled={isLoading}
+          suggestedQuestions={suggestedQuestions}
         />
       </div>
     </div>

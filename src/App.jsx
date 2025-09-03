@@ -52,9 +52,9 @@ function App() {
               <Route path="/profile" element={<ProtectedRoute><Navbar /><Profile /></ProtectedRoute>} />
               <Route path="/prediction/:predictionId" element={<ProtectedRoute><Navbar /><ViewPrediction /></ProtectedRoute>} />
               <Route path="/community" element={<ProtectedRoute><Navbar /><Community /></ProtectedRoute>} />
-              <Route path="/chat" element={<ProtectedRoute><Navbar /><ChatSupport /></ProtectedRoute>} />
+              {/* <Route path="/chat" element={<ProtectedRoute><Navbar /><ChatSupport /></ProtectedRoute>} /> */}
               <Route path="/chat/enhanced" element={<ProtectedRoute><Navbar /><EnhancedChatSupport /></ProtectedRoute>} />
-              <Route path="/chat/advanced" element={<ProtectedRoute><Navbar /><AdvancedChatSupport /></ProtectedRoute>} />
+              <Route path="/chat" element={<ProtectedRoute><Navbar /><AdvancedChatSupport /></ProtectedRoute>} />
               
               {/* Catch-all route for unmatched paths */}
               <Route path="*" element={<ProtectedRoute><Navigate to="/dashboard" replace /></ProtectedRoute>} />

@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Button from '../Button'
 import { formatTimestamp, exportChatHistory } from '../../utils/chatUtils'
+import { chatbotAPI } from '../../utils/api'
 
 const EnhancedChatHistorySidebar = ({ 
   chatHistory = {}, 
@@ -11,9 +12,15 @@ const EnhancedChatHistorySidebar = ({
   onClearAll 
 }) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null)
+  const [backendHistory, setBackendHistory] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
 
-  const chatEntries = Object.entries(chatHistory)
-    .sort(([, a], [, b]) => b.lastUpdated - a.lastUpdated)
+  // Prefer backend-fetched history when available, otherwise use prop
+  const effectiveHistory = backendHistory && Object.keys(backendHistory).length > 0 ? backendHistory : chatHistory || {}
+
+  const chatEntries = Object.entries(effectiveHistory)
+    .sort(([, a], [, b]) => (b.lastUpdated || 0) - (a.lastUpdated || 0))
     .slice(0, 10) // Show only recent 10 chats
 
   const handleDeleteChat = (chatId, e) => {
@@ -30,6 +37,58 @@ const EnhancedChatHistorySidebar = ({
     e.stopPropagation()
     exportChatHistory(chatId)
   }
+
+  // Fetch chat history from backend when component mounts
+  useEffect(() => {
+    let mounted = true
+    const fetchHistory = async () => {
+      setLoading(true)
+      setError(null)
+      try {
+        const resp = await chatbotAPI.getChatHistory()
+        if (!mounted) return
+        if (resp.success && resp.data && Array.isArray(resp.data.chats)) {
+          const mapped = {}
+          resp.data.chats.forEach(chat => {
+            const id = chat.id || chat._id || String(chat.sessionId || chat.session || Math.random())
+            mapped[id] = {
+              messages: chat.messages || chat.messagesList || [],
+              created: chat.createdAt ? new Date(chat.createdAt).getTime() : (chat.created ? chat.created : Date.now()),
+              lastUpdated: chat.updatedAt ? new Date(chat.updatedAt).getTime() : (chat.lastUpdated ? chat.lastUpdated : Date.now()),
+              title: chat.title || (chat.messages && chat.messages.length ? chat.messages[0].text || chat.messages[0].content || 'Chat' : 'Chat')
+            }
+          })
+          setBackendHistory(mapped)
+        } else if (resp.success && resp.data && typeof resp.data === 'object') {
+          // Accept backend that returns object with keys
+          // Try to normalize if possible
+          const maybeChats = resp.data.chats || resp.data.history || resp.data
+          if (Array.isArray(maybeChats)) {
+            const mapped = {}
+            maybeChats.forEach(chat => {
+              const id = chat.id || chat._id || String(chat.sessionId || chat.session || Math.random())
+              mapped[id] = {
+                messages: chat.messages || [],
+                created: chat.createdAt ? new Date(chat.createdAt).getTime() : Date.now(),
+                lastUpdated: chat.updatedAt ? new Date(chat.updatedAt).getTime() : Date.now(),
+                title: chat.title || 'Chat'
+              }
+            })
+            setBackendHistory(mapped)
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch chat history in sidebar:', err)
+        setError(err?.message || 'Failed to load chat history')
+      } finally {
+        if (mounted) setLoading(false)
+      }
+    }
+
+    fetchHistory()
+
+    return () => { mounted = false }
+  }, [])
 
   return (
     <aside className="rounded-lg border border-[#1F2A24] bg-[#111C18] p-4">
