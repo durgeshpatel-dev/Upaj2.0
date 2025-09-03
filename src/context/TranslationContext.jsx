@@ -8,6 +8,7 @@ export const TranslationProvider = ({ children }) => {
     try {
       const stored = localStorage.getItem('app_lang');
       if (stored) return stored;
+      console.log("lang ",stored)
     } catch (e) {
       // ignore
     }
@@ -18,6 +19,7 @@ export const TranslationProvider = ({ children }) => {
   const [language, setLanguage] = useState(getInitialLang);
 
   useEffect(() => {
+    console.log(`TranslationContext: Language changed to ${language}`);
     try {
       localStorage.setItem('app_lang', language);
     } catch (e) {

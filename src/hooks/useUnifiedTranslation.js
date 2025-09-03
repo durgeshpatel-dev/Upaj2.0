@@ -33,12 +33,14 @@ const hindiTranslations = {
 
   // Key features
   "Key Features": "मुख्य विशेषताएँ",
+  "AgriVision offers a range of features designed to help farmers make informed decisions and improve their crop yields.": "AgriVision किसानों को सूचित निर्णय लेने और अपनी फसल की पैदावार में सुधार करने में मदद करने के लिए विभिन्न सुविधाएं प्रदान करता है।",
+  "Precision": "सटीकता",
   "Accurate Predictions": "सटीक पूर्वानुमान",
-  "Our AI models provide highly accurate yield predictions using advanced algorithms, soil characteristics, and weather conditions.": "हमारे AI मॉडल उन्नत एल्गोरिदम, मिट्टी की विशेषताओं और मौसम की स्थितियों का उपयोग करके अत्यधिक सटीक उपज पूर्वानुमान प्रदान करते हैं।",
+  "Our AI models provide highly accurate yield predictions based on historical data, weather patterns, and soil conditions.": "हमारे AI मॉडल ऐतिहासिक डेटा, मौसम पैटर्न और मिट्टी की स्थितियों के आधार पर अत्यधिक सटीक उपज पूर्वानुमान प्रदान करते हैं।",
   "Crop-Specific Models": "फसल-विशिष्ट मॉडल",
-  "We offer specialized models for a variety of crops, allowing for more predictions tailored to specific agricultural needs.": "हम विभिन्न फसलों के लिए विशेषीकृत मॉडल प्रदान करते हैं, जो विशिष्ट कृषि आवश्यकताओं के अनुसार अधिक सटीक पूर्वानुमान देते हैं।",
+  "We offer specialized models for a variety of crops, ensuring precise predictions tailored to your specific needs.": "हम विभिन्न फसलों के लिए विशेषीकृत मॉडल प्रदान करते हैं, जो आपकी विशिष्ट आवश्यकताओं के अनुरूप सटीक पूर्वानुमान सुनिश्चित करते हैं।",
   "Real-Time Insights": "वास्तविक समय की जानकारी",
-  "Get up-to-date insights and alerts on potential risks, allowing you to take preventive measures to protect your crops.": "संभावित जोखिमों पर ताज़ा जानकारी और अलर्ट प्राप्त करें, जिससे आप अपनी फसलों की सुरक्षा के लिए निवारक कदम उठा सकें।",
+  "Get up-to-date insights and alerts on potential risks, allowing you to take proactive measures to protect your crops.": "संभावित जोखिमों पर अद्यतन जानकारी और अलर्ट प्राप्त करें, जिससे आप अपनी फसलों की सुरक्षा के लिए सक्रिय उपाय कर सकें।",
 
   // Section CTA
   "Ready to Boost Your Crop Yields?": "क्या आप अपनी फसल की उपज बढ़ाने के लिए तैयार हैं?",
@@ -49,6 +51,7 @@ const hindiTranslations = {
   "Terms of Service": "सेवा की शर्तें",
   "Contact Us": "संपर्क करें",
   "About Us": "हमारे बारे में",
+  "© 2024 AgriVision. All rights reserved.": "© 2024 AgriVision। सर्वाधिकार सुरक्षित।",
   "© 2024 AgriVision. All rights reserved. Empowering farmers with AI-driven insights.": "© 2024 AgriVision। सर्वाधिकार सुरक्षित। AI-प्रेरित अंतर्दृष्टि के साथ किसानों को सशक्त बनाना।",
   
 
@@ -142,12 +145,14 @@ export const useUnifiedTranslation = () => {
     if (!text) return text;
     if (language === 'en') return text;
     if (language === 'hi') {
-      return hindiTranslations[text] || text;
+      const translated = hindiTranslations[text] || text;
+      return translated;
     }
     return text;
   };
   
   const changeLanguage = (newLang) => {
+    console.log(`useUnifiedTranslation: Changing language from ${language} to ${newLang}`);
     setLanguage(newLang);
   };
   

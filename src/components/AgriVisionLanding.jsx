@@ -1,17 +1,15 @@
 import React from 'react'
 import { BarChart3, Leaf, Clock } from 'lucide-react'
-import { Tr } from '../components/ui/SimpleTranslation';
-import { useUnifiedTranslation } from '../hooks/useUnifiedTranslation';
+import { Tr } from './ui/SimpleTranslation';
+import {useunifiedTranslation} from '../../hooks/useUnifiedTranslation';
+
 const AgriVisionLanding = () => {
-
-
-
   return (
     <div className="min-h-screen bg-background text-text-primary font-['Inter',sans-serif]">
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">        
-        {/* Hero Content Container with Background Image */}
-        <div 
+        {/* Hero Section */}
+        <section className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
+          {/* Hero Content Container with Background Image */}
+          <div
           className="relative z-10 rounded-2xl p-8 sm:p-12 lg:p-16 mx-4 max-w-5xl text-center overflow-hidden"
           style={{
             backgroundImage: `linear-gradient(rgba(17, 24, 20, 0.75), rgba(17, 24, 20, 0.75)), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 800'%3E%3Cdefs%3E%3ClinearGradient id='sunset' x1='0%25' y1='0%25' x2='0%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23FFB366'/%3E%3Cstop offset='50%25' stop-color='%23FF8C42'/%3E%3Cstop offset='100%25' stop-color='%23D4A574'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='1200' height='800' fill='url(%23sunset)'/%3E%3Cg opacity='0.8'%3E%3Cpath d='M0 600 Q 50 550 100 600 Q 150 570 200 600 Q 250 580 300 600 Q 350 570 400 600 Q 450 580 500 600 Q 550 570 600 600 Q 650 580 700 600 Q 750 570 800 600 Q 850 580 900 600 Q 950 570 1000 600 Q 1050 580 1100 600 Q 1150 570 1200 600 L 1200 800 L 0 800 Z' fill='%23D4A574'/%3E%3Cpath d='M0 650 Q 30 630 60 650 Q 90 640 120 650 Q 150 635 180 650 Q 210 640 240 650 Q 270 635 300 650 Q 330 640 360 650 Q 390 635 420 650 Q 450 640 480 650 Q 510 635 540 650 Q 570 640 600 650 Q 630 635 660 650 Q 690 640 720 650 Q 750 635 780 650 Q 810 640 840 650 Q 870 635 900 650 Q 930 640 960 650 Q 990 635 1020 650 Q 1050 640 1080 650 Q 1110 635 1140 650 Q 1170 640 1200 650 L 1200 800 L 0 800 Z' fill='%23B8860B'/%3E%3C/g%3E%3Cg fill='%23DAA520' opacity='0.6'%3E%3Cpath d='M100 500 Q 105 450 110 500 Q 115 470 120 500 Q 125 480 130 500 Q 135 470 140 500' stroke='%23DAA520' stroke-width='2' fill='none'/%3E%3Cpath d='M200 510 Q 205 460 210 510 Q 215 480 220 510 Q 225 490 230 510 Q 235 480 240 510' stroke='%23DAA520' stroke-width='2' fill='none'/%3E%3Cpath d='M300 520 Q 305 470 310 520 Q 315 490 320 520 Q 325 500 330 520 Q 335 490 340 520' stroke='%23DAA520' stroke-width='2' fill='none'/%3E%3Cpath d='M400 505 Q 405 455 410 505 Q 415 475 420 505 Q 425 485 430 505 Q 435 475 440 505' stroke='%23DAA520' stroke-width='2' fill='none'/%3E%3Cpath d='M500 515 Q 505 465 510 515 Q 515 485 520 515 Q 525 495 530 515 Q 535 485 540 515' stroke='%23DAA520' stroke-width='2' fill='none'/%3E%3Cpath d='M600 500 Q 605 450 610 500 Q 615 470 620 500 Q 625 480 630 500 Q 635 470 640 500' stroke='%23DAA520' stroke-width='2' fill='none'/%3E%3Cpath d='M700 510 Q 705 460 710 510 Q 715 480 720 510 Q 725 490 730 510 Q 735 480 740 510' stroke='%23DAA520' stroke-width='2' fill='none'/%3E%3Cpath d='M800 520 Q 805 470 810 520 Q 815 490 820 520 Q 825 500 830 520 Q 835 490 840 520' stroke='%23DAA520' stroke-width='2' fill='none'/%3E%3Cpath d='M900 505 Q 905 455 910 505 Q 915 475 920 505 Q 925 485 930 505 Q 935 475 940 505' stroke='%23DAA520' stroke-width='2' fill='none'/%3E%3Cpath d='M1000 515 Q 1005 465 1010 515 Q 1015 485 1020 515 Q 1025 495 1030 515 Q 1035 485 1040 515' stroke='%23DAA520' stroke-width='2' fill='none'/%3E%3C/g%3E%3C/svg%3E")`,

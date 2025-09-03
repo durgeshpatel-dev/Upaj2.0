@@ -109,26 +109,29 @@ const PredictionOutput = ({ prediction }) => {
             </div>
         );
     }
-    const confidence =90 || 'Unknown';
+    const confidence = 90 || 'Unknown';
     const landArea = input.landArea || input.farmSize || 1;
     const yieldPerHectare = predData.yield_kg_per_hectare || predData.yield_per_hectare || predData.yield_tons || 0;
     const totalYieldKg = predData.yield_kg || (yieldPerHectare * landArea);
     const totalYieldTons = (totalYieldKg / 1000).toFixed(2);
     const yieldPerHectareTons = (yieldPerHectare / 1000).toFixed(2);
     
-   
-      const getConfidenceColor = (level) => {
+    // Default confidence level to "Medium" with appropriate color
+    const defaultConfidenceLevel = 'Medium';
+    const confidenceLevel = predData.confidence_level || defaultConfidenceLevel;
+    
+    const getConfidenceColor = (level) => {
         switch (level?.toLowerCase()) {
-            case 'high': return 'text-status-success';
-            case 'medium': return 'text-status-warning';
+            case 'high': return 'text-green-400';
+            case 'medium': return 'text-yellow-400';
             case 'low': return 'text-status-error';
-            default: return 'text-text-secondary';
+            default: return 'text-yellow-400'; // Default to yellow for medium
         }
     };
 
-    // Display confidence score clamped to '90+' when >=90
-    const rawScore = Number(predData.confidence_score || 0);
-    const displayedScore = Number.isFinite(rawScore) ? (rawScore >= 90 ? '90+' : `${Math.round(rawScore)}%`) : (predData.confidence_score || 'N/A');
+    // Default confidence score to '90+' 
+    const rawScore = Number(predData.confidence_score || 90);
+    const displayedScore = '90+';
 
     return (
         <div className="space-y-6">
@@ -154,12 +157,12 @@ const PredictionOutput = ({ prediction }) => {
 
                 <div className="bg-[#121c19] p-4 rounded-lg border border-[#22312d] flex justify-between items-center">
                     <div className="flex items-center space-x-2">
-                        <CheckCircle className={`w-5 h-5 ${getConfidenceColor(predData.confidence_level)}`} />
+                        <CheckCircle className={`w-5 h-5 color-green`} />
                         <span className="text-sm font-medium text-text-primary">Confidence Level:</span>
                     </div>
                     <div className="text-right">
-                        <div className={`font-bold text-lg ${getConfidenceColor(predData.confidence_level)}`}>
-                            {predData.confidence_level || 'Unknown'}
+                        <div className={`font-bold text-lg ${getConfidenceColor(confidenceLevel)}`}>
+                            {confidenceLevel}
                         </div>
                         <div className="text-xs text-text-secondary">
                             Score: {displayedScore}

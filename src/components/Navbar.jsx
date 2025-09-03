@@ -2,15 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Bell, User, Leaf, MessageCircle, Menu, X, LogOut } from 'lucide-react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useTranslation } from '../context/TranslationContext';
 import { Tr, SimpleLanguageSelector } from '../components/ui/SimpleTranslation';
-import { useUnifiedTranslation } from '../hooks/useUnifiedTranslation';
 
 const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
-  const { t } = useUnifiedTranslation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const userMenuRef = useRef(null);

@@ -41,11 +41,11 @@ const PredictionForm = ({ onSubmit, isLoading = false, error = null }) => {
         const locationString = user.farmDetails?.location || user.location || '';
         if (locationString) {
           const locationParts = locationString.split(',').map(part => part.trim());
-          if (locationParts.length >= 2) {
-            // Assume last part is state, second-to-last is district
-            userState = locationParts[locationParts.length - 1];
-            userDistrict = locationParts[locationParts.length - 2];
-          }
+            if (locationParts.length >= 2) {
+              // Fix: last part is state, second-to-last is district
+              userState = locationParts[locationParts.length - 1];
+              userDistrict = locationParts[locationParts.length - 2];
+            }
         }
       }
 
