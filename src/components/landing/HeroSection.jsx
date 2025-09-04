@@ -1,13 +1,13 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import Button from '../Button'
-
+import Bg from '../../assets/Hero.png'
 const HeroSection = () => {
   return (
     <section className="rounded-xl border border-border bg-surface overflow-hidden">
       <div className="relative min-h-[400px] lg:h-[500px] w-full">
         <img 
-          src="/wheat-field-photo.png" 
+          src={Bg}
           alt="Wheat field" 
           className="h-full w-full object-cover opacity-50" 
         />
