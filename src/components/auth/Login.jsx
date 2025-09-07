@@ -5,45 +5,21 @@ import FormInput from '../ui/FormInput'
 import Button from '../Button'
 import { useAuth } from '../../context/AuthContext'
 import { authAPI } from '../../utils/api'
-import { initiateOAuth } from '../../utils/oauth'
 import {Tr} from '../ui/SimpleTranslation';
+import { useUnifiedTranslation } from '../../hooks/useUnifiedTranslation'
 
 
 const Login = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const { login } = useAuth()
+  const { t } = useUnifiedTranslation()
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   })
   const [errors, setErrors] = useState({})
   const [isLoading, setIsLoading] = useState(false)
-
-  // Test function to check API connectivity
-  const testAPI = async () => {
-    try {
-      console.log('🔧 Testing direct API call...');
-      const response = await fetch('http://localhost:5001/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: 'test@example.com',
-          password: 'test123'
-        })
-      });
-      
-      console.log('📡 Direct API Response Status:', response.status);
-      console.log('📡 Direct API Response Headers:', response.headers);
-      
-      const data = await response.json();
-      console.log('📦 Direct API Response Data:', data);
-    } catch (error) {
-      console.error('❌ Direct API Test Error:', error);
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -93,6 +69,7 @@ const Login = () => {
         }
       }
     } catch (error) {
+      console.error('Login error:', error);
       setErrors({ general: 'Login failed. Please try again.' })
     } finally {
       setIsLoading(false)
@@ -113,27 +90,6 @@ const Login = () => {
     }
   }
 
-  const handleDemoLogin = async () => {
-    setIsLoading(true)
-    setFormData({ email: 'demo@agrivision.com', password: 'demo123' })
-    
-    try {
-      const result = await authAPI.login('demo@agrivision.com', 'demo123')
-      
-      if (result.success) {
-        const { user, token } = result.data
-        login(token, user)
-        navigate('/dashboard')
-      } else {
-        setErrors({ general: result.error })
-      }
-    } catch (error) {
-      setErrors({ general: 'Demo login failed. Please try again.' })
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
   const handleGoogleLogin = () => {
     window.location.href = 'http://localhost:5001/api/auth/google'
   }
@@ -145,8 +101,8 @@ const Login = () => {
           <div className="mx-auto mb-4 w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center">
             <span className="text-primary text-2xl">🌱</span>
           </div>
-          <CardTitle className="text-2xl text-text-primary">Welcome Back</CardTitle>
-          <p className="text-text-secondary">Sign in to your AgriVision account</p>
+          <CardTitle className="text-2xl text-text-primary"><Tr>Welcome Back</Tr></CardTitle>
+          <p className="text-text-secondary"><Tr>Sign in to your AgriVision account</Tr></p>
         </CardHeader>
         <CardContent>
           {/* OAuth Button */}
@@ -173,7 +129,7 @@ const Login = () => {
               <div className="w-full border-t border-border"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-background text-text-secondary">or</span>
+              <span className="px-2 bg-background text-text-secondary"><Tr>or</Tr></span>
             </div>
           </div>
 
@@ -185,21 +141,21 @@ const Login = () => {
             )}
 
             <FormInput
-              label="Email"
+              label={t("Email")}
               type="email"
               value={formData.email}
               onChange={(e) => handleInputChange('email', e.target.value)}
               error={errors.email}
-              placeholder="Enter your email"
+              placeholder={t("Enter your email")}
             />
 
             <FormInput
-              label="Password"
+              label={t("Password")}
               type="password"
               value={formData.password}
               onChange={(e) => handleInputChange('password', e.target.value)}
               error={errors.password}
-              placeholder="Enter your password"
+              placeholder={t("Enter your password")}
             />
 
             <div className="flex justify-between items-center text-sm">
@@ -213,7 +169,7 @@ const Login = () => {
               className="w-full"
               disabled={isLoading}
             >
-              {isLoading ? 'Signing in...' : 'Sign In'}
+              {isLoading ? <Tr>Signing in...</Tr> : <Tr>Sign In</Tr>}
             </Button>
 
             {/* Demo Login Button For Debugging  */}
@@ -240,16 +196,16 @@ const Login = () => {
 
           <div className="mt-6 text-center">
             <p className="text-text-secondary">
-              Don't have an account?{' '}
+              <Tr>Don't have an account?</Tr>{' '}
               <Link to="/signup" className="text-primary hover:text-primary/80 font-medium">
-                Sign up
+                <Tr>Sign up</Tr>
               </Link>
             </p>
           </div>
 
           <div className="mt-4 text-center">
             <Link to="/" className="text-text-secondary hover:text-text-primary text-sm">
-              ← Back to Home
+              ← <Tr>Back to Home</Tr>
             </Link>
           </div>
         </CardContent>

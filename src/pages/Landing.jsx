@@ -9,7 +9,7 @@ import Footer from '../components/ui/Footer'
 const Landing = () => {
   return (
     <div className="min-h-screen bg-background text-text-secondary">
-      
+      <Navbar />
       <main className="mx-auto max-w-7xl px-4 lg:px-6 py-6">
         <HeroSection />
         <StatsSection />

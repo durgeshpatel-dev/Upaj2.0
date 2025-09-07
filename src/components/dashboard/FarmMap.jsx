@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, useMap, useMapEvents } from 'react-lea
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
+import { Tr } from '../ui/SimpleTranslation';
 
 // Custom marker icon
 const markerIcon = new L.Icon({
@@ -118,7 +119,7 @@ const FarmMap = () => {
     <Card className="h-full">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg font-semibold text-gray-800">Farm Location</CardTitle>
+          <CardTitle className="text-lg font-semibold text-gray-800"><Tr>Farm Location</Tr></CardTitle>
         </div>
       </CardHeader>
       <CardContent className="p-0">

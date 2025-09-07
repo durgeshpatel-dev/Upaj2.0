@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { RefreshCw } from 'lucide-react';
 import axios from 'axios';
+import { Tr } from '../ui/SimpleTranslation';
 
 const SoilCard = () => {
   const { user, isAuthenticated } = useAuth();
@@ -9,18 +10,6 @@ const SoilCard = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  
-  // Demo/fallback values used when real data is not available yet
-  const demo = { 
-    ph: '--', 
-    pH: '--', 
-    moisture: '--', 
-    nitrogen: '--', 
-    phosphorus: '--', 
-    potassium: '--',
-    organicMatter: '--',
-    temperature: '--'
-  };
 
   // Normalize various backend soil response shapes into the keys this component expects
   const normalizeSoilData = (raw) => {
@@ -372,9 +361,13 @@ const SoilCard = () => {
     <div className="rounded-lg border border-border bg-background-card p-4">
       <div className="flex items-center justify-between">
         <div className="flex-1">
-          <p className="text-xs text-text-secondary">Soil Insights</p>
+          <p className="text-xs text-text-secondary"><Tr>Soil Health</Tr></p>
           <p className="mt-2 text-lg font-medium text-text-primary">
-            {loading ? 'Loading...' : `pH: ${formatSoilValue(show.ph)}, Moisture: ${formatSoilValue(show.moisture, '%')}`}
+            {loading ? <Tr>Loading...</Tr> : (
+              <>
+                pH: {formatSoilValue(show.ph)}, <Tr>Moisture</Tr>: {formatSoilValue(show.moisture, '%')}
+              </>
+            )}
           </p>
           <div className="mt-1 grid grid-cols-3 gap-2 text-xs">
             <div>
@@ -389,20 +382,20 @@ const SoilCard = () => {
           </div>
           {show.organicMatter && show.organicMatter !== '--' && (
             <div className="mt-1 text-xs">
-              <span className="text-text-secondary">Organic Matter: </span>
+              <span className="text-text-secondary"><Tr>Organic Matter</Tr>: </span>
               <span className={getNutrientColor(show.organicMatter)}>{formatSoilValue(show.organicMatter, '%')}</span>
             </div>
           )}
           {show.temperature && show.temperature !== '--' && (
             <div className="mt-1 text-xs">
-              <span className="text-text-secondary">Soil Temp: </span>
+              <span className="text-text-secondary"><Tr>Soil Temp</Tr>: </span>
               <span className="text-text-primary">{formatSoilValue(show.temperature, '°C')}</span>
             </div>
           )}
           {error && <div className="text-status-error text-xs mt-1">{error}</div>}
           {soil && (
             <div className="mt-1 text-xs text-text-secondary">
-              Last updated: {new Date().toLocaleTimeString()}
+              <Tr>Last updated</Tr>: {new Date().toLocaleTimeString()}
             </div>
           )}
         </div>

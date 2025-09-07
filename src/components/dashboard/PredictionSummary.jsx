@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Tr } from '../ui/SimpleTranslation';
 
 const PredictionSummary = ({ predictions = [], loading = false }) => {
   const [summary, setSummary] = useState({ label: 'Recent Prediction', value: '—', trend: null });
@@ -13,7 +14,7 @@ const PredictionSummary = ({ predictions = [], loading = false }) => {
     
     if (!Array.isArray(predictions) || predictions.length === 0) {
       console.log('🌾 PredictionSummary: no predictions available');
-      setSummary({ label: 'Recent Prediction', value: 'No predictions yet', trend: null });
+      setSummary({ label: 'Recent Predictions', value: 'No predictions yet', trend: null });
       return;
     }
 
@@ -63,7 +64,7 @@ const PredictionSummary = ({ predictions = [], loading = false }) => {
       }
     }
     
-    const finalSummary = { label: 'Recent Prediction', value, trend };
+    const finalSummary = { label: 'Recent Predictions', value, trend };
     console.log('🌾 PredictionSummary: setting final summary:', finalSummary);
     setSummary(finalSummary);
   }, [predictions, loading]);
@@ -72,8 +73,8 @@ const PredictionSummary = ({ predictions = [], loading = false }) => {
     <div className="rounded-lg border border-border bg-background-card p-4">
       <div className="flex items-center justify-between">
         <div className="flex-1">
-          <p className="text-xs text-text-secondary">{summary.label}</p>
-          <p className="mt-2 text-lg font-medium text-text-primary">{loading ? 'Loading...' : summary.value}</p>
+          <p className="text-xs text-text-secondary"><Tr>{summary.label}</Tr></p>
+          <p className="mt-2 text-lg font-medium text-text-primary">{loading ? <Tr>Loading...</Tr> : summary.value}</p>
           {summary.trend && (
             <div className="mt-1 flex items-center gap-1">
               {/* <span className="text-primary text-sm font-medium">{summary.trend}</span>

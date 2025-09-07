@@ -3,14 +3,14 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card'
 import FormInput from '../ui/FormInput'
 import Button from '../Button'
-import { useAuth } from '../../context/AuthContext'
 import { authAPI } from '../../utils/api'
-import { initiateOAuth } from '../../utils/oauth'
 import { Eye, EyeOff, CheckCircle, AlertCircle, ArrowLeft } from 'lucide-react'
+import { Tr } from '../ui/SimpleTranslation'
+import { useUnifiedTranslation } from '../../hooks/useUnifiedTranslation'
 
 const Signup = () => {
   const navigate = useNavigate()
-  const { login } = useAuth()
+  const { t } = useUnifiedTranslation()
   const [currentStep, setCurrentStep] = useState(1)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -172,8 +172,8 @@ const Signup = () => {
             <div className="mx-auto mb-4 w-20 h-20 bg-gradient-to-br from-primary/30 via-primary/20 to-primary/10 rounded-2xl flex items-center justify-center shadow-lg">
               <span className="text-primary text-3xl filter drop-shadow-lg">🌱</span>
             </div>
-            <CardTitle className="text-3xl font-bold text-text-primary mb-2 tracking-tight">Create Your Account</CardTitle>
-            <p className="text-text-secondary">Join thousands of farmers optimizing their yields with AI</p>
+            <CardTitle className="text-3xl font-bold text-text-primary mb-2 tracking-tight"><Tr>Create Your Account</Tr></CardTitle>
+            <p className="text-text-secondary"><Tr>Join thousands of farmers optimizing their yields with AI</Tr></p>
             
             {/* Progress Steps */}
             <div className="flex items-center justify-center mt-6 p-4 bg-background rounded-xl border border-border/50">
@@ -182,8 +182,8 @@ const Signup = () => {
                   {currentStep > 1 ? <CheckCircle size={16} /> : '1'}
                 </div>
                 <div className="text-left">
-                  <div className="text-xs font-semibold">Personal Info</div>
-                  <div className="text-xs opacity-70">Basic details</div>
+                  <div className="text-xs font-semibold"><Tr>Personal Info</Tr></div>
+                  <div className="text-xs opacity-70"><Tr>Basic details</Tr></div>
                 </div>
               </div>
               <div className={`w-8 h-1 mx-2 rounded-full transition-all duration-500 ${currentStep > 1 ? 'bg-gradient-to-r from-primary to-primary/70' : 'bg-border'}`}></div>
@@ -192,8 +192,8 @@ const Signup = () => {
                   {currentStep > 2 ? <CheckCircle size={16} /> : '2'}
                 </div>
                 <div className="text-left">
-                  <div className="text-xs font-semibold">Farm Details</div>
-                  <div className="text-xs opacity-70">Location & size</div>
+                  <div className="text-xs font-semibold"><Tr>Farm Details</Tr></div>
+                  <div className="text-xs opacity-70"><Tr>Location & size</Tr></div>
                 </div>
               </div>
             </div>
@@ -214,7 +214,7 @@ const Signup = () => {
                   <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                   <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                 </svg>
-                Continue with Google
+                <Tr>Continue with Google</Tr>
               </Button>
             </div>
 
@@ -224,7 +224,7 @@ const Signup = () => {
                 <div className="w-full border-t border-border"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-background-card text-text-secondary font-medium">or continue with email</span>
+                <span className="px-4 bg-background-card text-text-secondary font-medium"><Tr>or continue with email</Tr></span>
               </div>
             </div>
 
@@ -244,39 +244,39 @@ const Signup = () => {
               {currentStep === 1 && (
                 <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-500">
                   <div className="text-center mb-4">
-                    <h3 className="text-xl font-bold text-text-primary mb-1">Personal Information</h3>
-                    <p className="text-text-secondary text-sm">Let's start with your basic details</p>
+                    <h3 className="text-xl font-bold text-text-primary mb-1"><Tr>Personal Information</Tr></h3>
+                    <p className="text-text-secondary text-sm"><Tr>Let's start with your basic details</Tr></p>
                   </div>
                   
                   <div className="grid grid-cols-1 gap-4">
                     <FormInput
-                      label="Full Name"
+                      label={t("Full Name")}
                       value={formData.name}
                       onChange={(e) => handleInputChange('name', e.target.value)}
                       error={errors.name}
-                      placeholder="Enter your full name"
+                      placeholder={t("Enter your full name")}
                       className="h-12 text-sm rounded-lg border-2 focus:border-primary/50 transition-all duration-200"
                     />
 
                     <FormInput
-                      label="Email Address"
+                      label={t("Email Address")}
                       type="email"
                       value={formData.email}
                       onChange={(e) => handleInputChange('email', e.target.value)}
                       error={errors.email}
-                      placeholder="Enter your email address"
+                      placeholder={t("Enter your email address")}
                       className="h-12 text-sm rounded-lg border-2 focus:border-primary/50 transition-all duration-200"
                     />
 
                     <div className="space-y-3">
                       <div className="relative">
                         <FormInput
-                          label="Password"
+                          label={t("Password")}
                           type={showPassword ? "text" : "password"}
                           value={formData.password}
                           onChange={(e) => handleInputChange('password', e.target.value)}
                           error={errors.password}
-                          placeholder="Create a strong password"
+                          placeholder={t("Create a strong password")}
                           className="h-12 text-sm rounded-lg border-2 focus:border-primary/50 transition-all duration-200 pr-12"
                         />
                         <button
@@ -292,16 +292,16 @@ const Signup = () => {
                       {formData.password && (
                         <div className="space-y-2 p-3 bg-gradient-to-br from-background to-background/50 rounded-lg border border-border/50 animate-in fade-in slide-in-from-top-2 duration-300">
                           <p className="text-xs font-semibold text-text-primary flex items-center space-x-2">
-                            <span>Password Strength</span>
+                            <span><Tr>Password Strength</Tr></span>
                             <div className={`w-2 h-2 rounded-full ${isPasswordStrong ? 'bg-status-success' : 'bg-status-warning'} animate-pulse`}></div>
                           </p>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                             {Object.entries({
-                              'At least 8 characters': passwordRequirements.length,
-                              'Lowercase letter': passwordRequirements.lowercase,
-                              'Uppercase letter': passwordRequirements.uppercase,
-                              'Number': passwordRequirements.number,
-                              'Special character': passwordRequirements.special
+                              [t('At least 8 characters')]: passwordRequirements.length,
+                              [t('Lowercase letter')]: passwordRequirements.lowercase,
+                              [t('Uppercase letter')]: passwordRequirements.uppercase,
+                              [t('Number')]: passwordRequirements.number,
+                              [t('Special character')]: passwordRequirements.special
                             }).map(([req, met]) => (
                               <div key={req} className={`flex items-center space-x-2 transition-all duration-300 ${met ? 'text-status-success' : 'text-text-secondary'}`}>
                                 <CheckCircle size={12} className={`transition-all duration-300 ${met ? 'text-status-success' : 'text-text-secondary opacity-50'}`} />
@@ -332,12 +332,12 @@ const Signup = () => {
 
                     <div className="relative">
                       <FormInput
-                        label="Confirm Password"
+                        label={t("Confirm Password")}
                         type={showConfirmPassword ? "text" : "password"}
                         value={formData.confirmPassword}
                         onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
                         error={errors.confirmPassword}
-                        placeholder="Confirm your password"
+                        placeholder={t("Confirm your password")}
                         className="h-12 text-sm rounded-lg border-2 focus:border-primary/50 transition-all duration-200 pr-12"
                       />
                       <button
@@ -375,7 +375,7 @@ const Signup = () => {
                     className="w-full h-12 text-base font-semibold bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
                     disabled={!formData.name || !formData.email || !isPasswordStrong || formData.password !== formData.confirmPassword}
                   >
-                    Continue to Farm Information →
+                    <Tr>Continue to Farm Information →</Tr>
                   </Button>
                 </div>
               )}
@@ -385,8 +385,8 @@ const Signup = () => {
               <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-500">
                 <div className="flex items-center justify-between mb-4">
                   <div className="text-center flex-1">
-                    <h3 className="text-xl font-bold text-text-primary mb-1">Farm Information</h3>
-                    <p className="text-text-secondary text-sm">Tell us about your farming operation</p>
+                    <h3 className="text-xl font-bold text-text-primary mb-1"><Tr>Farm Information</Tr></h3>
+                    <p className="text-text-secondary text-sm"><Tr>Tell us about your farming operation</Tr></p>
                   </div>
                 </div>
 
@@ -397,38 +397,38 @@ const Signup = () => {
                     className="text-xs bg-background border border-border text-text-secondary hover:text-text-primary hover:border-primary transition-all duration-200 px-4 py-1.5 rounded-md flex items-center"
                   >
                     <ArrowLeft size={14} className="mr-1" />
-                    Back to Personal Info
+                    <Tr>Back to Personal Info</Tr>
                   </Button>
                 </div>
                 
                 <div className="grid grid-cols-1 gap-4">
                   <FormInput
-                    label="Farm Name"
+                    label={t("Farm Name")}
                     value={formData.farmName}
                     onChange={(e) => handleInputChange('farmName', e.target.value)}
                     error={errors.farmName}
-                    placeholder="Enter your farm name"
+                    placeholder={t("Enter your farm name")}
                     className="h-12 text-sm rounded-lg border-2 focus:border-primary/50 transition-all duration-200"
                   />
 
                   <FormInput
-                    label="Location"
+                    label={t("Location")}
                     value={formData.location}
                     onChange={(e) => handleInputChange('location', e.target.value)}
                     error={errors.location}
-                    placeholder="District, State (e.g., Pune, Maharashtra)"
+                    placeholder={t("District, State (e.g., Pune, Maharashtra)")}
                     className="h-12 text-sm rounded-lg border-2 focus:border-primary/50 transition-all duration-200"
                   />
 
                   <FormInput
-                    label="Total Area (acres)"
+                    label={t("Total Area (acres)")}
                     type="number"
                     step="0.1"
                     min="0"
                     value={formData.totalArea}
                     onChange={(e) => handleInputChange('totalArea', e.target.value)}
                     error={errors.totalArea}
-                    placeholder="Enter total farm area in acres"
+                    placeholder={t("Enter total farm area in acres")}
                     className="h-12 text-sm rounded-lg border-2 focus:border-primary/50 transition-all duration-200"
                   />
                 </div>
@@ -474,11 +474,11 @@ const Signup = () => {
                   {isLoading ? (
                     <div className="flex items-center justify-center space-x-2">
                       <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                      <span className="text-sm">Creating your account...</span>
+                      <span className="text-sm"><Tr>Creating your account...</Tr></span>
                     </div>
                   ) : (
                     <div className="flex items-center justify-center space-x-2">
-                      <span className="text-sm">Create My AgriVision Account</span>
+                      <span className="text-sm"><Tr>Create My AgriVision Account</Tr></span>
                       <CheckCircle size={16} />
                     </div>
                   )}
@@ -492,9 +492,9 @@ const Signup = () => {
           <div className="space-y-3 pt-4 border-t border-border/50 mt-6">
             <div className="text-center">
               <p className="text-text-secondary text-sm">
-                Already have an account?{' '}
+                <Tr>Already have an account?</Tr>{' '}
                 <Link to="/login" className="text-primary hover:text-primary/80 font-semibold underline underline-offset-2 transition-colors duration-200">
-                  Sign in here
+                  <Tr>Sign in here</Tr>
                 </Link>
               </p>
             </div>
@@ -502,7 +502,7 @@ const Signup = () => {
             <div className="text-center">
               <Link to="/" className="inline-flex items-center space-x-1 text-text-secondary hover:text-text-primary text-xs transition-colors duration-200 group">
                 <ArrowLeft size={14} />
-                <span className="group-hover:underline underline-offset-2">Back to Home</span>
+                <span className="group-hover:underline underline-offset-2"><Tr>Back to Home</Tr></span>
               </Link>
             </div>
           </div>

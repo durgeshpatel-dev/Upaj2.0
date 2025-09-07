@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Download, Eye } from 'lucide-react';
 import { predictionAPI } from '../../utils/api';
+import { Tr } from '../ui/SimpleTranslation';
 
 const PastPredictionsTable = ({ predictions: sharedPredictions = [], loading: sharedLoading = false }) => {
   const { isAuthenticated, user } = useAuth();
@@ -37,10 +38,10 @@ const PastPredictionsTable = ({ predictions: sharedPredictions = [], loading: sh
     }
 
     // If conditions not ready, do nothing; the effect depends on `user` so it will re-run when user becomes available
-  }, [sharedPredictions, sharedLoading, isAuthenticated, user]);
+  }, [sharedPredictions, sharedLoading, isAuthenticated, user, fetchUserPredictions]);
 
   // Function to fetch user predictions
-  const fetchUserPredictions = async () => {
+  const fetchUserPredictions = useCallback(async () => {
     setError(null);
     setLoading(true);
 
@@ -65,7 +66,7 @@ const PastPredictionsTable = ({ predictions: sharedPredictions = [], loading: sh
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   const formatDate = (prediction) => {
     try {
@@ -187,15 +188,15 @@ const PastPredictionsTable = ({ predictions: sharedPredictions = [], loading: sh
   return (
     <Card className="border-border bg-background-card">
       <CardHeader>
-        <CardTitle className="text-text-primary text-base">Past Predictions</CardTitle>
+        <CardTitle className="text-text-primary text-base"><Tr>Recent Predictions</Tr></CardTitle>
       </CardHeader>
       <CardContent>
-        {loading && <div className="text-center py-4 text-text-secondary">Loading predictions...</div>}
+        {loading && <div className="text-center py-4 text-text-secondary"><Tr>Loading...</Tr></div>}
         
-        {error && <div className="text-center py-4 text-status-error">Error: {error}</div>}
+        {error && <div className="text-center py-4 text-status-error"><Tr>Error</Tr>: {error}</div>}
         
         {!loading && !error && displayPredictions.length === 0 && (
-          <div className="text-center py-4 text-text-secondary">No predictions available</div>
+          <div className="text-center py-4 text-text-secondary"><Tr>No predictions available</Tr></div>
         )}
         
         {!loading && !error && displayPredictions.length > 0 && (
@@ -203,11 +204,11 @@ const PastPredictionsTable = ({ predictions: sharedPredictions = [], loading: sh
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-border">
-                  <th className="pb-2 text-text-secondary font-medium">Crop</th>
-                  <th className="pb-2 text-text-secondary font-medium">Date</th>
-                  <th className="pb-2 text-text-secondary font-medium">Predicted</th>
-                  <th className="pb-2 text-text-secondary font-medium">Download</th>
-                  <th className="pb-2 text-text-secondary font-medium">View</th>
+                  <th className="pb-2 text-text-secondary font-medium"><Tr>Crop</Tr></th>
+                  <th className="pb-2 text-text-secondary font-medium"><Tr>Date</Tr></th>
+                  <th className="pb-2 text-text-secondary font-medium"><Tr>Predicted</Tr></th>
+                  <th className="pb-2 text-text-secondary font-medium"><Tr>Download</Tr></th>
+                  <th className="pb-2 text-text-secondary font-medium"><Tr>View</Tr></th>
                 </tr>
               </thead>
               <tbody>

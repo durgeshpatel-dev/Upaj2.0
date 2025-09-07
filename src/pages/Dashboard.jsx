@@ -11,6 +11,7 @@ import BackendStatusCard from '../components/ui/BackendStatusCard';
 import Button from '../components/Button';
 import { useAuth } from '../context/AuthContext';
 import { predictionAPI } from '../utils/api';
+import { Tr } from '../components/ui/SimpleTranslation';
 
 const Dashboard = () => {
   const { user, isAuthenticated } = useAuth();
@@ -87,11 +88,13 @@ const Dashboard = () => {
     <div className="min-h-screen bg-background text-text-primary">
       <main className="mx-auto max-w-7xl px-4 py-6">
         <header className="mb-6">
-          <h1 className="text-2xl font-semibold text-text-primary">Dashboard</h1>
+          <h1 className="text-2xl font-semibold text-text-primary"><Tr>Dashboard</Tr></h1>
           <p className="mt-1 text-sm text-text-secondary">
             {isAuthenticated 
-              ? `Welcome back, ${user?.name || 'User'}! Here's your farm's overview.`
-              : 'Welcome to AgriVision Dashboard! This is a demo preview.'
+              ? <>
+                  <Tr>Welcome back</Tr>, {user?.name || 'User'}! <Tr>Here's your farm's overview.</Tr>
+                </>
+              : <Tr>Welcome to AgriVision Dashboard! This is a demo preview.</Tr>
             }
           </p>
         </header>
@@ -100,15 +103,15 @@ const Dashboard = () => {
           <div className="mb-6 p-4 bg-primary/10 border border-primary/20 rounded-lg">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-primary font-medium">Demo Mode</h3>
-                <p className="text-sm text-text-secondary">You're viewing a demo version. Sign up to access full features!</p>
+                <h3 className="text-primary font-medium"><Tr>Demo Mode</Tr></h3>
+                <p className="text-sm text-text-secondary"><Tr>You're viewing a demo version. Sign up to access full features!</Tr></p>
               </div>
               <div className="flex gap-2">
                 <Link to="/login">
-                  <Button variant="outline" size="sm">Login</Button>
+                  <Button variant="outline" size="sm"><Tr>Login</Tr></Button>
                 </Link>
                 <Link to="/signup">
-                  <Button size="sm">Sign Up</Button>
+                  <Button size="sm"><Tr>Sign Up</Tr></Button>
                 </Link>
               </div>
             </div>
@@ -116,7 +119,7 @@ const Dashboard = () => {
         )}
 
         <AlertBanner>
-          Heads up! A frost is predicted for tonight. Consider taking preventive measures for sensitive crops.
+          <Tr>Heads up! A frost is predicted for tonight. Consider taking preventive measures for sensitive crops.</Tr>
         </AlertBanner>
 
         

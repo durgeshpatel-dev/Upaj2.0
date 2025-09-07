@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react'
 import * as d3 from 'd3';
 import useAuth from '../../hooks/useAuth';
 import { predictionAPI } from '../../utils/api';
+import { Tr } from '../ui/SimpleTranslation';
 
 // Fallback demo data (used only if fetching fails)
 const FALLBACK_YIELD_DATA = [
@@ -56,7 +57,7 @@ const mapPredictionsToChart = (predictions = []) => {
       }
 
       // Average temperature: prefer weather.main.temp, then weather.temperature, then mlInput Avg_Temp_C
-      const avgTemp = p.weather?.main?.temp ?? p.weather?.temperature ?? Number(p.externalData?.mlInput?.Avg_Temp_C) ?? p.avgTemp ?? null;
+      const avgTemp = p.weather?.main?.temp ?? p.weather?.temperature ?? (p.externalData?.mlInput?.Avg_Temp_C != null ? Number(p.externalData.mlInput.Avg_Temp_C) : p.avgTemp);
 
       // Rainfall: prefer mlInput Avg_Rainfall_mm then weather.rainfall
       const rainfall = (p.externalData?.mlInput?.Avg_Rainfall_mm != null && !Number.isNaN(Number(p.externalData.mlInput.Avg_Rainfall_mm)))
@@ -82,14 +83,13 @@ const mapPredictionsToChart = (predictions = []) => {
 
 const YieldTrendChart = () => {
   const svgRef = useRef();
-  const tooltipRef = useRef();
   const { user, isLoading: authLoading } = useAuth();
   const [hoveredData, setHoveredData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState(FALLBACK_YIELD_DATA);
   const [error, setError] = useState(null);
   const [visualMode, setVisualMode] = useState('line'); // 'line' | 'bar'
-  const [extrapolate, setExtrapolate] = useState(false);
+  const [extrapolate] = useState(false);
   const [xField, setXField] = useState('year');
   const [yField, setYField] = useState('yield');
 
@@ -210,11 +210,11 @@ const YieldTrendChart = () => {
 
   // available fields to pick
   const availableFields = useMemo(() => ([
-    { key: 'year', label: 'Year' },
-    { key: 'cropType', label: 'Crop' },
-    { key: 'rainfall', label: 'Rainfall (mm)' },
-    { key: 'avgTemp', label: 'Avg Temp (°C)' },
-    { key: 'yield', label: 'Yield (t/ha)' }
+    { key: 'year', label: <Tr>Year</Tr> },
+    { key: 'cropType', label: <Tr>Crop</Tr> },
+    { key: 'rainfall', label: <Tr>Rainfall (mm)</Tr> },
+    { key: 'avgTemp', label: <Tr>Avg Temp (°C)</Tr> },
+    { key: 'yield', label: <Tr>Yield (t/ha)</Tr> }
   ]), []);
 
   useEffect(() => {
@@ -483,20 +483,20 @@ const YieldTrendChart = () => {
       }
     };
 
-  }, [drawData, visualMode]); // Re-draw chart when data or mode changes
+  }, [drawData, visualMode, handleMouseMove, handleMouseOut, handleMouseOver, xField, yField]); // Re-draw chart when data or mode changes
 
   return (
     <div className="bg-background-card p-6 rounded-lg border border-border">
       <div className="mb-3">
         <div className="flex items-start justify-between">
           <div className="min-w-0">
-            <h3 className="text-lg font-semibold text-text-primary truncate">Yield Trend Analysis</h3>
+            <h3 className="text-lg font-semibold text-text-primary truncate"><Tr>Yield Trend Analysis</Tr></h3>
             <div className="mt-1 text-text-secondary text-xs truncate">
               {isLoading
-                ? 'Loading yield data...'
+                ? <Tr>Loading yield data...</Tr>
                 : hoveredData
                   ? `${hoveredData[xField] ?? hoveredData.year}: ${hoveredData[yField] ?? '-'} ${yField === 'yield' ? 't/ha' : ''}`
-                  : (error ? `Using fallback data — ${error}` : 'Historical Yield Data - hover points for details')
+                  : (error ? `Using fallback data — ${error}` : <Tr>Historical Yield Data - hover points for details</Tr>)
               }
             </div>
             <div className="mt-2 text-text-secondary text-xs flex items-center space-x-3">
@@ -507,14 +507,14 @@ const YieldTrendChart = () => {
                     <span className="text-primary text-xs font-medium">
                       {data.length > 1 ? `${((data[data.length-1][yField] - data[0][yField]) / Math.max(1, data[0][yField]) * 100).toFixed(1)}%` : '+0%'}
                     </span>
-                    <span className="text-text-secondary">trend</span>
+                    <span className="text-text-secondary"><Tr>trend</Tr></span>
                   </div>
-                  <div>Avg: {(data.reduce((sum, d) => sum + Number(d[yField] || 0), 0) / Math.max(1, data.length)).toFixed(1)} {yField === 'yield' ? 't/ha' : ''}</div>
+                  <div><Tr>Avg</Tr>: {(data.reduce((sum, d) => sum + Number(d[yField] || 0), 0) / Math.max(1, data.length)).toFixed(1)} {yField === 'yield' ? 't/ha' : ''}</div>
                 </>
               ) : (
                 <div className="flex items-center space-x-2">
                   <div className="w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-                  <span className="text-primary text-xs">Loading...</span>
+                  <span className="text-primary text-xs"><Tr>Loading...</Tr></span>
                 </div>
               )}
             </div>
@@ -528,8 +528,8 @@ const YieldTrendChart = () => {
               title="Visualization mode"
               aria-label="Visualization mode"
             >
-              <option value="line">Line</option>
-              <option value="bar">Bar</option>
+              <option value="line"><Tr>Line</Tr></option>
+              <option value="bar"><Tr>Bar</Tr></option>
             </select>
 
             <select
