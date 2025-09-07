@@ -5,9 +5,12 @@ import Button from '../Button'
 import { useAuth } from '../../context/AuthContext'
 import { userProfileAPI } from '../../utils/api'
 import { Loader2, AlertCircle, CheckCircle } from 'lucide-react'
+import { Tr } from '../ui/SimpleTranslation'
+import { useUnifiedTranslation } from '../../hooks/useUnifiedTranslation'
 
 const FarmDetailsForm = () => {
   const { user, updateUser } = useAuth()
+  const { t } = useUnifiedTranslation()
   const [formData, setFormData] = useState({
     farmName: '',
     location: '',
@@ -81,7 +84,7 @@ const FarmDetailsForm = () => {
   return (
     <Card className="border-border bg-background-card">
       <CardHeader>
-        <CardTitle className="text-text-primary text-lg">Farm Details</CardTitle>
+        <CardTitle className="text-text-primary text-lg"><Tr>Farm Details</Tr></CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Error Message */}
@@ -99,7 +102,7 @@ const FarmDetailsForm = () => {
           <div className="bg-green-50 border border-green-200 rounded-lg p-3">
             <div className="flex items-center">
               <CheckCircle className="w-4 h-4 text-green-600 mr-2" />
-              <p className="text-green-700 text-sm">Farm details updated successfully!</p>
+              <p className="text-green-700 text-sm"><Tr>Farm details updated successfully!</Tr></p>
             </div>
           </div>
         )}
@@ -107,19 +110,19 @@ const FarmDetailsForm = () => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
             <FormInput
-              label="Farm Name"
+              label={t("Farm Name")}
               value={formData.farmName}
               onChange={(e) => handleInputChange('farmName', e.target.value)}
             />
             <FormInput
-              label="Location"
+              label={t("Location")}
               value={formData.location}
               onChange={(e) => handleInputChange('location', e.target.value)}
             />
           </div>
           <div className="grid gap-2 md:max-w-xs">
             <FormInput
-              label="Total Area (acres)"
+              label={t("Total Area (acres)")}
               type="number"
               value={formData.totalArea}
               onChange={(e) => handleInputChange('totalArea', e.target.value)}
@@ -134,7 +137,7 @@ const FarmDetailsForm = () => {
               className="flex items-center space-x-2"
             >
               {isLoading && <Loader2 size={16} className="animate-spin" />}
-              <span>{isLoading ? 'Saving...' : 'Save Changes'}</span>
+              <span>{isLoading ? <Tr>Saving...</Tr> : <Tr>Save Changes</Tr>}</span>
             </Button>
           </div>
         </form>

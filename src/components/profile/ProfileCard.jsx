@@ -2,6 +2,7 @@ import React from 'react'
 import { Card, CardContent } from '../ui/Card'
 import { User } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
+import { Tr } from '../ui/SimpleTranslation'
 
 const ProfileCard = () => {
   const { user } = useAuth()
@@ -31,9 +32,9 @@ const ProfileCard = () => {
             />
           </div>
           <h3 className="mt-4 text-text-primary font-semibold text-lg">{user?.name || 'User'}</h3>
-          <p className="text-sm text-text-secondary">Farmer</p>
+          <p className="text-sm text-text-secondary"><Tr>Farmer</Tr></p>
           <p className="text-xs text-text-secondary mt-1">
-            Joined in {formatJoinDate(user?.createdAt || user?.joinedDate)}
+            <Tr>Joined in</Tr> {formatJoinDate(user?.createdAt || user?.joinedDate)}
           </p>
         </div>
       </CardContent>

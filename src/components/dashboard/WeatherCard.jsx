@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { locationAPI } from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
+import { Tr } from '../ui/SimpleTranslation';
 
 const WeatherCard = () => {
   const { user, isAuthenticated, backendAvailable } = useAuth();
@@ -87,19 +88,19 @@ const WeatherCard = () => {
     };
 
     fetchWeatherData();
-  }, [user, backendAvailable]);
+  }, [user, backendAvailable, isAuthenticated]);
 
   return (
     <div className="rounded-lg border border-border bg-background-card p-4">
       <div className="flex items-center justify-between">
         <div className="flex-1">
-          <p className="text-xs text-text-secondary">Weather Update</p>
+          <p className="text-xs text-text-secondary"><Tr>Weather Information</Tr></p>
           <p className="mt-2 text-lg font-medium text-text-primary">
-            {loading ? 'Loading...' : show ? `${show.summary || show.description || ''}, ${((show.tempC ?? show.temp) || '')}°C` : 'N/A'}
+            {loading ? <Tr>Loading...</Tr> : show ? `${show.summary || show.description || ''}, ${((show.tempC ?? show.temp) || '')}°C` : 'N/A'}
           </p>
           <div className="mt-1 grid grid-cols-2 gap-2 text-xs text-text-secondary">
-            <div>Humidity: {loading ? '...' : (show?.humidity ?? demo.humidity)}</div>
-            <div>Wind: {loading ? '...' : ((show?.windSpeed ?? show?.wind) ?? demo.wind)}</div>
+            <div><Tr>Humidity</Tr>: {loading ? '...' : (show?.humidity ?? demo.humidity)}</div>
+            <div><Tr>Wind</Tr>: {loading ? '...' : ((show?.windSpeed ?? show?.wind) ?? demo.wind)}</div>
           </div>
           {error && <div className="text-status-error text-xs mt-1">{error}</div>}
         </div>

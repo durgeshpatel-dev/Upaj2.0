@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Brain } from 'lucide-react';
 import PredictionForm from '../components/prediction/PredictionForm';
 import PredictionOutput from '../components/prediction/PredictionOutput';
 import YieldTrendChart from '../components/prediction/YieldTrendChart';
 import { useAuth } from '../context/AuthContext';
 import { predictionAPI } from '../utils/api';
+import { Tr } from '../components/ui/SimpleTranslation';
 
 const Prediction = () => {
   const { user, backendAvailable } = useAuth();
@@ -12,25 +13,25 @@ const Prediction = () => {
   const [prediction, setPrediction] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [pastPredictions, setPastPredictions] = useState([]);
 
   // Load user's past predictions on component mount
-  useEffect(() => {
-    if (user && backendAvailable) {
-      loadPastPredictions();
-    }
-  }, [user, backendAvailable]);
-
-  const loadPastPredictions = async () => {
+  const loadPastPredictions = useCallback(async () => {
     try {
       const result = await predictionAPI.getUserPredictions(user.id || user._id);
       if (result.success) {
-        setPastPredictions(result.data.predictions || []);
+        // Past predictions loaded but not currently displayed in UI
+        console.log('Past predictions loaded:', result.data.predictions || []);
       }
     } catch (error) {
       console.error('Failed to load past predictions:', error);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (user && backendAvailable) {
+      loadPastPredictions();
+    }
+  }, [user, backendAvailable, loadPastPredictions]);
 
   const handlePredictionSubmit = async (formData) => {
     setIsLoading(true);
@@ -125,33 +126,33 @@ const Prediction = () => {
                 onClick={clearPrediction}
                 className="w-full bg-border hover:bg-text-secondary text-text-primary text-sm font-medium px-3 py-2 rounded transition-colors"
               >
-                Clear Prediction
+                <Tr>Clear Prediction</Tr>
               </button>
             </div>
             
             {/* How it Works Section */}
             <div className="bg-background-card p-6 rounded-lg border border-border">
-              <h3 className="text-lg font-semibold text-text-primary mb-4">How It Works</h3>
+              <h3 className="text-lg font-semibold text-text-primary mb-4"><Tr>How It Works</Tr></h3>
               <div className="space-y-4">
                 <div className="flex items-start space-x-3">
                   <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center text-primary-foreground text-sm font-bold">1</div>
                   <div>
-                    <div className="text-sm font-medium text-text-primary">Enter Farm Details</div>
-                    <div className="text-xs text-text-secondary">Provide crop type, location, and soil information</div>
+                    <div className="text-sm font-medium text-text-primary"><Tr>Enter Farm Details</Tr></div>
+                    <div className="text-xs text-text-secondary"><Tr>Provide crop type, location, and soil information</Tr></div>
                   </div>
                 </div>
                 <div className="flex items-start space-x-3">
                   <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center text-primary-foreground text-sm font-bold">2</div>
                   <div>
-                    <div className="text-sm font-medium text-text-primary">AI Analysis</div>
-                    <div className="text-xs text-text-secondary">Our AI analyzes weather, soil, and historical data</div>
+                    <div className="text-sm font-medium text-text-primary"><Tr>AI Analysis</Tr></div>
+                    <div className="text-xs text-text-secondary"><Tr>Our AI analyzes weather, soil, and historical data</Tr></div>
                   </div>
                 </div>
                 <div className="flex items-start space-x-3">
                   <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center text-primary-foreground text-sm font-bold">3</div>
                   <div>
-                    <div className="text-sm font-medium text-text-primary">Get Predictions</div>
-                    <div className="text-xs text-text-secondary">Receive detailed yield forecasts and recommendations</div>
+                    <div className="text-sm font-medium text-text-primary"><Tr>Get Predictions</Tr></div>
+                    <div className="text-xs text-text-secondary"><Tr>Receive detailed yield forecasts and recommendations</Tr></div>
                   </div>
                 </div>
               </div>
@@ -167,8 +168,8 @@ const Prediction = () => {
                   <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
                     <Brain size={32} className="text-primary animate-pulse" />
                   </div>
-                  <h3 className="text-lg font-semibold text-text-primary mb-2">Analyzing Your Data...</h3>
-                  <p className="text-text-secondary text-sm">Our AI is processing weather patterns, soil conditions, and historical data to generate your prediction.</p>
+                  <h3 className="text-lg font-semibold text-text-primary mb-2"><Tr>Analyzing Your Data...</Tr></h3>
+                  <p className="text-text-secondary text-sm"><Tr>Our AI is processing weather patterns, soil conditions, and historical data to generate your prediction.</Tr></p>
                   <div className="mt-4 w-64 mx-auto bg-border rounded-full h-2">
                     <div className="bg-primary h-2 rounded-full animate-pulse" style={{ width: '60%' }}></div>
                   </div>

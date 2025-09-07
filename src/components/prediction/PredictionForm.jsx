@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Loader2, MapPin, Thermometer, CloudRain, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { predictionAPI } from '../../utils/api';
+import { Tr } from '../ui/SimpleTranslation';
+import { useUnifiedTranslation } from '../../hooks/useUnifiedTranslation';
 
 const PredictionForm = ({ onSubmit, isLoading = false, error = null }) => {
   const { user } = useAuth();
+  const { t } = useUnifiedTranslation();
   const [formData, setFormData] = useState({
     cropType: '',
     soilType: '',
@@ -65,65 +67,6 @@ const PredictionForm = ({ onSubmit, isLoading = false, error = null }) => {
     }
   }, [user]);
 
-  // Test function to hit API directly
-  const testPredictionAPI = async () => {
-    try {
-      console.log('🔧 Testing prediction API directly...');
-      
-      // Test data with fetchedFromAPIs = true
-      const testDataAutoFetch = {
-        cropType: 'rice',
-        farmSize: 2.5,
-        soilType: null, // null when auto-fetching
-        rainfall: null, // null when auto-fetching
-        temperature: null, // null when auto-fetching
-        humidity: 70,
-        season: 'kharif',
-        location: {
-          state: 'Maharashtra',
-          district: 'Pune'
-        },
-        fetchedFromAPIs: true, // THIS IS THE KEY FLAG
-        autoFetchData: true,
-        fetchFromApis: true // Alternative field name
-      };
-      
-      // Test data with fetchedFromAPIs = false
-      const testDataManual = {
-        cropType: 'wheat',
-        farmSize: 1.5,
-        soilType: 'loam',
-        rainfall: 850,
-        temperature: 22,
-        humidity: 65,
-        season: 'rabi',
-        location: {
-          state: 'Gujarat',
-          district: 'Baroda'
-        },
-        fetchedFromAPIs: false, // Manual data entry
-        autoFetchData: false,
-        fetchFromApis: false
-      };
-      
-      console.log('📤 Test data (AUTO-FETCH):', testDataAutoFetch);
-      console.log('📤 Test data (MANUAL):', testDataManual);
-      
-      // Test auto-fetch scenario
-      console.log('🤖 Testing AUTO-FETCH scenario...');
-      const resultAutoFetch = await predictionAPI.createPrediction(testDataAutoFetch);
-      console.log('📥 Auto-fetch Result:', resultAutoFetch);
-      
-      // Test manual scenario
-      console.log('✋ Testing MANUAL scenario...');
-      const resultManual = await predictionAPI.createPrediction(testDataManual);
-      console.log('� Manual Result:', resultManual);
-      
-    } catch (error) {
-      console.error('❌ Direct API Test Error:', error);
-    }
-  };
-
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
 
@@ -165,22 +108,22 @@ const PredictionForm = ({ onSubmit, isLoading = false, error = null }) => {
     
     // Basic validation
     if (!formData.cropType) {
-      alert('Please select a crop type');
+      alert(t('Please select a crop type'));
       return;
     }
     
     if (!formData.location.state || !formData.location.district) {
-      alert('Please enter both state and district');
+      alert(t('Please enter both state and district'));
       return;
     }
     
     if (!formData.date) {
-      alert('Please select a date');
+      alert(t('Please select a date'));
       return;
     }
     
     if (!formData.landInHectares || parseFloat(formData.landInHectares) <= 0) {
-      alert('Please enter a valid land area in hectares');
+      alert(t('Please enter a valid land area in hectares'));
       return;
     }
 
@@ -215,12 +158,11 @@ const PredictionForm = ({ onSubmit, isLoading = false, error = null }) => {
 
   return (
     <div className="bg-background-card p-6 rounded-lg border border-border">
-      <h2 className="text-2xl font-bold text-text-primary mb-6">Crop Yield Prediction</h2>
+      <h2 className="text-2xl font-bold text-text-primary mb-6"><Tr>Crop Yield Prediction</Tr></h2>
       
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-6">
         <p className="text-blue-700 text-sm">
-          ℹ️ Weather and soil data can be automatically fetched by the system based on your location, 
-          or you can provide your own data for more accurate predictions.
+          ℹ️ <Tr>Weather and soil data can be automatically fetched by the system based on your location, or you can provide your own data for more accurate predictions.</Tr>
         </p>
       </div>
 
@@ -238,7 +180,7 @@ const PredictionForm = ({ onSubmit, isLoading = false, error = null }) => {
         {/* Crop Type */}
         <div>
           <label className="block text-text-secondary text-sm font-medium mb-2">
-            Crop Type *
+            <Tr>Crop Type</Tr> *
           </label>
           <select
             name="cropType"
@@ -246,22 +188,22 @@ const PredictionForm = ({ onSubmit, isLoading = false, error = null }) => {
             onChange={handleInputChange}
             className="w-full bg-background border border-border rounded-lg px-4 py-3 text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
           >
-            <option value="">Select Crop</option>
-            <option value="rice">Rice</option>
-            <option value="wheat">Wheat</option>
-            <option value="corn">Corn</option>
-            <option value="soybean">Soybean</option>
-            <option value="cotton">Cotton</option>
-            <option value="sugarcane">Sugarcane</option>
-            <option value="potato">Potato</option>
-            <option value="tomato">Tomato</option>
+            <option value=""><Tr>Select Crop</Tr></option>
+            <option value="rice"><Tr>Rice</Tr></option>
+            <option value="wheat"><Tr>Wheat</Tr></option>
+            <option value="corn"><Tr>Corn</Tr></option>
+            <option value="soybean"><Tr>Soybean</Tr></option>
+            <option value="cotton"><Tr>Cotton</Tr></option>
+            <option value="sugarcane"><Tr>Sugarcane</Tr></option>
+            <option value="potato"><Tr>Potato</Tr></option>
+            <option value="tomato"><Tr>Tomato</Tr></option>
           </select>
         </div>
 
         {/* Date */}
         <div>
           <label className="block text-text-secondary text-sm font-medium mb-2">
-            Date *
+            <Tr>Date</Tr> *
           </label>
           <input
             type="date"
@@ -277,7 +219,7 @@ const PredictionForm = ({ onSubmit, isLoading = false, error = null }) => {
           <div>
             <label className="block text-text-secondary text-sm font-medium mb-2">
               <MapPin className="inline w-4 h-4 mr-1" />
-              State *
+              <Tr>State</Tr> *
             </label>
             <input
               type="text"
@@ -290,7 +232,7 @@ const PredictionForm = ({ onSubmit, isLoading = false, error = null }) => {
           </div>
           <div>
             <label className="block text-text-secondary text-sm font-medium mb-2">
-              District *
+              <Tr>District</Tr> *
             </label>
             <input
               type="text"
@@ -306,14 +248,14 @@ const PredictionForm = ({ onSubmit, isLoading = false, error = null }) => {
         {/* Land Area */}
         <div>
           <label className="block text-text-secondary text-sm font-medium mb-2">
-            Land Area (Hectares) *
+            <Tr>Land Area (Hectares) *</Tr>
           </label>
           <input
             type="number"
             name="landInHectares"
             value={formData.landInHectares}
             onChange={handleInputChange}
-            placeholder="Enter area in hectares"
+            placeholder={t("Enter area in hectares")}
             min="0.1"
             step="0.1"
             className="w-full bg-background border border-border rounded-lg px-4 py-3 text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
@@ -323,14 +265,14 @@ const PredictionForm = ({ onSubmit, isLoading = false, error = null }) => {
         <div className="flex items-center mb-6">
           <label className="inline-flex items-center">
             <input type="checkbox" name="autoFetchData" checked={formData.autoFetchData} onChange={(e) => setFormData(prev => ({ ...prev, autoFetchData: e.target.checked, fetchedFromAPIs: e.target.checked, ...(e.target.checked && { soilType: '', weather: { temperature: '', rainfall: '' } }) }))} className="form-checkbox" />
-            <span className="ml-2">Auto-fetch Weather and Soil Data</span>
+            <span className="ml-2"><Tr>Auto-fetch Weather and Soil Data</Tr></span>
           </label>
         </div>
 
         {/* Soil Type */}
         <div>
           <label className="block text-text-secondary text-sm font-medium mb-2">
-            Soil Type (Optional - can be auto-detected)
+            <Tr>Soil Type (Optional - can be auto-detected)</Tr>
           </label>
           <select
             name="soilType"
@@ -339,26 +281,26 @@ const PredictionForm = ({ onSubmit, isLoading = false, error = null }) => {
             disabled={formData.autoFetchData}
             className="w-full bg-background border border-border rounded-lg px-4 py-3 text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
           >
-            <option value="">Select Soil Type</option>
-            <option value="clay">Clay</option>
-            <option value="loam">Loam</option>
-            <option value="sandy">Sandy</option>
-            <option value="silt">Silt</option>
-            <option value="black">Black</option>
-            <option value="red">Red</option>
-            <option value="alluvial">Alluvial</option>
+            <option value=""><Tr>Select Soil Type</Tr></option>
+            <option value="clay"><Tr>Clay</Tr></option>
+            <option value="loam"><Tr>Loam</Tr></option>
+            <option value="sandy"><Tr>Sandy</Tr></option>
+            <option value="silt"><Tr>Silt</Tr></option>
+            <option value="black"><Tr>Black</Tr></option>
+            <option value="red"><Tr>Red</Tr></option>
+            <option value="alluvial"><Tr>Alluvial</Tr></option>
           </select>
         </div>
 
         {/* Weather Data */}
         <div>
-          <h3 className="text-text-primary font-medium mb-3">Weather Information</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <h3 className="text-text-primary font-medium mb-4"><Tr>Weather Information</Tr></h3>
+          <div className="space-y-4 xl:space-y-0 xl:grid xl:grid-cols-2 xl:gap-6">
             {/* Temperature */}
-            <div>
-              <label className="block text-text-secondary text-sm font-medium mb-2">
-                <Thermometer className="inline w-4 h-4 mr-1" />
-                Temperature (°C) (Optional - can be auto-fetched)
+            <div className="w-full">
+              <label className="block text-text-secondary text-sm font-medium mb-2 leading-relaxed break-words">
+                <Thermometer className="inline w-4 h-4 mr-1 flex-shrink-0" />
+                <span className="break-words"><Tr>Temperature (°C) (Optional - can be auto-fetched)</Tr></span>
               </label>
               <input
                 type="number"
@@ -369,15 +311,21 @@ const PredictionForm = ({ onSubmit, isLoading = false, error = null }) => {
                 min="-10"
                 max="50"
                 disabled={formData.autoFetchData}
+                title="Optional - can be auto-fetched if enabled"
                 className="w-full bg-background border border-border rounded-lg px-4 py-3 text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               />
+              {!formData.autoFetchData && (
+                <p className="text-xs text-text-secondary mt-1 opacity-75">
+                  <Tr>Optional - leave empty for auto-fetch</Tr>
+                </p>
+              )}
             </div>
 
             {/* Rainfall */}
-            <div>
-              <label className="block text-text-secondary text-sm font-medium mb-2">
-                <CloudRain className="inline w-4 h-4 mr-1" />
-                Rainfall (mm) (Optional - can be auto-fetched)
+            <div className="w-full">
+              <label className="block text-text-secondary text-sm font-medium mb-2 leading-relaxed break-words">
+                <CloudRain className="inline w-4 h-4 mr-1 flex-shrink-0" />
+                <span className="break-words"><Tr>Rainfall (mm) (Optional - can be auto-fetched)</Tr></span>
               </label>
               <input
                 type="number"
@@ -387,8 +335,14 @@ const PredictionForm = ({ onSubmit, isLoading = false, error = null }) => {
                 placeholder="e.g., 750"
                 min="0"
                 disabled={formData.autoFetchData}
+                title="Optional - can be auto-fetched if enabled"
                 className="w-full bg-background border border-border rounded-lg px-4 py-3 text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               />
+              {!formData.autoFetchData && (
+                <p className="text-xs text-text-secondary mt-1 opacity-75">
+                  <Tr>Optional - leave empty for auto-fetch</Tr>
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -404,7 +358,7 @@ const PredictionForm = ({ onSubmit, isLoading = false, error = null }) => {
           }`}
         >
           {isLoading && <Loader2 size={20} className="animate-spin" />}
-          <span>{isLoading ? 'Analyzing...' : 'Predict Yield'}</span>
+          <span>{isLoading ? <Tr>Analyzing...</Tr> : <Tr>Predict Yield</Tr>}</span>
         </button>
 
         {/* Test API Button */}

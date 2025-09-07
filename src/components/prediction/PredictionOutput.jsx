@@ -1,16 +1,17 @@
 import React from 'react';
 import { TrendingUp, Leaf, AlertCircle, CheckCircle, Zap, BarChart, Thermometer, Droplet } from 'lucide-react';
+import { Tr } from '../ui/SimpleTranslation';
 
 const StatCard = ({ icon, label, value, unit, colorClass = 'text-primary' }) => (
         <div className="rounded-lg overflow-hidden">
             <div className="p-4 bg-[#0f1a17] flex items-center justify-between space-x-4">
                 <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 rounded-full bg-[#12221d] flex items-center justify-center text-[#50FF9F]">
+                    <div className={`w-10 h-10 rounded-full bg-[#12221d] flex items-center justify-center ${colorClass}`}>
                         {icon}
                     </div>
                     <div>
                         <div className="text-text-secondary text-xs font-medium">{label}</div>
-                        <div className="text-lg font-bold text-[#50FF9F]">
+                        <div className={`text-lg font-bold ${colorClass}`}>
                             {value} <span className="text-sm font-normal text-text-secondary">{unit}</span>
                         </div>
                     </div>
@@ -67,7 +68,9 @@ const InsightCard = ({ text }) => {
                 </div>
                 <p className="text-sm text-text-secondary leading-relaxed tracking-wide">{content}</p>
                 <div className="mt-2">
-                    <span className="inline-block text-xs bg-[#0f2b22] text-[#50FF9F] px-2 py-1 rounded font-medium">Impact: Higher yield potential</span>
+                    <span className="inline-block text-xs bg-[#0f2b22] text-[#50FF9F] px-2 py-1 rounded font-medium">
+                        <Tr>Impact</Tr>: <Tr>Higher yield potential</Tr>
+                    </span>
                 </div>
             </div>
         </div>
@@ -81,13 +84,13 @@ const PredictionOutput = ({ prediction }) => {
     if (!prediction) {
         return (
             <div className="bg-background-card p-4 rounded-lg border border-border">
-                <h3 className="text-lg font-bold text-text-primary mb-3">Prediction Output</h3>
+                <h3 className="text-lg font-bold text-text-primary mb-3"><Tr>Prediction Output</Tr></h3>
                 <div className="text-center py-6">
                     <div className="w-16 h-16 bg-border rounded-full flex items-center justify-center mx-auto mb-3">
                         <TrendingUp size={24} className="text-text-secondary" />
                     </div>
-                    <p className="text-text-secondary text-base mb-1">No Prediction Yet</p>
-                    <p className="text-text-secondary text-xs">Fill out the form to see results</p>
+                    <p className="text-text-secondary text-base mb-1"><Tr>No Prediction Yet</Tr></p>
+                    <p className="text-text-secondary text-xs"><Tr>Fill out the form to see results</Tr></p>
                 </div>
             </div>
         );
@@ -101,15 +104,14 @@ const PredictionOutput = ({ prediction }) => {
     if (!predData || !input) {
         return (
             <div className="bg-background-card p-4 rounded-lg border border-border">
-                <h3 className="text-lg font-bold text-text-primary mb-3">Prediction Output</h3>
+                <h3 className="text-lg font-bold text-text-primary mb-3"><Tr>Prediction Output</Tr></h3>
                 <div className="text-center py-6">
-                    <p className="text-status-error text-base mb-1">Error loading prediction data</p>
-                    <p className="text-text-secondary text-xs">Please try again</p>
+                    <p className="text-status-error text-base mb-1"><Tr>Error loading prediction data</Tr></p>
+                    <p className="text-text-secondary text-xs"><Tr>Please try again</Tr></p>
                 </div>
             </div>
         );
     }
-    const confidence = 90 || 'Unknown';
     const landArea = input.landArea || input.farmSize || 1;
     const yieldPerHectare = predData.yield_kg_per_hectare || predData.yield_per_hectare || predData.yield_tons || 0;
     const totalYieldKg = predData.yield_kg || (yieldPerHectare * landArea);
@@ -130,25 +132,24 @@ const PredictionOutput = ({ prediction }) => {
     };
 
     // Default confidence score to '90+' 
-    const rawScore = Number(predData.confidence_score || 90);
     const displayedScore = '90+';
 
     return (
         <div className="space-y-6">
             {/* Main Prediction Card */}
             <div className="bg-background-card p-6 rounded-lg border border-border">
-                <h3 className="text-2xl font-bold text-text-primary mb-4">Prediction Result</h3>
+                <h3 className="text-2xl font-bold text-text-primary mb-4"><Tr>Prediction Result</Tr></h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     <StatCard
                         icon={<TrendingUp size={20} />}
-                        label="Yield per Hectare"
+                        label={<Tr>Yield per Hectare</Tr>}
                         value={yieldPerHectareTons}
                         unit="tons"
                     />
                     <StatCard
                         icon={<Leaf size={20} />}
-                        label="Total Estimated Yield"
+                        label={<Tr>Total Estimated Yield</Tr>}
                         value={totalYieldTons}
                         unit={`tons for ${landArea} ha`}
                         colorClass="text-status-success"
@@ -158,14 +159,14 @@ const PredictionOutput = ({ prediction }) => {
                 <div className="bg-[#121c19] p-4 rounded-lg border border-[#22312d] flex justify-between items-center">
                     <div className="flex items-center space-x-2">
                         <CheckCircle className={`w-5 h-5 color-green`} />
-                        <span className="text-sm font-medium text-text-primary">Confidence Level:</span>
+                        <span className="text-sm font-medium text-text-primary"><Tr>Confidence Level</Tr>:</span>
                     </div>
                     <div className="text-right">
                         <div className={`font-bold text-lg ${getConfidenceColor(confidenceLevel)}`}>
                             {confidenceLevel}
                         </div>
                         <div className="text-xs text-text-secondary">
-                            Score: {displayedScore}
+                            <Tr>Score</Tr>: {displayedScore}
                         </div>
                     </div>
                 </div>
@@ -176,10 +177,10 @@ const PredictionOutput = ({ prediction }) => {
                 <div className="bg-background-card p-6 rounded-lg border border-border">
                     <div className="flex items-center space-x-3 mb-6">
                         <Zap size={20} className="text-primary" />
-                        <h4 className="text-xl font-bold text-text-primary">🚀 Yield Optimization Recommendations</h4>
+                        <h4 className="text-xl font-bold text-text-primary">🚀 <Tr>Yield Optimization Recommendations</Tr></h4>
                     </div>
                     <div className="text-sm text-text-secondary mb-4 bg-background rounded-lg p-3 border-l-4 border-primary/20">
-                        <strong>💡 Pro Tip:</strong> Implementing these optimizations could potentially increase your yield by 15-30% compared to current practices.
+                        <strong>💡 <Tr>Pro Tip</Tr>:</strong> <Tr>Implementing these optimizations could potentially increase your yield by 15-30% compared to current practices.</Tr>
                     </div>
                     <div className="space-y-4">
                         {insights.map((insight, index) => (

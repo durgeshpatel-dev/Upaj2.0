@@ -150,10 +150,12 @@ const Navbar = () => {
 
         {/* Right side icons */}
         <div className="flex items-center space-x-4">
-          {/* Language selector */}
-          <div className="relative">
-            <SimpleLanguageSelector />
-          </div>
+          {/* Language selector - only show on home page */}
+          {isActive('/') && (
+            <div className="relative">
+              <SimpleLanguageSelector />
+            </div>
+          )}
 
           {/* Authentication buttons for home page */}
           {isActive('/') && !isAuthenticated && (

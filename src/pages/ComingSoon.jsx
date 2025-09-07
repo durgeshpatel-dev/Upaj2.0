@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Button from '../components/Button'
+import { Tr } from '../components/ui/SimpleTranslation'
 
 const ComingSoon = () => {
   const navigate = useNavigate()
@@ -23,11 +24,11 @@ const ComingSoon = () => {
       <div className="max-w-2xl w-full text-center">
         <div className="mb-6 inline-flex items-center space-x-3">
           <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center text-primary font-bold">🚧</div>
-          <h1 className="text-3xl font-bold">Coming Soon</h1>
+          <h1 className="text-3xl font-bold"><Tr>Coming Soon</Tr></h1>
         </div>
 
         <p className="text-text-secondary mb-6">
-          We're working on this feature and will be releasing it soon. Leave your email and we'll notify you when it's live.
+          <Tr>We're working on this feature and will be releasing it soon. Leave your email and we'll notify you when it's live.</Tr>
         </p>
 
         {!subscribed ? (
@@ -39,15 +40,15 @@ const ComingSoon = () => {
               placeholder="you@domain.com"
               className="px-4 py-2 rounded border border-border bg-background-card text-text-primary w-full sm:w-auto"
             />
-            <Button type="submit" className="px-4 py-2">Notify Me</Button>
+            <Button type="submit" className="px-4 py-2"><Tr>Notify Me</Tr></Button>
           </form>
         ) : (
-          <div className="mb-6 text-status-success">Thanks — we'll let you know when it's ready.</div>
+          <div className="mb-6 text-status-success"><Tr>Thanks — we'll let you know when it's ready.</Tr></div>
         )}
 
         <div className="flex items-center justify-center space-x-3">
-          <Button variant="outline" onClick={() => navigate(-1)}>Go Back</Button>
-          <Button onClick={() => navigate('/dashboard')}>Go to Dashboard</Button>
+          <Button variant="outline" onClick={() => navigate(-1)}><Tr>Go Back</Tr></Button>
+          <Button onClick={() => navigate('/dashboard')}><Tr>Go to Dashboard</Tr></Button>
         </div>
       </div>
     </div>

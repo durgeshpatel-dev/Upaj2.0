@@ -1,4 +1,5 @@
 import React from 'react'
+import { Tr } from '../ui/SimpleTranslation'
 
 const StatsSection = () => {
   const stats = [
@@ -36,7 +37,7 @@ const StatsSection = () => {
               {stat.number}
             </div>
             <div className="text-sm text-text-secondary">
-              {stat.label}
+              <Tr>{stat.label}</Tr>
             </div>
           </div>
         ))}

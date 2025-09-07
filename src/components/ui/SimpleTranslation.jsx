@@ -9,8 +9,8 @@ export const Tr = ({ children, className, ...props }) => {
   const translated = React.Children.map(children, (child) => {
     if (typeof child === 'string' || typeof child === 'number') {
       const result = t(String(child));
-      // Debug logging
-      if (process.env.NODE_ENV === 'development') {
+      // Debug logging (only in development)
+      if (import.meta.env.DEV) {
         console.log(`Translation: "${child}" -> "${result}" (lang: ${language})`);
       }
       return result;
@@ -39,12 +39,12 @@ export const SimpleLanguageSelector = ({ className = '' }) => {
     <select
       value={language}
       onChange={handleLanguageChange}
-      className={`text-sm bg-background border border-border rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary ${className}`}
+      className={`text-sm bg-background border border-border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors ${className}`}
       aria-label="Language"
     >
       {availableLanguages.map(lang => (
         <option key={lang.code} value={lang.code}>
-          {lang.code.toUpperCase()}
+          {lang.nativeName}
         </option>
       ))}
     </select>

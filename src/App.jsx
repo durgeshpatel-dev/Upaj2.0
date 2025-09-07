@@ -32,7 +32,7 @@ function App() {
           <GlobalRouteProtection>
             <Routes>
               {/* Public routes - accessible to everyone */}
-              <Route path="/" element={<GuestRoute><Navbar /><Landing /></GuestRoute>} />
+              <Route path="/" element={<GuestRoute><Landing /></GuestRoute>} />
               
               {/* Auth routes - redirect authenticated users to dashboard */}
               <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
