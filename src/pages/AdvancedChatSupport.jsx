@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 
-import EnhancedChatWindow from '../components/chat/EnhancedChatWindow'
-import EnhancedChatHistorySidebar from '../components/chat/EnhancedChatHistorySidebar'
-import useChat from '../hooks/useChat'
+import EnhancedChatWindow from '../components/chat/EnhancedChatWindow';
+import EnhancedChatHistorySidebar from '../components/chat/EnhancedChatHistorySidebar';
+import useChat from '../hooks/useChat';
 
 const AdvancedChatSupport = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
@@ -86,10 +86,10 @@ const AdvancedChatSupport = () => {
 
         <div className={`grid gap-4 transition-all duration-300 ${
           sidebarCollapsed 
-            ? "grid-cols-1" 
+            ? "grid-cols-1"
             : "lg:grid-cols-[1fr_320px]"
         }`}>
-          <EnhancedChatWindow 
+          <EnhancedChatWindow
             messages={messages}
             isLoading={isLoading}
             onSendMessage={sendMessage}

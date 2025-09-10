@@ -13,33 +13,6 @@ const PastPredictionsTable = ({ predictions: sharedPredictions = [], loading: sh
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Simplified useEffect to handle props
-  useEffect(() => {
-    console.log('PastPredictionsTable: auto-fetch check --', {
-      sharedCount: Array.isArray(sharedPredictions) ? sharedPredictions.length : 'n/a',
-      isAuthenticated,
-      
-      hasUser: !!user
-    });
-
-    // If parent provided predictions, use them
-    if (Array.isArray(sharedPredictions) && sharedPredictions.length > 0) {
-      console.log('Using shared predictions:', sharedPredictions.length);
-      const latestPredictions = sharedPredictions.slice(0, 4);
-      setPredictions(latestPredictions);
-      setLoading(sharedLoading);
-      return;
-    }
-
-    // Otherwise fetch predictions when authenticated, backend available and user present
-    if (isAuthenticated  && user) {
-      fetchUserPredictions();
-      return;
-    }
-
-    // If conditions not ready, do nothing; the effect depends on `user` so it will re-run when user becomes available
-  }, [sharedPredictions, sharedLoading, isAuthenticated, user, fetchUserPredictions]);
-
   // Function to fetch user predictions
   const fetchUserPredictions = useCallback(async () => {
     setError(null);
@@ -67,6 +40,33 @@ const PastPredictionsTable = ({ predictions: sharedPredictions = [], loading: sh
       setLoading(false);
     }
   }, [user]);
+
+  // Simplified useEffect to handle props
+  useEffect(() => {
+    console.log('PastPredictionsTable: auto-fetch check --', {
+      sharedCount: Array.isArray(sharedPredictions) ? sharedPredictions.length : 'n/a',
+      isAuthenticated,
+      
+      hasUser: !!user
+    });
+
+    // If parent provided predictions, use them
+    if (Array.isArray(sharedPredictions) && sharedPredictions.length > 0) {
+      console.log('Using shared predictions:', sharedPredictions.length);
+      const latestPredictions = sharedPredictions.slice(0, 4);
+      setPredictions(latestPredictions);
+      setLoading(sharedLoading);
+      return;
+    }
+
+    // Otherwise fetch predictions when authenticated, backend available and user present
+    if (isAuthenticated  && user) {
+      fetchUserPredictions();
+      return;
+    }
+
+    // If conditions not ready, do nothing; the effect depends on `user` so it will re-run when user becomes available
+  }, [sharedPredictions, sharedLoading, isAuthenticated, user, fetchUserPredictions]);
 
   const formatDate = (prediction) => {
     try {

@@ -49,8 +49,8 @@ const FarmMap = () => {
   const [mapType, setMapType] = useState('standard');
   
   const defaultLocation = React.useMemo(() => ({
-    lat: 41.8781,
-    lng: -93.0977
+    lat: 31.1471,
+    lng: 75.3412
   }), []);
 
   const toggleMapType = () => {

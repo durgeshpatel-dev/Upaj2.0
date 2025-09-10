@@ -167,11 +167,7 @@ const EnhancedChatHistorySidebar = ({
         + New Chat
       </Button>
 
-      <div className="mt-4 pt-3 border-t border-[#1F2A24]">
-        <p className="text-xs text-gray-500 text-center">
-          Chats are saved locally in your browser
-        </p>
-      </div>
+      
     </aside>
   )
 }

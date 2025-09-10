@@ -6,6 +6,7 @@ import { ArrowLeft, Download, Calendar, MapPin, Wheat } from 'lucide-react'
 import { predictionAPI, locationAPI } from '../utils/api'
 import { getCropOptimization, getCurrentSeason, getSuitableCropsForSoil } from '../utils/cropOptimizationUtils'
 import cropOptimizationData from '../data/cropOptimizationData.json'
+import { Tr } from '../components/ui/SimpleTranslation'
 
 const ViewPrediction = () => {
   const { predictionId } = useParams()
@@ -264,7 +265,7 @@ const ViewPrediction = () => {
         <main className="mx-auto max-w-4xl px-6 py-8">
           <div className="text-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-4 text-text-secondary">Loading prediction details...</p>
+            <p className="mt-4 text-text-secondary"><Tr>Loading prediction details...</Tr></p>
           </div>
         </main>
       </div>
@@ -276,9 +277,9 @@ const ViewPrediction = () => {
       <div className="min-h-screen bg-background text-text-primary">
         <main className="mx-auto max-w-4xl px-6 py-8">
           <div className="text-center py-8">
-            <p className="text-status-error">{error || 'Prediction not found'}</p>
+            <p className="text-status-error">{error || <Tr>Prediction not found</Tr>}</p>
             <Button onClick={() => navigate('/dashboard')} className="mt-4">
-              Back to Dashboard
+              <Tr>Back to Dashboard</Tr>
             </Button>
           </div>
         </main>
@@ -298,9 +299,9 @@ const ViewPrediction = () => {
               className="flex items-center space-x-2"
             >
               <ArrowLeft size={16} />
-              <span>Back</span>
+              <span><Tr>Back</Tr></span>
             </Button>
-            <h1 className="text-2xl font-bold text-text-primary">Prediction Details</h1>
+            <h1 className="text-2xl font-bold text-text-primary"><Tr>Prediction Details</Tr></h1>
           </div>
           <Button 
             onClick={handleDownloadReport} 
@@ -308,7 +309,7 @@ const ViewPrediction = () => {
             disabled={!prediction || loading}
           >
             <Download size={16} />
-            <span>Download Report</span>
+            <span><Tr>Download Report</Tr></span>
           </Button>
         </div>
 
@@ -317,47 +318,47 @@ const ViewPrediction = () => {
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Wheat className="text-primary" size={20} />
-              <span>Prediction Overview</span>
+              <span><Tr>Prediction Overview</Tr></span>
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="bg-primary/20 p-4 rounded-lg border border-primary/30">
-                <p className="text-text-secondary text-sm">Crop Type</p>
+                <p className="text-text-secondary text-sm"><Tr>Crop Type</Tr></p>
                 <p className="text-text-primary font-semibold text-lg capitalize">
                   {prediction?.cropType || 'N/A'}
                 </p>
               </div>
               <div className="bg-status-success/20 p-4 rounded-lg border border-status-success/30">
-                <p className="text-text-secondary text-sm">Predicted Yield</p>
+                <p className="text-text-secondary text-sm"><Tr>Predicted Yield</Tr></p>
                 <p className="text-text-primary font-semibold text-lg">
                   {prediction?.yieldPerHectare ? `${Math.round(prediction.yieldPerHectare)} kg/ha` : 
                    prediction?.predictedYield ? `${Math.round(prediction.predictedYield)} kg total` : 'N/A'}
                 </p>
                 {prediction?.confidence && (
                   <p className="text-text-secondary text-xs mt-1">
-                    Confidence: {Math.round(prediction.confidence * 100)}%
+                    <Tr>Confidence:</Tr> {Math.round(prediction.confidence * 100)}%
                   </p>
                 )}
               </div>
               <div className="bg-primary/10 p-4 rounded-lg border border-primary/20">
                 <p className="text-text-secondary text-sm flex items-center">
                   <Calendar size={14} className="mr-1" />
-                  Planting Date
+                  <Tr>Planting Date</Tr>
                 </p>
                 <p className="text-text-primary font-semibold">
                   {formatDate(prediction?.plantingDate)}
                 </p>
                 {prediction?.landArea && (
                   <p className="text-text-secondary text-xs mt-1">
-                    Area: {prediction.landArea} hectares
+                    <Tr>Area:</Tr> {prediction.landArea} <Tr>hectares</Tr>
                   </p>
                 )}
               </div>
               <div className="bg-status-warning/10 p-4 rounded-lg border border-status-warning/20">
                 <p className="text-text-secondary text-sm flex items-center">
                   <MapPin size={14} className="mr-1" />
-                  Location
+                  <Tr>Location</Tr>
                 </p>
                 <p className="text-text-primary font-semibold">
                   {prediction?.location?.district && prediction?.location?.state 
@@ -374,29 +375,29 @@ const ViewPrediction = () => {
           {/* Basic Info & Soil */}
           <Card>
             <CardHeader>
-              <CardTitle>Environmental Conditions</CardTitle>
+              <CardTitle><Tr>Environmental Conditions</Tr></CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div>
-                  <h4 className="text-sm font-medium text-text-secondary mb-2">Soil Type</h4>
+                  <h4 className="text-sm font-medium text-text-secondary mb-2"><Tr>Soil Type</Tr></h4>
                   <p className="text-text-primary font-medium capitalize">
                     {prediction?.soilType || 'N/A'}
                   </p>
                 </div>
                 <div>
-                  <h4 className="text-sm font-medium text-text-secondary mb-2">Weather Conditions</h4>
+                  <h4 className="text-sm font-medium text-text-secondary mb-2"><Tr>Weather Conditions</Tr></h4>
                   <div className="grid grid-cols-3 gap-3">
                     <div className="text-center p-2 bg-background-card rounded">
-                      <p className="text-xs text-text-secondary">Temperature</p>
+                      <p className="text-xs text-text-secondary"><Tr>Temperature</Tr></p>
                       <p className="text-sm font-medium">{prediction?.weather?.temperature ? `${Math.round(prediction.weather.temperature)}°C` : 'N/A'}</p>
                     </div>
                     <div className="text-center p-2 bg-background-card rounded">
-                      <p className="text-xs text-text-secondary">Humidity</p>
+                      <p className="text-xs text-text-secondary"><Tr>Humidity</Tr></p>
                       <p className="text-sm font-medium">{prediction?.weather?.humidity ? `${prediction.weather.humidity}%` : 'N/A'}</p>
                     </div>
                     <div className="text-center p-2 bg-background-card rounded">
-                      <p className="text-xs text-text-secondary">Rainfall</p>
+                      <p className="text-xs text-text-secondary"><Tr>Rainfall</Tr></p>
                       <p className="text-sm font-medium">{prediction?.weather?.rainfall !== undefined ? `${prediction.weather.rainfall}mm` : 'N/A'}</p>
                     </div>
                   </div>
@@ -408,24 +409,24 @@ const ViewPrediction = () => {
           {/* Detailed Soil Analysis */}
           <Card>
             <CardHeader>
-              <CardTitle>Detailed Soil Analysis</CardTitle>
+              <CardTitle><Tr>Detailed Soil Analysis</Tr></CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {/* Soil Composition */}
                 <div>
-                  <h4 className="text-sm font-medium text-text-secondary mb-2">Soil Composition</h4>
+                  <h4 className="text-sm font-medium text-text-secondary mb-2"><Tr>Soil Composition</Tr></h4>
                   <div className="grid grid-cols-3 gap-2">
                     <div className="text-center p-2 bg-background-card rounded">
-                      <p className="text-xs text-text-secondary">Sand</p>
+                      <p className="text-xs text-text-secondary"><Tr>Sand</Tr></p>
                       <p className="text-sm font-medium">{prediction?.soilData?.composition?.sand ? `${prediction.soilData.composition.sand}%` : 'N/A'}</p>
                     </div>
                     <div className="text-center p-2 bg-background-card rounded">
-                      <p className="text-xs text-text-secondary">Clay</p>
+                      <p className="text-xs text-text-secondary"><Tr>Clay</Tr></p>
                       <p className="text-sm font-medium">{prediction?.soilData?.composition?.clay ? `${prediction.soilData.composition.clay}%` : 'N/A'}</p>
                     </div>
                     <div className="text-center p-2 bg-background-card rounded">
-                      <p className="text-xs text-text-secondary">Silt</p>
+                      <p className="text-xs text-text-secondary"><Tr>Silt</Tr></p>
                       <p className="text-sm font-medium">{prediction?.soilData?.composition?.silt ? `${prediction.soilData.composition.silt}%` : 'N/A'}</p>
                     </div>
                   </div>
@@ -433,22 +434,22 @@ const ViewPrediction = () => {
 
                 {/* Soil Properties */}
                 <div>
-                  <h4 className="text-sm font-medium text-text-secondary mb-2">Soil Properties</h4>
+                  <h4 className="text-sm font-medium text-text-secondary mb-2"><Tr>Soil Properties</Tr></h4>
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
-                      <span className="text-text-secondary text-sm">pH Level</span>
+                      <span className="text-text-secondary text-sm"><Tr>pH Level</Tr></span>
                       <span className="text-text-primary font-medium">{prediction?.soilData?.properties?.pH || 'N/A'}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-text-secondary text-sm">Nitrogen</span>
+                      <span className="text-text-secondary text-sm"><Tr>Nitrogen</Tr></span>
                       <span className="text-text-primary font-medium">{prediction?.soilData?.properties?.nitrogen ? `${prediction.soilData.properties.nitrogen}%` : 'N/A'}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-text-secondary text-sm">Organic Carbon</span>
+                      <span className="text-text-secondary text-sm"><Tr>Organic Carbon</Tr></span>
                       <span className="text-text-primary font-medium">{prediction?.soilData?.properties?.organicCarbon ? `${prediction.soilData.properties.organicCarbon}%` : 'N/A'}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-text-secondary text-sm">Fertility</span>
+                      <span className="text-text-secondary text-sm"><Tr>Fertility</Tr></span>
                       <span className={`font-medium text-sm px-2 py-1 rounded ${
                         prediction?.soilData?.properties?.fertility === 'High' ? 'bg-status-success/20 text-status-success' :
                         prediction?.soilData?.properties?.fertility === 'Medium' ? 'bg-status-warning/20 text-status-warning' :
@@ -467,30 +468,30 @@ const ViewPrediction = () => {
           {/* Optimization Recommendations */}
           <Card>
             <CardHeader>
-              <CardTitle>Optimization Recommendations</CardTitle>
+              <CardTitle><Tr>Optimization Recommendations</Tr></CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-text-secondary">Recommended Fertilizer</span>
+                  <span className="text-text-secondary"><Tr>Recommended Fertilizer</Tr></span>
                   <span className="text-text-primary font-medium">
                     {optimizationData?.recommendedFertilizer || prediction?.optimization?.recommendedFertilizer || 'N/A'}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-text-secondary">Best Planting Time</span>
+                  <span className="text-text-secondary"><Tr>Best Planting Time</Tr></span>
                   <span className="text-text-primary font-medium">
                     {optimizationData?.bestPlantingTime || prediction?.optimization?.bestPlantingTime || 'N/A'}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-text-secondary">Irrigation Schedule</span>
+                  <span className="text-text-secondary"><Tr>Irrigation Schedule</Tr></span>
                   <span className="text-text-primary font-medium">
                     {optimizationData?.irrigationSchedule || prediction?.optimization?.irrigationSchedule || 'N/A'}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-text-secondary">Expected Harvest</span>
+                  <span className="text-text-secondary"><Tr>Expected Harvest</Tr></span>
                   <span className="text-text-primary font-medium">
                     {optimizationData?.expectedHarvestTime || prediction?.optimization?.expectedHarvestTime || 'N/A'}
                   </span>
@@ -501,15 +502,15 @@ const ViewPrediction = () => {
                   <>
                     <div className="border-t pt-3 mt-3">
                       <div className="flex justify-between">
-                        <span className="text-text-secondary">Growth Period</span>
+                        <span className="text-text-secondary"><Tr>Growth Period</Tr></span>
                         <span className="text-text-primary font-medium">{optimizationData.avgGrowthPeriod}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-text-secondary">Optimal Temperature</span>
+                        <span className="text-text-secondary"><Tr>Optimal Temperature</Tr></span>
                         <span className="text-text-primary font-medium">{optimizationData.optimalTemperature}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-text-secondary">Water Requirement</span>
+                        <span className="text-text-secondary"><Tr>Water Requirement</Tr></span>
                         <span className="text-text-primary font-medium">{optimizationData.waterRequirement}</span>
                       </div>
                     </div>
@@ -517,7 +518,7 @@ const ViewPrediction = () => {
                     {/* Seasonal recommendations */}
                     {optimizationData.seasonalRecommendations && (
                       <div className="mt-3 p-2 bg-primary/10 rounded">
-                        <p className="text-primary text-xs font-medium mb-1">Seasonal Recommendations:</p>
+                        <p className="text-primary text-xs font-medium mb-1"><Tr>Seasonal Recommendations:</Tr></p>
                         {optimizationData.seasonalRecommendations.map((rec, index) => (
                           <p key={index} className="text-text-secondary text-xs">• {rec}</p>
                         ))}
@@ -532,24 +533,24 @@ const ViewPrediction = () => {
           {/* Soil Recommendations */}
           <Card>
             <CardHeader>
-              <CardTitle>Soil Recommendations</CardTitle>
+              <CardTitle><Tr>Soil Recommendations</Tr></CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {/* Soil Analysis */}
                 <div>
-                  <h4 className="text-sm font-medium text-text-secondary mb-2">Soil Analysis</h4>
+                  <h4 className="text-sm font-medium text-text-secondary mb-2"><Tr>Soil Analysis</Tr></h4>
                   <div className="grid grid-cols-3 gap-3">
                     <div className="text-center p-2 bg-background-card rounded">
-                      <p className="text-xs text-text-secondary">Drainage</p>
+                      <p className="text-xs text-text-secondary"><Tr>Drainage</Tr></p>
                       <p className="text-sm font-medium">{prediction?.soilData?.analysis?.drainage || 'N/A'}</p>
                     </div>
                     <div className="text-center p-2 bg-background-card rounded">
-                      <p className="text-xs text-text-secondary">Water Holding</p>
+                      <p className="text-xs text-text-secondary"><Tr>Water Holding</Tr></p>
                       <p className="text-sm font-medium">{prediction?.soilData?.analysis?.waterHolding || 'N/A'}</p>
                     </div>
                     <div className="text-center p-2 bg-background-card rounded">
-                      <p className="text-xs text-text-secondary">Nutrient Retention</p>
+                      <p className="text-xs text-text-secondary"><Tr>Nutrient Retention</Tr></p>
                       <p className="text-sm font-medium">{prediction?.soilData?.analysis?.nutrientRetention || 'N/A'}</p>
                     </div>
                   </div>
@@ -557,7 +558,7 @@ const ViewPrediction = () => {
 
                 {/* Recommendations */}
                 <div>
-                  <h4 className="text-sm font-medium text-text-secondary mb-2">Management Recommendations</h4>
+                  <h4 className="text-sm font-medium text-text-secondary mb-2"><Tr>Management Recommendations</Tr></h4>
                   <div className="space-y-2">
                     {prediction?.soilData?.recommendations?.length > 0 ? (
                       prediction.soilData.recommendations.map((recommendation, index) => (
@@ -567,7 +568,7 @@ const ViewPrediction = () => {
                         </div>
                       ))
                     ) : (
-                      <p className="text-text-secondary text-sm">No recommendations available</p>
+                      <p className="text-text-secondary text-sm"><Tr>No recommendations available</Tr></p>
                     )}
                   </div>
                 </div>
@@ -578,7 +579,7 @@ const ViewPrediction = () => {
           {/* Suitable Crops */}
           <Card>
             <CardHeader>
-              <CardTitle>Suitable Crops for This Soil</CardTitle>
+              <CardTitle><Tr>Suitable Crops for This Soil</Tr></CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
@@ -598,12 +599,12 @@ const ViewPrediction = () => {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-text-secondary">No suitable crops data available</p>
+                  <p className="text-text-secondary"><Tr>No suitable crops data available</Tr></p>
                 )}
                 {prediction?.soilData?.suitableCrops?.includes(prediction?.cropType?.charAt(0).toUpperCase() + prediction?.cropType?.slice(1)) && (
                   <div className="mt-3 p-3 bg-status-success/10 border border-status-success/20 rounded-lg">
                     <p className="text-status-success text-sm">
-                      ✅ Your selected crop ({prediction?.cropType}) is well-suited for this soil type!
+                      ✅ <Tr>Your selected crop</Tr> ({prediction?.cropType}) <Tr>is well-suited for this soil type!</Tr>
                     </p>
                   </div>
                 )}
@@ -615,7 +616,7 @@ const ViewPrediction = () => {
           {optimizationData?.fertilizationStages && (
             <Card>
               <CardHeader>
-                <CardTitle>Fertilization Schedule</CardTitle>
+                <CardTitle><Tr>Fertilization Schedule</Tr></CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
@@ -634,7 +635,7 @@ const ViewPrediction = () => {
                   {optimizationData.fertilizerAdjustment && (
                     <div className="mt-3 p-2 bg-status-warning/10 rounded">
                       <p className="text-status-warning text-xs">
-                        <strong>Soil Adjustment:</strong> {optimizationData.fertilizerAdjustment}
+                        <strong><Tr>Soil Adjustment:</Tr></strong> {optimizationData.fertilizerAdjustment}
                       </p>
                     </div>
                   )}
@@ -647,7 +648,7 @@ const ViewPrediction = () => {
           {optimizationData?.irrigationStages && (
             <Card>
               <CardHeader>
-                <CardTitle>Irrigation Schedule</CardTitle>
+                <CardTitle><Tr>Irrigation Schedule</Tr></CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
@@ -663,7 +664,7 @@ const ViewPrediction = () => {
                   {optimizationData.seasonalIrrigationNote && (
                     <div className="mt-3 p-2 bg-primary/10 rounded">
                       <p className="text-primary text-xs">
-                        <strong>Seasonal Note:</strong> {optimizationData.seasonalIrrigationNote}
+                        <strong><Tr>Seasonal Note:</Tr></strong> {optimizationData.seasonalIrrigationNote}
                       </p>
                     </div>
                   )}
@@ -675,7 +676,7 @@ const ViewPrediction = () => {
           {/* Soil Health Matrix & Projected Growth */}
           <Card>
             <CardHeader>
-              <CardTitle>Soil Health Matrix & Projected Growth</CardTitle>
+              <CardTitle><Tr>Soil Health Matrix & Projected Growth</Tr></CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -763,16 +764,16 @@ const ViewPrediction = () => {
                   // Prepare matrix rows
                   const matrixRows = [
                     { label: 'pH', value: pH !== null ? pH : 'N/A', ...metricStatus('pH', pH) },
-                    { label: 'Nitrogen (%)', value: nitrogen !== null ? `${nitrogen}` : 'N/A', ...metricStatus('Nitrogen', nitrogen) },
-                    { label: 'Organic Carbon (%)', value: organicCarbon !== null ? `${organicCarbon}` : 'N/A', ...metricStatus('OrganicCarbon', organicCarbon) },
+                    { label: <Tr>Nitrogen (%)</Tr>, value: nitrogen !== null ? `${nitrogen}` : 'N/A', ...metricStatus('Nitrogen', nitrogen) },
+                    { label: <Tr>Organic Carbon (%)</Tr>, value: organicCarbon !== null ? `${organicCarbon}` : 'N/A', ...metricStatus('OrganicCarbon', organicCarbon) },
                     { label: 'CEC', value: cec !== null ? `${cec}` : 'N/A', ...metricStatus('CEC', cec) },
-                    { label: 'Fertility', value: fertilityLabel || 'N/A', ...metricStatus('Fertility', fertilityLabel) }
+                    { label: <Tr>Fertility</Tr>, value: fertilityLabel || 'N/A', ...metricStatus('Fertility', fertilityLabel) }
                   ]
 
                   return (
                     <>
                       <div>
-                        <p className="text-text-secondary text-sm mb-2">Soil Health Score</p>
+                        <p className="text-text-secondary text-sm mb-2"><Tr>Soil Health Score</Tr></p>
                         <div className="flex items-center space-x-3">
                           <div className="w-40 bg-background-card rounded-full h-4 overflow-hidden">
                             <div className={`h-4 rounded-full bg-gradient-to-r ${soilHealthScore >= 70 ? 'from-status-success to-status-success/60' : soilHealthScore >= 40 ? 'from-status-warning to-status-warning/60' : 'from-status-error to-status-error/60'}`} style={{ width: `${soilHealthScore}%` }} />
@@ -783,7 +784,7 @@ const ViewPrediction = () => {
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <h4 className="text-sm font-medium text-text-secondary mb-2">Soil Health Matrix</h4>
+                          <h4 className="text-sm font-medium text-text-secondary mb-2"><Tr>Soil Health Matrix</Tr></h4>
                           <div className="space-y-2">
                             {matrixRows.map((row, i) => (
                               <div key={i} className="flex items-center justify-between p-2 bg-background-card rounded">
@@ -798,29 +799,29 @@ const ViewPrediction = () => {
                         </div>
 
                         <div>
-                          <h4 className="text-sm font-medium text-text-secondary mb-2">Projected Growth After Applying Recommendations</h4>
+                          <h4 className="text-sm font-medium text-text-secondary mb-2"><Tr>Projected Growth After Applying Recommendations</Tr></h4>
                           <div className="p-3 bg-background-card rounded space-y-2">
                             <div className="flex justify-between items-center">
-                              <span className="text-text-secondary text-sm">Current estimated yield</span>
+                              <span className="text-text-secondary text-sm"><Tr>Current estimated yield</Tr></span>
                               <span className="text-text-primary font-medium">{baseYield ? `${Math.round(baseYield)} kg` : 'N/A'}</span>
                             </div>
                             <div className="flex justify-between items-center">
-                              <span className="text-text-secondary text-sm">Estimated improvement</span>
+                              <span className="text-text-secondary text-sm"><Tr>Estimated improvement</Tr></span>
                               <span className="text-text-primary font-medium">{improvementPercent}%</span>
                             </div>
                             <div className="flex justify-between items-center">
-                              <span className="text-text-secondary text-sm">Projected yield after applying recommendations</span>
+                              <span className="text-text-secondary text-sm"><Tr>Projected yield after applying recommendations</Tr></span>
                               <span className="text-text-primary font-semibold">{projectedYield ? `${projectedYield} kg` : 'N/A'}</span>
                             </div>
 
                             <div className="mt-2 text-xs text-text-secondary">
-                              <p>Note: This is a simple estimate based on current soil health metrics. Actual results depend on implementation quality, weather and farm management.</p>
+                              <p><Tr>Note: This is a simple estimate based on current soil health metrics. Actual results depend on implementation quality, weather and farm management.</Tr></p>
                             </div>
                           </div>
 
                           {prediction?.soilData?.recommendations && prediction.soilData.recommendations.length > 0 && (
                             <div className="mt-3">
-                              <p className="text-text-secondary text-sm mb-2">Top actionable recommendations</p>
+                              <p className="text-text-secondary text-sm mb-2"><Tr>Top actionable recommendations</Tr></p>
                               <ul className="list-inside list-disc text-text-primary text-sm space-y-1">
                                 {prediction.soilData.recommendations.slice(0, 4).map((rec, idx) => (
                                   <li key={idx}>{rec}</li>

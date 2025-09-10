@@ -12,9 +12,9 @@ export const theme = {
     },
     text: {
       primary: '#E0E0E0',
-      secondary: '#A0A0A0',
+      secondary: '#BDBDBD', // Lighter gray for better contrast
     },
-    border: '#333C37',
+    border: '#444E48', // Increased contrast against the background
     status: {
       success: '#50FF9F',
       error: '#FF5B5B',
