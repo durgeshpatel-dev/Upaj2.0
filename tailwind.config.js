@@ -25,6 +25,7 @@ export default {
           error: '#FF5B5B',
           warning: '#FFB800',
         },
+        'surface-hover': 'rgba(255, 255, 255, 0.05)',
       },
     },
   },

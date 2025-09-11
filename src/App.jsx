@@ -20,6 +20,7 @@ import ResetPassword from './components/auth/ResetPassword';
 import OAuthCallback from './components/auth/OAuthCallback';
 import OAuthSuccess from './components/auth/OAuthSuccess';
 import Community from './pages/Community';
+import DiseasePrediction from './pages/DiseasePrediction';
 // Keep the old ProtectedRoute for backward compatibility if needed
 // import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
@@ -48,6 +49,7 @@ function App() {
               {/* Protected routes - require authentication */}
               <Route path="/predict" element={<ProtectedRoute><Navbar /><Prediction /></ProtectedRoute>} />
               <Route path="/prediction" element={<ProtectedRoute><Navbar /><Prediction /></ProtectedRoute>} />
+              <Route path="/disease-prediction" element={<ProtectedRoute><Navbar /><DiseasePrediction /></ProtectedRoute>} />
               <Route path="/dashboard" element={<ProtectedRoute><Navbar /><Dashboard /></ProtectedRoute>} />
               <Route path="/profile" element={<ProtectedRoute><Navbar /><Profile /></ProtectedRoute>} />
               <Route path="/prediction/:predictionId" element={<ProtectedRoute><Navbar /><ViewPrediction /></ProtectedRoute>} />

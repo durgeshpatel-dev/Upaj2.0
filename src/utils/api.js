@@ -17,6 +17,11 @@ api.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
     
+    // Don't set Content-Type for FormData - let browser handle it
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type'];
+    }
+    
     // Enhanced debug logging
     console.log('🚀 API Request Starting...');
     console.log('📡 Method:', config.method?.toUpperCase());
@@ -25,6 +30,7 @@ api.interceptors.request.use(
     console.log('🔗 Full URL:', config.baseURL + config.url);
     console.log('📋 Headers:', config.headers);
     console.log('📦 Data:', config.data);
+    console.log('📦 Is FormData:', config.data instanceof FormData);
     console.log('🔑 Has Auth Token:', !!token);
     
     return config;
@@ -245,7 +251,14 @@ export const predictionAPI = {
       console.log('📥 Prediction response data:', response.data);
       console.log('📥 Prediction response status:', response.status);
       
-      return { success: true, data: response.data };
+      // Extract disease name from status field
+      const responseData = response.data;
+      if (responseData && responseData.status) {
+        responseData.diseaseName = responseData.status;
+        console.log('🦠 Disease name extracted from status:', responseData.diseaseName);
+      }
+      
+      return { success: true, data: responseData };
     } catch (error) {
       console.error('❌ Prediction error:', error);
       console.error('❌ Error response:', error.response);
@@ -311,6 +324,17 @@ export const predictionAPI = {
         }
       }
 
+      // Extract disease names from status fields for each prediction
+      if (Array.isArray(normalized)) {
+        normalized = normalized.map(prediction => {
+          if (prediction && prediction.status && !prediction.diseaseName) {
+            prediction.diseaseName = prediction.status;
+            console.log('🦠 Disease name extracted from status for prediction:', prediction.diseaseName);
+          }
+          return prediction;
+        });
+      }
+
       console.log('📥 predictionAPI: Normalized predictions array length:', normalized.length);
       return { success: true, data: normalized };
     } catch (error) {
@@ -339,7 +363,14 @@ export const predictionAPI = {
       
       console.log('📥 Prediction details response:', response.data);
       
-      return { success: true, data: response.data };
+      // Extract disease name from status field
+      const responseData = response.data;
+      if (responseData && responseData.status && !responseData.diseaseName) {
+        responseData.diseaseName = responseData.status;
+        console.log('🦠 Disease name extracted from status for single prediction:', responseData.diseaseName);
+      }
+      
+      return { success: true, data: responseData };
     } catch (error) {
       console.error('❌ Get prediction details error:', error);
       console.error('❌ Error response:', error.response);
@@ -378,6 +409,132 @@ export const predictionAPI = {
       return { 
         success: false, 
         error: error.response?.data?.message || error.message || 'Failed to download report' 
+      };
+    }
+  },
+
+  // Disease prediction API functions
+  // Predict disease from uploaded image
+  predictDisease: async (imageFile) => {
+    try {
+      console.log('🦠 Starting disease prediction...');
+      console.log('📤 Image file:', imageFile);
+      console.log('📤 Image file name:', imageFile?.name);
+      console.log('📤 Image file type:', imageFile?.type);
+      console.log('📤 Image file size:', imageFile?.size);
+      
+      // Validate file
+      if (!imageFile) {
+        throw new Error('No image file provided');
+      }
+      
+      // Validate file type
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+      if (!validTypes.includes(imageFile.type)) {
+        throw new Error('Invalid file format. Please upload JPG, JPEG, or PNG images only.');
+      }
+      
+      // Validate file size (10MB limit)
+      const maxSize = 10 * 1024 * 1024; // 10MB
+      if (imageFile.size > maxSize) {
+        throw new Error('File size too large. Please upload an image smaller than 10MB.');
+      }
+      
+      // Create FormData
+      const formData = new FormData();
+      formData.append('image', imageFile);
+      
+      console.log('📤 FormData created, making request...');
+      console.log('📤 FormData entries:');
+      for (let pair of formData.entries()) {
+        console.log('📤 FormData key:', pair[0], 'value:', pair[1]);
+      }
+      
+      // Make request with multipart/form-data
+      const response = await api.post('/disease/predict', formData, {
+        headers: {
+          // Don't set Content-Type - let the browser set it automatically for FormData
+          // This ensures the correct boundary is set for multipart/form-data
+        },
+        timeout: 60000, // 60 second timeout for image processing
+      });
+      
+      console.log('📥 Disease prediction response:', response.data);
+      
+      // Extract disease name from status field
+      const responseData = response.data;
+      if (responseData && responseData.status && !responseData.diseaseName) {
+        responseData.diseaseName = responseData.status;
+        console.log('🦠 Disease name extracted from status:', responseData.diseaseName);
+      }
+      
+      return { success: true, data: responseData };
+    } catch (error) {
+      console.error('❌ Disease prediction error:', error);
+      console.error('❌ Error response:', error.response);
+      
+      // Handle specific error cases
+      let errorMessage = 'Disease prediction failed';
+      
+      if (error.response) {
+        // Server responded with error
+        errorMessage = error.response.data?.message || errorMessage;
+      } else if (error.request) {
+        // Request was made but no response
+        if (error.code === 'ECONNREFUSED') {
+          errorMessage = 'Disease prediction service is currently unavailable. Please try again later.';
+        } else if (error.code === 'TIMEOUT') {
+          errorMessage = 'Disease prediction request timed out. Please try again with a smaller image.';
+        } else {
+          errorMessage = 'Network error. Please check your connection and try again.';
+        }
+      } else {
+        // Something else happened
+        errorMessage = error.message || errorMessage;
+      }
+      
+      return { 
+        success: false, 
+        error: errorMessage
+      };
+    }
+  },
+
+  // Check disease prediction service health
+  checkDiseaseServiceHealth: async () => {
+    try {
+      console.log('🏥 Checking disease prediction service health...');
+      
+      const response = await api.get('/disease/health', {
+        timeout: 10000, // 10 second timeout
+      });
+      
+      console.log('📥 Health check response:', response.data);
+      
+      return { success: true, data: response.data };
+    } catch (error) {
+      console.error('❌ Health check error:', error);
+      console.error('❌ Error response:', error.response);
+      
+      let errorMessage = 'Health check failed';
+      
+      if (error.response) {
+        errorMessage = error.response.data?.message || 'Disease prediction service is unhealthy';
+      } else if (error.request) {
+        if (error.code === 'ECONNREFUSED') {
+          errorMessage = 'Disease prediction service is not responding';
+        } else if (error.code === 'TIMEOUT') {
+          errorMessage = 'Health check timed out';
+        } else {
+          errorMessage = 'Network error during health check';
+        }
+      } else {
+        errorMessage = error.message || errorMessage;
+      }
+      
+      return { 
+        success: false, 
+        error: errorMessage
       };
     }
   }

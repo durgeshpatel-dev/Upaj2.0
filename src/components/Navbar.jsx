@@ -49,7 +49,7 @@ const Navbar = () => {
   // Handle navigation with authentication check
   const handleNavigation = (path) => {
     // List of protected routes
-    const protectedRoutes = ['/predict', '/prediction', '/dashboard', '/profile', '/community', '/chat'];
+    const protectedRoutes = ['/predict', '/prediction', '/disease-prediction', '/dashboard', '/profile', '/community', '/chat'];
     
     if (protectedRoutes.includes(path) && !isAuthenticated) {
       // Redirect to login if trying to access protected route without authentication
@@ -93,6 +93,14 @@ const Navbar = () => {
                 <Tr>Predict</Tr>
               </Link>
               <Link 
+                to="/disease-prediction" 
+                className={`transition-colors ${
+                  isActive('/disease-prediction') ? 'text-primary font-medium' : 'text-text-secondary hover:text-primary'
+                }`}
+              >
+                <Tr>Disease Detection</Tr>
+              </Link>
+              <Link 
                 to="/dashboard" 
                 className={`transition-colors ${
                   isActive('/dashboard') ? 'text-primary font-medium' : 'text-text-secondary hover:text-primary'
@@ -125,6 +133,12 @@ const Navbar = () => {
                 className="text-text-secondary hover:text-primary transition-colors"
               >
                 <Tr>Predict</Tr>
+              </button>
+              <button 
+                onClick={() => handleNavigation('/disease-prediction')}
+                className="text-text-secondary hover:text-primary transition-colors"
+              >
+                <Tr>Disease Detection</Tr>
               </button>
               <button 
                 onClick={() => handleNavigation('/dashboard')}
@@ -291,6 +305,15 @@ const Navbar = () => {
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <Tr>Predict</Tr>
+                </a>
+                <a 
+                  href="/disease-prediction" 
+                  className={`block transition-colors ${
+                    isActive('/disease-prediction') ? 'text-primary font-medium' : 'text-text-secondary hover:text-primary'
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <Tr>Disease Detection</Tr>
                 </a>
                 <a 
                   href="/dashboard" 
