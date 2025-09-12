@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { RefreshCw } from 'lucide-react';
 import axios from 'axios';
+import { locationAPI } from '../../utils/api';
 import { Tr } from '../ui/SimpleTranslation';
 
 const SoilCard = () => {
@@ -41,8 +42,8 @@ const SoilCard = () => {
       return null;
     };
 
-    const pH = pick(['properties','pH'], 'pH', 'ph', ['analysis','pH']);
-    const moisture = pick(['properties','moisture'], 'moisture', 'waterHolding', ['analysis','waterHolding'], 'humidity');
+    const pH = pick(['properties','pH'], ['properties','ph'], 'pH', 'ph', ['analysis','pH']);
+    const moisture = pick(['properties','moisture'], ['properties','waterHolding'], 'moisture', 'waterHolding', ['analysis','waterHolding'], 'humidity');
     const nitrogen = pick(['properties','nitrogen'], 'nitrogen', 'N');
     const phosphorus = pick(['properties','phosphorus'], 'phosphorus', 'P');
     const potassium = pick(['properties','potassium'], 'potassium', 'K');
@@ -72,7 +73,7 @@ const SoilCard = () => {
     // Handle different possible key variations
     const variations = {
       ph: ['ph', 'pH', 'Ph'],
-      moisture: ['moisture', 'waterContent', 'soilMoisture', 'humidity'],
+      moisture: ['moisture', 'waterContent', 'soilMoisture', 'humidity', 'waterHolding'],
       nitrogen: ['nitrogen', 'N', 'n', 'nitrate'],
       phosphorus: ['phosphorus', 'P', 'p', 'phosphate'],
       potassium: ['potassium', 'K', 'k', 'potash'],
@@ -114,21 +115,81 @@ const SoilCard = () => {
     // Try to get location from user's farm details
     if (user?.farmDetails) {
       state = user.farmDetails.state || user.farmDetails.region;
-      district = user.farmDetails.district || user.farmDetails.location || user.farmDetails.city;
+      district = user.farmDetails.district;
+      
+      // If no district but we have a location string, try to parse it
+      if (!district && user.farmDetails.location) {
+        const locationParts = user.farmDetails.location.split(',').map(p => p.trim());
+        if (locationParts.length >= 2) {
+          const firstPartLower = locationParts[0].toLowerCase();
+          const knownStates = ['punjab', 'gujarat', 'maharashtra', 'karnataka', 'tamil nadu', 'rajasthan', 'uttar pradesh'];
+          
+          if (knownStates.includes(firstPartLower)) {
+            state = state || locationParts[0];
+            district = locationParts.slice(1).join(', ');
+          } else {
+            state = state || locationParts[locationParts.length - 1];
+            district = locationParts[locationParts.length - 2];
+          }
+        } else {
+          district = user.farmDetails.location;
+        }
+      }
+      
+      district = district || user.farmDetails.city;
       console.debug('SoilCard: Manual fetch - Location from farmDetails:', { state, district });
     }
 
     // Try to get location from user's farm object
     if (!state && user?.farm) {
       state = user.farm.state || user.farm.region;
-      district = user.farm.district || user.farm.location || user.farm.city;
+      district = user.farm.district;
+      
+      if (!district && user.farm.location) {
+        const locationParts = user.farm.location.split(',').map(p => p.trim());
+        if (locationParts.length >= 2) {
+          const firstPartLower = locationParts[0].toLowerCase();
+          const knownStates = ['punjab', 'gujarat', 'maharashtra', 'karnataka', 'tamil nadu', 'rajasthan', 'uttar pradesh'];
+          
+          if (knownStates.includes(firstPartLower)) {
+            state = state || locationParts[0];
+            district = locationParts.slice(1).join(', ');
+          } else {
+            state = state || locationParts[locationParts.length - 1];
+            district = locationParts[locationParts.length - 2];
+          }
+        } else {
+          district = user.farm.location;
+        }
+      }
+      
+      district = district || user.farm.city;
       console.debug('SoilCard: Manual fetch - Location from farm object:', { state, district });
     }
 
     // Try to get location from user's direct properties
     if (!state && user?.state) {
       state = user.state;
-      district = user.district || user.city || user.location;
+      district = user.district || user.city;
+      
+      if (!district && user.location) {
+        const locationParts = user.location.split(',').map(p => p.trim());
+        if (locationParts.length >= 2) {
+          const firstPartLower = locationParts[0].toLowerCase();
+          const knownStates = ['punjab', 'gujarat', 'maharashtra', 'karnataka', 'tamil nadu', 'rajasthan', 'uttar pradesh'];
+          
+          if (knownStates.includes(firstPartLower)) {
+            state = state || locationParts[0];
+            district = locationParts.slice(1).join(', ');
+          } else {
+            state = state || locationParts[locationParts.length - 1];
+            district = locationParts[locationParts.length - 2];
+          }
+        } else {
+          district = user.location;
+        }
+      }
+      
       console.debug('SoilCard: Manual fetch - Location from user properties:', { state, district });
     }
 
@@ -146,36 +207,47 @@ const SoilCard = () => {
     }
 
     // Fallback to defaults if no location found
-    const finalState = state || 'Gujarat';
-    const finalDistrict = district || 'Baroda';
+    // Use smart defaults based on district if available
+    let finalState = state;
+    let finalDistrict = district;
+    
+    if (!finalState && finalDistrict) {
+      // Try to determine state from district
+      const districtLower = finalDistrict.toLowerCase();
+      if (['amritsar', 'ludhiana', 'chandigarh', 'jalandhar', 'patiala', 'bathinda', 'mohali'].includes(districtLower)) {
+        finalState = 'Punjab';
+      } else if (['ahmedabad', 'surat', 'vadodara', 'baroda', 'rajkot', 'bhavnagar', 'jamnagar'].includes(districtLower)) {
+        finalState = 'Gujarat';
+      }
+    }
+    
+    // Final fallbacks
+    finalState = finalState || 'Gujarat';
+    finalDistrict = finalDistrict || 'Baroda';
     
     console.log('🔄 Manual soil fetch: Calling API with:', { state: finalState, district: finalDistrict });
 
     try {
-      const response = await axios.post('http://localhost:5001/api/soil-data', {
-        state: finalState,
-        district: finalDistrict
-      });
+      // Use the locationAPI which has proper validation and normalization
+      const result = await locationAPI.getSoilData(finalState, finalDistrict);
       
-      console.log('🔄 Manual soil fetch: API response:', response.data);
-      
-      if (response.data) {
-        console.log('🔄 Manual soil fetch: Raw API response:', response.data);
+      if (result.success) {
+        console.log('🔄 Manual soil fetch: API response:', result.data);
         
         // Handle different response formats
-  let soilData = response.data;
-  if (response.data.data) soilData = response.data.data;
-  if (soilData.soil) soilData = soilData.soil;
-  // If returned object is wrapping soilData
-  if (soilData.soilData) soilData = soilData.soilData;
+        let soilData = result.data;
+        if (result.data.data) soilData = result.data.data;
+        if (soilData.soil) soilData = soilData.soil;
+        // If returned object is wrapping soilData
+        if (soilData.soilData) soilData = soilData.soilData;
 
-  const normalized = normalizeSoilData(soilData) || normalizeSoilData(response.data) || null;
-  setSoil(normalized);
-  console.log('✅ Manual soil fetch: Success - Normalized soil data:', normalized, 'raw:', soilData);
+        const normalized = normalizeSoilData(soilData) || normalizeSoilData(result.data) || null;
+        setSoil(normalized);
+        console.log('✅ Manual soil fetch: Success - Normalized soil data:', normalized, 'raw:', soilData);
         setError(null);
       } else {
-        console.error('❌ Manual soil fetch: No data received');
-        setError('No soil data received');
+        console.error('❌ Manual soil fetch: API error:', result.error);
+        setError(result.error || 'No soil data received');
       }
     } catch (err) {
       console.error('❌ Manual soil fetch: API call failed:', err);
@@ -210,21 +282,80 @@ const SoilCard = () => {
       // Try to get location from user's farm details
       if (user?.farmDetails) {
         state = user.farmDetails.state || user.farmDetails.region;
-        district = user.farmDetails.district || user.farmDetails.location || user.farmDetails.city;
+        district = user.farmDetails.district;
+        
+        if (!district && user.farmDetails.location) {
+          const locationParts = user.farmDetails.location.split(',').map(p => p.trim());
+          if (locationParts.length >= 2) {
+            const firstPartLower = locationParts[0].toLowerCase();
+            const knownStates = ['punjab', 'gujarat', 'maharashtra', 'karnataka', 'tamil nadu', 'rajasthan', 'uttar pradesh'];
+            
+            if (knownStates.includes(firstPartLower)) {
+              state = state || locationParts[0];
+              district = locationParts.slice(1).join(', ');
+            } else {
+              state = state || locationParts[locationParts.length - 1];
+              district = locationParts[locationParts.length - 2];
+            }
+          } else {
+            district = user.farmDetails.location;
+          }
+        }
+        
+        district = district || user.farmDetails.city;
         console.debug('SoilCard: Location from farmDetails:', { state, district });
       }
 
       // Try to get location from user's farm object
       if (!state && user?.farm) {
         state = user.farm.state || user.farm.region;
-        district = user.farm.district || user.farm.location || user.farm.city;
+        district = user.farm.district;
+        
+        if (!district && user.farm.location) {
+          const locationParts = user.farm.location.split(',').map(p => p.trim());
+          if (locationParts.length >= 2) {
+            const firstPartLower = locationParts[0].toLowerCase();
+            const knownStates = ['punjab', 'gujarat', 'maharashtra', 'karnataka', 'tamil nadu', 'rajasthan', 'uttar pradesh'];
+            
+            if (knownStates.includes(firstPartLower)) {
+              state = state || locationParts[0];
+              district = locationParts.slice(1).join(', ');
+            } else {
+              state = state || locationParts[locationParts.length - 1];
+              district = locationParts[locationParts.length - 2];
+            }
+          } else {
+            district = user.farm.location;
+          }
+        }
+        
+        district = district || user.farm.city;
         console.debug('SoilCard: Location from farm object:', { state, district });
       }
 
       // Try to get location from user's direct properties
       if (!state && user?.state) {
         state = user.state;
-        district = user.district || user.city || user.location;
+        district = user.district || user.city;
+        
+        if (!district && user.location) {
+          const locationParts = user.location.split(',').map(p => p.trim());
+          if (locationParts.length >= 2) {
+            const firstPartLower = locationParts[0].toLowerCase();
+            const knownStates = ['punjab', 'gujarat', 'maharashtra', 'karnataka', 'tamil nadu', 'rajasthan', 'uttar pradesh'];
+            
+            if (knownStates.includes(firstPartLower)) {
+              state = state || locationParts[0];
+              district = locationParts.slice(1).join(', ');
+            } else {
+              state = state || locationParts[locationParts.length - 1];
+              district = locationParts[locationParts.length - 2];
+            }
+          } else {
+            district = user.location;
+          }
+        }
+        
         console.debug('SoilCard: Location from user properties:', { state, district });
       }
 
@@ -242,8 +373,23 @@ const SoilCard = () => {
       }
 
       // Fallback to defaults if no location found
-      const finalState = state || 'Gujarat';
-      const finalDistrict = district || 'Baroda';
+      // Use smart defaults based on district if available
+      let finalState = state;
+      let finalDistrict = district;
+      
+      if (!finalState && finalDistrict) {
+        // Try to determine state from district
+        const districtLower = finalDistrict.toLowerCase();
+        if (['amritsar', 'ludhiana', 'chandigarh', 'jalandhar', 'patiala', 'bathinda', 'mohali'].includes(districtLower)) {
+          finalState = 'Punjab';
+        } else if (['ahmedabad', 'surat', 'vadodara', 'baroda', 'rajkot', 'bhavnagar', 'jamnagar'].includes(districtLower)) {
+          finalState = 'Gujarat';
+        }
+      }
+      
+      // Final fallbacks
+      finalState = finalState || 'Gujarat';
+      finalDistrict = finalDistrict || 'Baroda';
       
       console.debug('SoilCard: Final location for API call:', { 
         originalState: state, 
@@ -255,39 +401,26 @@ const SoilCard = () => {
       console.debug('SoilCard: Calling soil API with:', { state: finalState, district: finalDistrict });
       setLoading(true);
       try {
-        const response = await axios.post('http://localhost:5001/api/soil-data', {
-          state: finalState,
-          district: finalDistrict
-        }, {
-          timeout: 5000, // Add timeout
-          validateStatus: function (status) {
-            return status >= 200 && status < 500; // Accept 4xx errors
-          }
-        });
+        // Use the locationAPI which has proper validation and normalization
+        const result = await locationAPI.getSoilData(finalState, finalDistrict);
         
-        console.debug('SoilCard: API response:', response.data);
-        
-        // Check if the response indicates server is unavailable
-        if (response.status >= 500) {
-          throw new Error('Backend server error');
-        }
-        
-        if (response.data) {
-          console.debug('SoilCard: Raw API response:', response.data);
+        if (result.success) {
+          console.debug('SoilCard: API response:', result.data);
           
           // Handle different response formats
-          let soilData = response.data;
-          if (response.data.data) soilData = response.data.data;
+          let soilData = result.data;
+          if (result.data.data) soilData = result.data.data;
           if (soilData.soil) soilData = soilData.soil;
+          // If returned object is wrapping soilData
           if (soilData.soilData) soilData = soilData.soilData;
 
-          const normalized = normalizeSoilData(soilData) || normalizeSoilData(response.data) || null;
+          const normalized = normalizeSoilData(soilData) || normalizeSoilData(result.data) || null;
           setSoil(normalized);
-          console.log('Soil data received and normalized:', normalized, 'raw:', soilData);
+          console.debug('✅ SoilCard: Success - Normalized soil data:', normalized);
           setError(null);
         } else {
-          console.error('SoilCard: No data received');
-          setError('No soil data received');
+          console.error('❌ SoilCard: API error:', result.error);
+          setError(result.error || 'No soil data received');
         }
       } catch (err) {
         console.error('SoilCard: API call failed:', err);
@@ -296,7 +429,7 @@ const SoilCard = () => {
         if (err.code === 'ECONNREFUSED' || err.message.includes('Network Error')) {
           setError('Backend server is not running. Please start the server.');
         } else {
-          setError(`Failed to load soil data: ${err.response?.data?.message || err.message}`);
+          setError(`Failed to load soil data: ${err.message}`);
         }
       } finally {
         setLoading(false);
@@ -311,12 +444,9 @@ const SoilCard = () => {
     window.testSoilAPI = async (state = 'Gujarat', district = 'Baroda') => {
       console.log('🧪 Manual soil API test called with:', { state, district });
       try {
-        const response = await axios.post('http://localhost:5001/api/soil-data', {
-          state,
-          district
-        });
-        console.log('🧪 Test result:', response.data);
-        return response.data;
+        const result = await locationAPI.getSoilData(state, district);
+        console.log('🧪 Test result:', result);
+        return result;
       } catch (err) {
         console.error('🧪 Test failed:', err);
         return { success: false, error: err.message };
@@ -370,13 +500,21 @@ const SoilCard = () => {
   const formatSoilValue = (value, unit = '') => {
     if (!value || value === '--') return '--';
     
+    // Convert to string for easier checking
+    const valueStr = String(value);
+    
     // If it's a number, format it appropriately
     if (!isNaN(value)) {
       const num = parseFloat(value);
       return `${num.toFixed(1)}${unit}`;
     }
     
-    return `${value}${unit}`;
+    // If the value already contains the unit, don't add it again
+    if (unit && valueStr.includes(unit.replace('°', ''))) {
+      return valueStr;
+    }
+    
+    return `${valueStr}${unit}`;
   };
 
   return (

@@ -123,7 +123,7 @@ const Dashboard = () => {
           <Tr>Heads up! A frost is predicted for tonight. Consider taking preventive measures for sensitive crops.</Tr>
         </AlertBanner>
 
-        <BackendStatusIndicator />
+        {/* <BackendStatusIndicator /> */}
 
         <div className="mt-4 grid gap-4 md:grid-cols-3">
           <PredictionSummary predictions={predictions} loading={loadingPredictions} />

@@ -722,6 +722,45 @@ export const chatbotAPI = {
 
 // Location and Weather API functions
 export const locationAPI = {
+  // Validate and correct state-district mappings
+  validateStateDistrictMapping: (state, district) => {
+    // Known state-district mappings for correction
+    const districtStateMap = {
+      'amritsar': 'Punjab',
+      'ludhiana': 'Punjab',
+      'chandigarh': 'Punjab',
+      'jalandhar': 'Punjab',
+      'patiala': 'Punjab',
+      'bathinda': 'Punjab',
+      'mohali': 'Punjab',
+      'ahmedabad': 'Gujarat',
+      'surat': 'Gujarat',
+      'vadodara': 'Gujarat',
+      'baroda': 'Gujarat',
+      'rajkot': 'Gujarat',
+      'bhavnagar': 'Gujarat',
+      'jamnagar': 'Gujarat',
+      'junagadh': 'Gujarat',
+      'gandhinagar': 'Gujarat',
+      'anand': 'Gujarat',
+      // Add more mappings as needed
+    };
+
+    const normalizedDistrict = district?.toLowerCase().trim();
+    const correctState = districtStateMap[normalizedDistrict];
+    
+    if (correctState && state && state.toLowerCase() !== correctState.toLowerCase()) {
+      console.warn(`🔧 ✅ FIXED: Correcting state-district mapping: ${district} is in ${correctState}, not ${state}`);
+      return { state: correctState, district };
+    }
+    
+    if (correctState) {
+      console.log(`✅ State-district mapping validated: ${district} in ${correctState}`);
+    }
+    
+    return { state, district };
+  },
+
   // Get weather data by location
   getWeatherData: async (state, district) => {
     try {
@@ -730,35 +769,68 @@ export const locationAPI = {
         let ns = s || '';
         let nd = d || '';
 
+        console.log('🔧 Normalizing location input:', { originalState: s, originalDistrict: d });
+
         // If district looks like "State,District" or contains multiple commas, pick the most specific part
         if (typeof nd === 'string' && nd.includes(',')) {
           const parts = nd.split(',').map(p => p.trim()).filter(Boolean);
-          if (parts.length > 1 && ns && parts[0].toLowerCase() === ns.toLowerCase()) {
-            // district was prefixed with the state, drop the matching state part
-            nd = parts.slice(1).join(', ');
-          } else {
-            // fallback: take the last segment which is usually the district
-            nd = parts[parts.length - 1];
+          console.log('🔧 District contains comma, parts:', parts);
+          
+          if (parts.length >= 2) {
+            // If the first part matches the state, use remaining parts as district
+            if (ns && parts[0].toLowerCase() === ns.toLowerCase()) {
+              nd = parts.slice(1).join(', ');
+              console.log('🔧 First part matches state, using remaining:', nd);
+            } else {
+              // Check if first part is a known state and second part is the district
+              const firstPartLower = parts[0].toLowerCase();
+              const knownStates = ['punjab', 'gujarat', 'maharashtra', 'karnataka', 'tamil nadu', 'rajasthan', 'uttar pradesh'];
+              
+              if (knownStates.includes(firstPartLower)) {
+                // First part is a state, so use it as state and rest as district
+                ns = parts[0];
+                nd = parts.slice(1).join(', ');
+                console.log('🔧 First part is a known state, correcting:', { state: ns, district: nd });
+              } else {
+                // Fallback: take the last segment which is usually the district
+                nd = parts[parts.length - 1];
+                console.log('🔧 Using last part as district:', nd);
+              }
+            }
           }
         }
 
         // Handle other separators like "/" or " - "
         if (typeof nd === 'string' && (nd.includes('/') || nd.includes(' - '))) {
           nd = nd.split(/\/| - /).map(p => p.trim()).filter(Boolean).pop();
+          console.log('🔧 Handled separators, district now:', nd);
         }
 
         // If district accidentally contains the state name as prefix without comma, strip it
         if (ns && typeof nd === 'string' && nd.toLowerCase().startsWith(ns.toLowerCase())) {
           const maybe = nd.slice(ns.length).replace(/^[,\s:-]+/, '').trim();
-          if (maybe) nd = maybe;
+          if (maybe) {
+            nd = maybe;
+            console.log('🔧 Stripped state prefix from district:', nd);
+          }
         }
 
+        console.log('🔧 Normalized location result:', { state: ns, district: nd });
         return { state: ns, district: nd };
       };
 
-      const { state: finalState, district: finalDistrict } = normalizeLocation(state, district);
+      const normalized = normalizeLocation(state, district);
+      
+      // Validate and correct state-district mapping
+      const corrected = locationAPI.validateStateDistrictMapping(normalized.state, normalized.district);
+      
+      const { state: finalState, district: finalDistrict } = corrected;
 
-      console.log('🌦️ Fetching weather data for:', { state: finalState, district: finalDistrict });
+      console.log('🌦️ Fetching weather data for:', { 
+        original: { state, district },
+        normalized: normalized,
+        corrected: { state: finalState, district: finalDistrict }
+      });
 
       const response = await api.post('/location/weather', {
         state: finalState,
@@ -784,21 +856,66 @@ export const locationAPI = {
       const normalizeLocation = (s, d) => {
         let ns = s || '';
         let nd = d || '';
+        
+        console.log('🔧 Soil API - Normalizing location input:', { originalState: s, originalDistrict: d });
+        
         if (typeof nd === 'string' && nd.includes(',')) {
           const parts = nd.split(',').map(p => p.trim()).filter(Boolean);
-          if (parts.length > 1 && ns && parts[0].toLowerCase() === ns.toLowerCase()) nd = parts.slice(1).join(', ');
-          else nd = parts[parts.length - 1];
+          console.log('🔧 Soil API - District contains comma, parts:', parts);
+          
+          if (parts.length >= 2) {
+            // If the first part matches the state, use remaining parts as district
+            if (ns && parts[0].toLowerCase() === ns.toLowerCase()) {
+              nd = parts.slice(1).join(', ');
+              console.log('🔧 Soil API - First part matches state, using remaining:', nd);
+            } else {
+              // Check if first part is a known state and second part is the district
+              const firstPartLower = parts[0].toLowerCase();
+              const knownStates = ['punjab', 'gujarat', 'maharashtra', 'karnataka', 'tamil nadu', 'rajasthan', 'uttar pradesh'];
+              
+              if (knownStates.includes(firstPartLower)) {
+                // First part is a state, so use it as state and rest as district
+                ns = parts[0];
+                nd = parts.slice(1).join(', ');
+                console.log('🔧 Soil API - First part is a known state, correcting:', { state: ns, district: nd });
+              } else {
+                // Fallback: take the last segment which is usually the district
+                nd = parts[parts.length - 1];
+                console.log('🔧 Soil API - Using last part as district:', nd);
+              }
+            }
+          }
         }
-        if (typeof nd === 'string' && (nd.includes('/') || nd.includes(' - '))) nd = nd.split(/\/| - /).map(p => p.trim()).filter(Boolean).pop();
+        
+        if (typeof nd === 'string' && (nd.includes('/') || nd.includes(' - '))) {
+          nd = nd.split(/\/| - /).map(p => p.trim()).filter(Boolean).pop();
+          console.log('🔧 Soil API - Handled separators, district now:', nd);
+        }
+        
         if (ns && typeof nd === 'string' && nd.toLowerCase().startsWith(ns.toLowerCase())) {
-          const maybe = nd.slice(ns.length).replace(/^[,\s:-]+/, '').trim(); if (maybe) nd = maybe;
+          const maybe = nd.slice(ns.length).replace(/^[,\s:-]+/, '').trim(); 
+          if (maybe) {
+            nd = maybe;
+            console.log('🔧 Soil API - Stripped state prefix from district:', nd);
+          }
         }
+        
+        console.log('🔧 Soil API - Normalized location result:', { state: ns, district: nd });
         return { state: ns, district: nd };
       };
 
-      const { state: finalState, district: finalDistrict } = normalizeLocation(state, district);
+      const normalized = normalizeLocation(state, district);
+      
+      // Validate and correct state-district mapping
+      const corrected = locationAPI.validateStateDistrictMapping(normalized.state, normalized.district);
+      
+      const { state: finalState, district: finalDistrict } = corrected;
 
-      console.log('🌱 Fetching soil data for:', { state: finalState, district: finalDistrict });
+      console.log('🌱 Fetching soil data for:', { 
+        original: { state, district },
+        normalized: normalized,
+        corrected: { state: finalState, district: finalDistrict }
+      });
 
       const response = await api.post('/soil-data', {
         state: finalState,
@@ -881,6 +998,29 @@ export const locationAPI = {
         error: error.response?.data?.message || error.message || 'Failed to fetch soil data'
       };
     }
+  },
+
+  // Test function to verify state-district mapping correction
+  testLocationValidation: () => {
+    console.log('🧪 Testing location validation...');
+    
+    // Test cases
+    const testCases = [
+      { state: 'Gujarat', district: 'Amritsar', expected: { state: 'Punjab', district: 'Amritsar' } },
+      { state: 'Punjab', district: 'Baroda', expected: { state: 'Gujarat', district: 'Baroda' } },
+      { state: 'Gujarat', district: 'Vadodara', expected: { state: 'Gujarat', district: 'Vadodara' } },
+      { state: 'Punjab', district: 'Ludhiana', expected: { state: 'Punjab', district: 'Ludhiana' } },
+    ];
+    
+    testCases.forEach((testCase, index) => {
+      const result = locationAPI.validateStateDistrictMapping(testCase.state, testCase.district);
+      const passed = result.state === testCase.expected.state && result.district === testCase.expected.district;
+      console.log(`Test ${index + 1}: ${passed ? '✅ PASS' : '❌ FAIL'}`, {
+        input: testCase,
+        result,
+        expected: testCase.expected
+      });
+    });
   }
 };
 

@@ -299,7 +299,7 @@ const RecentDiseasePredictions = ({ predictions = [], loading = false, onView })
                 </td>
                 <td className="py-3">
                   <div className="text-text-primary font-medium">{item.crop}</div>
-                  <div className="text-text-secondary text-sm">{item.location}</div>
+                  {/* <div className="text-text-secondary text-sm">{item.location}</div> */}
                 </td>
                 <td className="py-3 text-text-secondary text-sm">{item.date}</td>
                 <td className="py-3">

@@ -16,16 +16,35 @@ const HeroSection = () => {
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="max-w-4xl px-6 lg:px-8 text-center">
             <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold text-text-primary text-balance leading-tight">
-              <Tr>Predict Your Crop Yields with</Tr>
-              <span className="block text-primary"><Tr>Precision</Tr></span>
+              <Tr>Smart Farming with AI-Powered</Tr>
+              <span className="block text-primary"><Tr>Crop Intelligence</Tr></span>
             </h1>
             <p className="mt-6 text-lg lg:text-xl text-text-secondary max-w-3xl mx-auto leading-relaxed">
-              <Tr>AgriVision uses advanced AI to provide accurate yield predictions, helping farmers optimize their resources and maximize profits.</Tr>
+              <Tr>Detect crop diseases instantly, predict yields accurately, and access real-time market data to maximize your farming success with AgriVision's advanced AI platform.</Tr>
             </p>
-            <div className="mt-8">
+            <div className="mt-6 flex flex-wrap justify-center gap-4 text-sm lg:text-base">
+              <div className="flex items-center gap-2 bg-background/80 px-4 py-2 rounded-full">
+                <span className="w-2 h-2 bg-primary rounded-full"></span>
+                <span className="text-text-secondary"><Tr>AI Disease Detection</Tr></span>
+              </div>
+              <div className="flex items-center gap-2 bg-background/80 px-4 py-2 rounded-full">
+                <span className="w-2 h-2 bg-primary rounded-full"></span>
+                <span className="text-text-secondary"><Tr>Live Market Prices</Tr></span>
+              </div>
+              <div className="flex items-center gap-2 bg-background/80 px-4 py-2 rounded-full">
+                <span className="w-2 h-2 bg-primary rounded-full"></span>
+                <span className="text-text-secondary"><Tr>Yield Predictions</Tr></span>
+              </div>
+            </div>
+            <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link to="/predict">
                 <Button className="bg-primary text-black hover:bg-primary-hover text-lg px-8 py-3 font-semibold">
-                  <Tr>Get Started Now</Tr>
+                  <Tr>Start Free Prediction</Tr>
+                </Button>
+              </Link>
+              <Link to="/disease-prediction">
+                <Button variant="outline" className="text-lg px-8 py-3 font-semibold">
+                  <Tr>Detect Disease</Tr>
                 </Button>
               </Link>
             </div>

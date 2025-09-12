@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar'
 import HeroSection from '../components/landing/HeroSection'
 import StatsSection from '../components/landing/StatsSection'
 import KeyFeatures from '../components/landing/KeyFeatures'
+import DetailedFeatures from '../components/landing/DetailedFeatures'
 import CallToAction from '../components/landing/CallToAction'
 import Footer from '../components/ui/Footer'
 
@@ -14,6 +15,7 @@ const Landing = () => {
         <HeroSection />
         <StatsSection />
         <KeyFeatures />
+        <DetailedFeatures />
         <CallToAction />
       </main>
       <Footer />

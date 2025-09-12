@@ -248,7 +248,7 @@ const PredictionForm = ({ onSubmit, isLoading = false, error = null }) => {
         {/* Land Area */}
         <div>
           <label className="block text-text-secondary text-sm font-medium mb-2">
-            <Tr>Land Area (Hectares) *</Tr>
+            <Tr>Land Area (Hectares)</Tr> *
           </label>
           <input
             type="number"
