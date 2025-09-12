@@ -81,7 +81,13 @@ const WeatherCard = () => {
         }
       } catch (err) {
         console.error('WeatherCard: Error fetching weather data:', err);
-        setError(err.message || 'Failed to load weather data');
+        
+        // Handle different types of errors
+        if (err.code === 'ECONNREFUSED' || err.message.includes('Network Error')) {
+          setError('Backend server is not running');
+        } else {
+          setError(err.message || 'Failed to load weather data');
+        }
       } finally {
         setLoading(false);
       }

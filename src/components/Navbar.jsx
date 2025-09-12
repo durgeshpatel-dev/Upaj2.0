@@ -48,8 +48,8 @@ const Navbar = () => {
 
   // Handle navigation with authentication check
   const handleNavigation = (path) => {
-    // List of protected routes
-    const protectedRoutes = ['/predict', '/prediction', '/disease-prediction', '/dashboard', '/profile', '/community', '/chat'];
+    // List of protected routes (merged from both versions)
+    const protectedRoutes = ['/predict', '/prediction', '/disease-prediction', '/dashboard', '/profile', '/community', '/chat', '/market'];
     
     if (protectedRoutes.includes(path) && !isAuthenticated) {
       // Redirect to login if trying to access protected route without authentication
@@ -124,6 +124,14 @@ const Navbar = () => {
               >
                 <Tr>Chat Support</Tr>
               </Link>
+              <Link 
+                to="/market" 
+                className={`transition-colors ${
+                  isActive('/market') ? 'text-primary font-medium' : 'text-text-secondary hover:text-primary'
+                }`}
+              >
+                <Tr>Market</Tr>
+              </Link>
             </>
           ) : (
             <>
@@ -157,6 +165,12 @@ const Navbar = () => {
                 className="text-text-secondary hover:text-primary transition-colors"
               >
                 <Tr>Chat Support</Tr>
+              </button>
+              <button 
+                onClick={() => handleNavigation('/market')}
+                className="text-text-secondary hover:text-primary transition-colors"
+              >
+                <Tr>Market</Tr>
               </button>
             </>
           )}
@@ -343,6 +357,15 @@ const Navbar = () => {
                   <Tr>Chat Support</Tr>
                 </a>
                 <a 
+                  href="/market" 
+                  className={`block transition-colors ${
+                    isActive('/market') ? 'text-primary font-medium' : 'text-text-secondary hover:text-primary'
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <Tr>Market</Tr>
+                </a>
+                <a 
                   href="/profile" 
                   className={`block transition-colors ${
                     isActive('/profile') ? 'text-primary font-medium' : 'text-text-secondary hover:text-primary'
@@ -373,7 +396,7 @@ const Navbar = () => {
                   }`}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  Home
+                  <Tr>Home</Tr>
                 </a>
                 
                 {/* Auth buttons in mobile menu */}
@@ -385,7 +408,7 @@ const Navbar = () => {
                     }}
                     className="block w-full text-center bg-transparent border border-primary text-primary hover:bg-primary hover:text-primary-foreground font-medium px-4 py-2 rounded-lg transition-colors"
                   >
-                    Sign In
+                    <Tr>Sign In</Tr>
                   </button>
                   <button 
                     onClick={() => {
@@ -394,7 +417,7 @@ const Navbar = () => {
                     }}
                     className="block w-full text-center bg-primary hover:bg-primary/80 text-primary-foreground font-semibold px-4 py-2 rounded-lg transition-colors"
                   >
-                    Get Started
+                    <Tr>Get Started</Tr>
                   </button>
                 </div>
               </>

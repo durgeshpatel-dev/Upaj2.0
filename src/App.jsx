@@ -21,6 +21,7 @@ import OAuthCallback from './components/auth/OAuthCallback';
 import OAuthSuccess from './components/auth/OAuthSuccess';
 import Community from './pages/Community';
 import DiseasePrediction from './pages/DiseasePrediction';
+import Market from './pages/Market'; // Import the Market component
 // Keep the old ProtectedRoute for backward compatibility if needed
 // import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
@@ -57,6 +58,7 @@ function App() {
               {/* <Route path="/chat" element={<ProtectedRoute><Navbar /><ChatSupport /></ProtectedRoute>} /> */}
               <Route path="/chat/enhanced" element={<ProtectedRoute><Navbar /><EnhancedChatSupport /></ProtectedRoute>} />
               <Route path="/chat" element={<ProtectedRoute><Navbar /><AdvancedChatSupport /></ProtectedRoute>} />
+              <Route path="/market" element={<ProtectedRoute><Navbar /><Market /></ProtectedRoute>} /> {/* Add Market route */}
               
               {/* Catch-all route for unmatched paths */}
               <Route path="*" element={<ProtectedRoute><Navigate to="/dashboard" replace /></ProtectedRoute>} />

@@ -179,7 +179,13 @@ const SoilCard = () => {
       }
     } catch (err) {
       console.error('❌ Manual soil fetch: API call failed:', err);
-      setError(`Failed to load soil data: ${err.response?.data?.message || err.message}`);
+            
+      // Handle different types of errors
+      if (err.code === 'ECONNREFUSED' || err.message.includes('Network Error')) {
+        setError('Backend server is not running. Please start the server.');
+      } else {
+        setError(`Failed to load soil data: ${err.response?.data?.message || err.message}`);
+      }
     } finally {
       setIsRefreshing(false);
     }
@@ -252,9 +258,19 @@ const SoilCard = () => {
         const response = await axios.post('http://localhost:5001/api/soil-data', {
           state: finalState,
           district: finalDistrict
+        }, {
+          timeout: 5000, // Add timeout
+          validateStatus: function (status) {
+            return status >= 200 && status < 500; // Accept 4xx errors
+          }
         });
         
         console.debug('SoilCard: API response:', response.data);
+        
+        // Check if the response indicates server is unavailable
+        if (response.status >= 500) {
+          throw new Error('Backend server error');
+        }
         
         if (response.data) {
           console.debug('SoilCard: Raw API response:', response.data);
@@ -275,7 +291,13 @@ const SoilCard = () => {
         }
       } catch (err) {
         console.error('SoilCard: API call failed:', err);
-        setError(`Failed to load soil data: ${err.response?.data?.message || err.message}`);
+        
+        // Handle different types of errors
+        if (err.code === 'ECONNREFUSED' || err.message.includes('Network Error')) {
+          setError('Backend server is not running. Please start the server.');
+        } else {
+          setError(`Failed to load soil data: ${err.response?.data?.message || err.message}`);
+        }
       } finally {
         setLoading(false);
       }

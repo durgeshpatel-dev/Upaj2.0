@@ -898,4 +898,95 @@ const getYieldUnit = (prediction) => {
     return 'kg/ha'; // Always return kg/ha
 };
 
+// Market API functions
+export const marketAPI = {
+  // Get market prices with optional filters and pagination
+  getMarketPrices: async (params = {}) => {
+    try {
+      console.log('🏪 Fetching market prices with params:', params);
+      
+      const queryParams = new URLSearchParams();
+      if (params.crop) queryParams.append('crop', params.crop);
+      if (params.state) queryParams.append('state', params.state);
+      if (params.district) queryParams.append('district', params.district);
+      if (params.search) queryParams.append('search', params.search);
+      if (params.page) queryParams.append('page', params.page);
+      if (params.limit) queryParams.append('limit', params.limit);
+      if (params.language) queryParams.append('language', params.language);
+      
+      const response = await api.get(`/market/prices?${queryParams.toString()}`);
+      console.log('✅ Market prices fetched successfully:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('❌ Error fetching market prices:', error);
+      throw error;
+    }
+  },
+
+  // Get market statistics
+  getMarketStats: async (language = 'en') => {
+    try {
+      console.log('📊 Fetching market statistics');
+      const response = await api.get(`/market/stats?language=${language}`);
+      console.log('✅ Market stats fetched successfully:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('❌ Error fetching market stats:', error);
+      throw error;
+    }
+  },
+
+  // Get available crops
+  getAvailableCrops: async (language = 'en') => {
+    try {
+      console.log('🌾 Fetching available crops');
+      const response = await api.get(`/market/crops?language=${language}`);
+      console.log('✅ Available crops fetched successfully:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('❌ Error fetching available crops:', error);
+      throw error;
+    }
+  },
+
+  // Get available states
+  getAvailableStates: async (language = 'en') => {
+    try {
+      console.log('🗺️ Fetching available states');
+      const response = await api.get(`/market/states?language=${language}`);
+      console.log('✅ Available states fetched successfully:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('❌ Error fetching available states:', error);
+      throw error;
+    }
+  },
+
+  // Get available districts by state with translation support
+  getAvailableDistricts: async (state, language = 'en') => {
+    try {
+      console.log(`🏙️ Fetching available districts for state: ${state} in language: ${language}`);
+      const response = await api.get(`/market/districts?state=${encodeURIComponent(state)}&language=${language}`);
+      console.log('✅ Available districts fetched successfully:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('❌ Error fetching available districts:', error);
+      throw error;
+    }
+  },
+
+  // Get crop price trend
+  getCropTrend: async (crop) => {
+    try {
+      console.log(`📈 Fetching price trend for ${crop}`);
+      const response = await api.get(`/market/trend/${crop}`);
+      console.log('✅ Crop trend fetched successfully:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('❌ Error fetching crop trend:', error);
+      throw error;
+    }
+  }
+};
+
 export default api;

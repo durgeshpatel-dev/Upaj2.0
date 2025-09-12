@@ -7,7 +7,7 @@ import SoilCard from '../components/dashboard/SoilCard';
 import FarmMap from '../components/dashboard/FarmMap';
 import PastPredictionsTable from '../components/dashboard/PastPredictionsTable';
 import PredictionSummary from '../components/dashboard/PredictionSummary';
-import BackendStatusCard from '../components/ui/BackendStatusCard';
+import BackendStatusIndicator from '../components/dashboard/BackendStatusIndicator';
 import Button from '../components/Button';
 import { useAuth } from '../context/AuthContext';
 import { predictionAPI } from '../utils/api';
@@ -122,9 +122,7 @@ const Dashboard = () => {
           <Tr>Heads up! A frost is predicted for tonight. Consider taking preventive measures for sensitive crops.</Tr>
         </AlertBanner>
 
-        
-
-       
+        <BackendStatusIndicator />
 
         <div className="mt-4 grid gap-4 md:grid-cols-3">
           <PredictionSummary predictions={predictions} loading={loadingPredictions} />
