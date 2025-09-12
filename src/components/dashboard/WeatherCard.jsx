@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { locationAPI } from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
 import { Tr } from '../ui/SimpleTranslation';
+import AlertBanner from './AlertBanner';
+import { getAlertsForWeather } from '../../utils/weatherAlerts';
 
 const WeatherCard = () => {
   const { user, isAuthenticated, backendAvailable } = useAuth();
@@ -98,6 +100,28 @@ const WeatherCard = () => {
 
   return (
     <div className="rounded-lg border border-border bg-background-card p-4">
+      {/* Dynamic weather alerts */}
+      {weather && (() => {
+        const lang = (user?.preferredLanguage || user?.language || 'en').startsWith('hi') ? 'hi' : 'en'
+        const alerts = getAlertsForWeather(weather, lang)
+        if (alerts && alerts.length > 0) {
+          // Render the first alert prominently
+          const a = alerts[0]
+          return (
+            <div className="mb-3">
+              <AlertBanner variant="warning">
+                <div className="font-semibold">{a.title || (lang === 'hi' ? 'चेतावनी' : 'Alert')}</div>
+                <ul className="mt-1 list-disc pl-5 text-sm">
+                  {a.messages.map((m, idx) => (
+                    <li key={idx}>{m}</li>
+                  ))}
+                </ul>
+              </AlertBanner>
+            </div>
+          )
+        }
+        return null
+      })()}
       <div className="flex items-center justify-between">
         <div className="flex-1">
           <p className="text-xs text-text-secondary"><Tr>Weather Information</Tr></p>

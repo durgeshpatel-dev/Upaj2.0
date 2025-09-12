@@ -199,9 +199,16 @@ const useChat = (initialChatId = null) => {
         throw new Error(response?.error || 'Failed to get AI response')
       }
     } catch (error) {
-      console.error('Chat error:', error)
+      // Log concise axios/network error details for easier debugging
+      console.error('Chat error:', {
+        message: error?.message,
+        code: error?.code,
+        status: error?.response?.status,
+        responseData: error?.response?.data,
+        timeout: error?.config?.timeout
+      })
       
-      // Fallback to local AI response if backend fails
+  // Fallback to local AI response if backend fails
       try {
         const aiResponseText = await getAIResponse(text.trim(), currentLanguage)
         const aiMessage = {

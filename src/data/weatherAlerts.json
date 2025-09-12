@@ -1,0 +1,98 @@
+{
+  "heat": {
+    "en": {
+      "title": "Heat Advisory",
+      "messages": [
+        "High temperatures expected today. Water crops early morning and late evening.",
+        "Avoid applying pesticides during peak heat hours."
+      ]
+    },
+    "hi": {
+      "title": "गर्मी की चेतावनी",
+      "messages": [
+        "आज अधिक तापमान की संभावना है। फसलों में सुबह जल्दी और शाम को पानी दें।",
+        "ऊँचे तापमान में कीटनाशक लगाने से बचें।"
+      ]
+    }
+  },
+  "rain": {
+    "en": {
+      "title": "Rain Alert",
+      "messages": [
+        "Rain expected — secure young plants and avoid fieldwork during heavy showers.",
+        "Check drainage in low-lying areas to prevent waterlogging."
+      ]
+    },
+    "hi": {
+      "title": "बारिश की चेतावनी",
+      "messages": [
+        "बारिश की संभावना — युवा पौधों को सुरक्षित रखें और तेज बारिश में खेत का काम न करें।",
+        "निचले हिस्सों में जल निकासी जांचें ताकि जलभराव न हो।"
+      ]
+    }
+  },
+  "storm": {
+    "en": {
+      "title": "Storm / Wind Warning",
+      "messages": [
+        "Strong winds or storm predicted — stake vulnerable plants and secure structures.",
+        "Stay indoors during severe conditions."
+      ]
+    },
+    "hi": {
+      "title": "तूफान/हवा चेतावनी",
+      "messages": [
+        "मज़बूत हवाएँ या तूफ़ान की संभावना — कमजोर पौधों को बाँधें और संरचनाओं को सुरक्षित करें।",
+        "गंभीर स्थिति में घर के अंदर रहें।"
+      ]
+    }
+  },
+  "frost": {
+    "en": {
+      "title": "Frost Advisory",
+      "messages": [
+        "Low overnight temperatures expected — protect sensitive crops with covers.",
+        "Delay planting of frost-sensitive varieties."
+      ]
+    },
+    "hi": {
+      "title": "ओला/जमीनी ठंड चेतावनी",
+      "messages": [
+        "रात में तापमान बहुत कम होगा — संवेदनशील फसलों को ढक कर रखें।",
+        "ओले-संवेदनशील किस्मों की बुवाई टालें।"
+      ]
+    }
+  },
+  "flood": {
+    "en": {
+      "title": "Flood Risk",
+      "messages": [
+        "Heavy/continuous rainfall may cause flooding — move equipment and livestock to higher ground.",
+        "Monitor water levels and follow local authority guidance."
+      ]
+    },
+    "hi": {
+      "title": "बाढ़ का जोखिम",
+      "messages": [
+        "तेज़/लगातार बारिश से बाढ़ का खतरा है — उपकरण और पशुधन को ऊँची जगह भेजें।",
+        "जल स्तर की निगरानी करें और स्थानीय अधिकारियों के निर्देशों का पालन करें।"
+      ]
+    }
+  },
+  "dry": {
+    "en": {
+      "title": "Dry / Drought Alert",
+      "messages": [
+        "Low rainfall expected — prioritize irrigation for young and high-value crops.",
+        "Conserve soil moisture with mulching."
+      ]
+    },
+    "hi": {
+      "title": "सूखा चेतावनी",
+      "messages": [
+        "कम बारिश की उम्मीद — युवा और मूल्यवान फसलों के लिए सिंचाई को प्राथमिकता दें।",
+        "मल्चिंग से मिट्टी में नमी बनाए रखें।"
+      ]
+    }
+  }
+}

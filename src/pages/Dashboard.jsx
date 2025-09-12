@@ -9,6 +9,7 @@ import PastPredictionsTable from '../components/dashboard/PastPredictionsTable';
 import PredictionSummary from '../components/dashboard/PredictionSummary';
 import BackendStatusIndicator from '../components/dashboard/BackendStatusIndicator';
 import Button from '../components/Button';
+import RecentDiseasePredictions from '../components/dashboard/RecentDiseasePredictions';
 import { useAuth } from '../context/AuthContext';
 import { predictionAPI } from '../utils/api';
 import { Tr } from '../components/ui/SimpleTranslation';
@@ -133,6 +134,14 @@ const Dashboard = () => {
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           <PastPredictionsTable predictions={predictions} loading={loadingPredictions} />
           <FarmMap />
+        </div>
+
+        <div className="mt-6">
+          <RecentDiseasePredictions 
+            predictions={predictions} 
+            loading={loadingPredictions} 
+            onView={(id) => console.log('View disease prediction', id)} 
+          />
         </div>
       </main>
     </div>

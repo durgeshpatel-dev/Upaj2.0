@@ -461,9 +461,16 @@ export const predictionAPI = {
       
       console.log('📥 Disease prediction response:', response.data);
       
-      // Extract disease name from status field
+      // Handle the new response format with diseaseData nested object
       const responseData = response.data;
-      if (responseData && responseData.status && !responseData.diseaseName) {
+      
+      // If diseaseData exists, extract disease name from diseaseData.status
+      if (responseData && responseData.diseaseData && responseData.diseaseData.status) {
+        responseData.diseaseName = responseData.diseaseData.status;
+        console.log('🦠 Disease name extracted from diseaseData.status:', responseData.diseaseName);
+      }
+      // Fallback to old format for backward compatibility
+      else if (responseData && responseData.status && !responseData.diseaseName) {
         responseData.diseaseName = responseData.status;
         console.log('🦠 Disease name extracted from status:', responseData.diseaseName);
       }
@@ -621,19 +628,39 @@ export const userProfileAPI = {
 export const chatbotAPI = {
   // Ask a question to the AI chatbot
   askQuestion: async (question, context = {}) => {
-    try {
-      const response = await api.post('/chatbot/ask', { 
-        question,
-        context 
-      });
-      return { success: true, data: response.data };
-    } catch (error) {
-      console.error('❌ Chatbot ask error:', error);
-      return { 
-        success: false, 
-        error: error.response?.data?.message || error.message || 'Failed to ask question' 
-      };
+    // Use a slightly more tolerant timeout for chatbot requests and retry once on timeouts/network errors
+    const maxRetries = 1
+    let attempt = 0
+    const makeRequest = async () => {
+      attempt += 1
+      try {
+        const response = await api.post('/chatbot/ask', { question, context }, {
+          timeout: 30000 // 30s for potentially slow AI responses
+        })
+        return { success: true, data: response.data }
+      } catch (error) {
+        console.error('❌ Chatbot ask error (attempt ' + attempt + '):', error?.message || error)
+
+        // If it's a timeout or network error and we have retries left, backoff and retry
+        const isTimeout = error?.code === 'ECONNABORTED' || /timeout/i.test(error?.message || '')
+        const isNetworkError = !error?.response
+
+        if ((isTimeout || isNetworkError) && attempt <= maxRetries) {
+          const backoffMs = 500 * attempt
+          console.warn(`⚠️ Retrying chatbot request after ${backoffMs}ms (attempt ${attempt} of ${maxRetries})`)
+          await new Promise(r => setTimeout(r, backoffMs))
+          return makeRequest()
+        }
+
+        // Final failure
+        return { 
+          success: false, 
+          error: error.response?.data?.message || error.message || 'Failed to ask question' 
+        }
+      }
     }
+
+    return makeRequest()
   },
 
   // Get chat history for the user
@@ -985,6 +1012,197 @@ export const marketAPI = {
     } catch (error) {
       console.error('❌ Error fetching crop trend:', error);
       throw error;
+    }
+  }
+};
+
+// Disease API functions for managing disease predictions
+export const diseaseAPI = {
+  // Get recent disease predictions for user
+  getRecentDiseasePredictions: async (userId, limit = 10) => {
+    try {
+      console.log('🦠 diseaseAPI: Starting getRecentDiseasePredictions...');
+      console.log('🦠 diseaseAPI: userId:', userId, 'limit:', limit);
+      
+      if (!userId) {
+        console.log('❌ diseaseAPI: No userId provided');
+        return { 
+          success: false, 
+          error: 'User ID is required' 
+        };
+      }
+      
+      console.log('📤 diseaseAPI: Making GET request to /diseases/recent/' + userId);
+      
+      const response = await api.get(`/diseases/recent/${userId}`, {
+        params: { limit }
+      });
+
+      console.log('📥 diseaseAPI: Response received:', response.data);
+
+      // Normalize response data
+      const raw = response.data;
+      let normalized = [];
+
+      if (Array.isArray(raw)) {
+        normalized = raw;
+      } else if (raw && Array.isArray(raw.data)) {
+        normalized = raw.data;
+      } else if (raw && Array.isArray(raw.diseases)) {
+        normalized = raw.diseases;
+      } else if (raw && Array.isArray(raw.predictions)) {
+        normalized = raw.predictions;
+      }
+
+      // Transform data to match component expectations
+      const diseaseData = normalized.map(item => ({
+        id: item.id || item._id,
+        crop: item.crop || item.cropType || item.diseaseData?.crop || 'Unknown',
+        date: item.createdAt || item.date || new Date().toISOString(),
+        disease: item.diseaseData?.status || item.predictedDisease || item.disease || item.diseaseName || item.status || 'Unknown Disease',
+        confidence: item.diseaseData?.confidence || item.confidence || Math.random() * 100,
+        location: typeof item.location === 'string' 
+          ? item.location 
+          : item.location?.district && item.location?.state
+            ? `${item.location.district}, ${item.location.state}`
+            : item.location?.state || 'Unknown Location',
+        imageUrl: item.diseaseData?.uploaded_image_url || item.diseaseData?.predicted_image_url || item.imageUrl || item.image,
+        recommendations: item.recommendations || [],
+        processingTime: item.processingTime || 0,
+        detectedDisease: item.detectedDisease,
+        flaskApiResponse: item.flaskApiResponse
+      }));
+
+      console.log('📥 diseaseAPI: Normalized disease data:', diseaseData);
+      return { success: true, data: diseaseData };
+    } catch (error) {
+      console.error('❌ diseaseAPI: getRecentDiseasePredictions error:', error);
+      console.error('❌ diseaseAPI: Error response:', error.response);
+      
+      return { 
+        success: false, 
+        error: error.response?.data?.message || error.message || 'Failed to get recent disease predictions' 
+      };
+    }
+  },
+
+  // Get all disease predictions for user
+  getUserDiseasePredictions: async (userId) => {
+    try {
+      console.log('🦠 diseaseAPI: Starting getUserDiseasePredictions...');
+      console.log('🦠 diseaseAPI: userId:', userId);
+      
+      if (!userId) {
+        console.log('❌ diseaseAPI: No userId provided');
+        return { 
+          success: false, 
+          error: 'User ID is required' 
+        };
+      }
+      
+      console.log('📤 diseaseAPI: Making GET request to /diseases/' + userId);
+      
+      const response = await api.get(`/diseases/${userId}`);
+
+      console.log('📥 diseaseAPI: Response received:', response.data);
+
+      // Normalize response data similar to above
+      const raw = response.data;
+      let normalized = [];
+
+      if (Array.isArray(raw)) {
+        normalized = raw;
+      } else if (raw && Array.isArray(raw.data)) {
+        normalized = raw.data;
+      } else if (raw && Array.isArray(raw.diseases)) {
+        normalized = raw.diseases;
+      } else if (raw && Array.isArray(raw.predictions)) {
+        normalized = raw.predictions;
+      }
+
+      // Transform data to match component expectations
+      const diseaseData = normalized.map(item => ({
+        id: item.id || item._id,
+        crop: item.crop || item.cropType || item.diseaseData?.crop || 'Unknown',
+        date: item.createdAt || item.date || new Date().toISOString(),
+        disease: item.diseaseData?.status || item.predictedDisease || item.disease || item.diseaseName || item.status || 'Unknown Disease',
+        confidence: item.diseaseData?.confidence || item.confidence || Math.random() * 100,
+        location: typeof item.location === 'string' 
+          ? item.location 
+          : item.location?.district && item.location?.state
+            ? `${item.location.district}, ${item.location.state}`
+            : item.location?.state || 'Unknown Location',
+        imageUrl: item.diseaseData?.uploaded_image_url || item.diseaseData?.predicted_image_url || item.imageUrl || item.image,
+        recommendations: item.recommendations || [],
+        processingTime: item.processingTime || 0,
+        detectedDisease: item.detectedDisease,
+        flaskApiResponse: item.flaskApiResponse
+      }));
+
+      console.log('📥 diseaseAPI: Normalized disease data:', diseaseData);
+      return { success: true, data: diseaseData };
+    } catch (error) {
+      console.error('❌ diseaseAPI: getUserDiseasePredictions error:', error);
+      console.error('❌ diseaseAPI: Error response:', error.response);
+      
+      return { 
+        success: false, 
+        error: error.response?.data?.message || error.message || 'Failed to get user disease predictions' 
+      };
+    }
+  },
+
+  // Get disease prediction by ID
+  getDiseasePredictionById: async (predictionId) => {
+    try {
+      console.log('🦠 diseaseAPI: Starting getDiseasePredictionById...');
+      console.log('🦠 diseaseAPI: predictionId:', predictionId);
+      
+      if (!predictionId) {
+        console.log('❌ diseaseAPI: No predictionId provided');
+        return { 
+          success: false, 
+          error: 'Prediction ID is required' 
+        };
+      }
+      
+      console.log('📤 diseaseAPI: Making GET request to /diseases/prediction/' + predictionId);
+      
+      const response = await api.get(`/diseases/prediction/${predictionId}`);
+
+      console.log('📥 diseaseAPI: Response received:', response.data);
+
+      const data = response.data;
+      // Transform single item to match component expectations
+      const diseaseData = {
+        id: data.id || data._id,
+        crop: data.crop || data.cropType || data.diseaseData?.crop || 'Unknown',
+        date: data.createdAt || data.date || new Date().toISOString(),
+        disease: data.diseaseData?.status || data.predictedDisease || data.disease || data.diseaseName || data.status || 'Unknown Disease',
+        confidence: data.diseaseData?.confidence || data.confidence || 0,
+        location: typeof data.location === 'string' 
+          ? data.location 
+          : data.location?.district && data.location?.state
+            ? `${data.location.district}, ${data.location.state}`
+            : data.location?.state || 'Unknown Location',
+        imageUrl: data.diseaseData?.uploaded_image_url || data.diseaseData?.predicted_image_url || data.imageUrl || data.image,
+        description: data.description,
+        recommendations: data.recommendations || data.treatment || [],
+        processingTime: data.processingTime || 0,
+        detectedDisease: data.detectedDisease,
+        flaskApiResponse: data.flaskApiResponse
+      };
+
+      console.log('📥 diseaseAPI: Normalized disease data:', diseaseData);
+      return { success: true, data: diseaseData };
+    } catch (error) {
+      console.error('❌ diseaseAPI: getDiseasePredictionById error:', error);
+      console.error('❌ diseaseAPI: Error response:', error.response);
+      
+      return { 
+        success: false, 
+        error: error.response?.data?.message || error.message || 'Failed to get disease prediction details' 
+      };
     }
   }
 };

@@ -108,14 +108,14 @@ const Navbar = () => {
               >
                 <Tr>Dashboard</Tr>
               </Link>
-              <Link 
+              {/* <Link 
                 to="/community" 
                 className={`transition-colors ${
                   isActive('/community') ? 'text-primary font-medium' : 'text-text-secondary hover:text-primary'
                 }`}
               >
                 <Tr>Community</Tr>
-              </Link>
+              </Link> */}
               <Link 
                 to="/chat" 
                 className={`transition-colors ${
@@ -154,12 +154,12 @@ const Navbar = () => {
               >
                 <Tr>Dashboard</Tr>
               </button>
-              <button 
+              {/* <button 
                 onClick={() => handleNavigation('/community')}
                 className="text-text-secondary hover:text-primary transition-colors"
               >
                 <Tr>Community</Tr>
-              </button>
+              </button> */}
               <button 
                 onClick={() => handleNavigation('/chat')}
                 className="text-text-secondary hover:text-primary transition-colors"
