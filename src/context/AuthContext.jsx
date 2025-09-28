@@ -19,38 +19,20 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const initializeAuth = async () => {
       try {
+        console.log('🔄 Initializing auth state (frontend-only mode)...')
+        
+        // In frontend-only mode, don't do complex token validation
+        // Just use basic localStorage check
         const storedToken = localStorage.getItem('token')
         const storedUser = localStorage.getItem('user')
 
-        console.log('🔄 Initializing auth state...')
         console.log('💾 Stored token:', storedToken ? 'Present' : 'None')
         console.log('💾 Stored user:', storedUser ? 'Present' : 'None')
 
         if (storedToken && storedUser) {
           try {
             const userData = JSON.parse(storedUser)
-            
-            // First check token structure and expiration
-            if (!isValidTokenStructure(storedToken)) {
-              console.log('❌ Token has invalid structure, clearing auth state')
-              localStorage.removeItem('token')
-              localStorage.removeItem('user')
-              setToken(null)
-              setUser(null)
-              return
-            }
-            
-            if (isTokenExpired(storedToken)) {
-              console.log('⏰ Token is expired, clearing auth state')
-              localStorage.removeItem('token')
-              localStorage.removeItem('user')
-              setToken(null)
-              setUser(null)
-              return
-            }
-            
-            // Skip backend verification in frontend-only mode
-            console.log('✅ Using stored token without backend verification (frontend-only mode)')
+            console.log('✅ Restoring auth state from localStorage')
             setToken(storedToken)
             setUser(userData)
           } catch (error) {
@@ -62,19 +44,26 @@ export const AuthProvider = ({ children }) => {
             setUser(null)
           }
         } else {
-          console.log('💾 No stored auth data found')
+          console.log('💾 No stored auth data found - user not logged in')
+          setToken(null)
+          setUser(null)
         }
       } catch (error) {
         console.error('❌ Error initializing auth:', error)
         // Clear potentially corrupted data
         localStorage.removeItem('token')
         localStorage.removeItem('user')
+        setToken(null)
+        setUser(null)
       } finally {
+        // Always set loading to false to prevent infinite loading
+        console.log('✅ Auth initialization complete')
         setIsLoading(false)
       }
     }
 
-    initializeAuth()
+    // Small delay to ensure DOM is ready
+    setTimeout(initializeAuth, 100)
   }, [])
 
   const login = (newToken, newUser) => {
