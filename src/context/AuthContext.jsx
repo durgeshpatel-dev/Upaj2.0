@@ -9,37 +9,10 @@ export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true)
   const [backendAvailable, setBackendAvailable] = useState(false)
 
-  // Check backend availability
+  // Set backend as unavailable for frontend-only deployment
   useEffect(() => {
-    const checkBackendAvailability = async () => {
-      try {
-        console.log('🔍 Checking backend availability...')
-        const baseURL = process.env.REACT_APP_API_URL || 'https://upaj-flask-backend-liart.vercel.app/api';
-        const healthURL = baseURL.replace('/api', '/health');
-        const response = await fetch(healthURL, {
-          method: 'GET',
-          timeout: 5000 // 5 second timeout
-        })
-        
-        if (response.ok) {
-          console.log('✅ Backend is available')
-          setBackendAvailable(true)
-        } else {
-          console.log('❌ Backend responded with error:', response.status)
-          setBackendAvailable(false)
-        }
-      } catch (error) {
-        console.log('❌ Backend is not available:', error.message)
-        setBackendAvailable(false)
-      }
-    }
-
-    checkBackendAvailability()
-    
-    // Check backend availability every 30 seconds
-    const interval = setInterval(checkBackendAvailability, 30000)
-    
-    return () => clearInterval(interval)
+    console.log('⚠️ Running in frontend-only mode - backend disabled')
+    setBackendAvailable(false)
   }, [])
 
   // Initialize auth state from localStorage on mount
@@ -76,47 +49,17 @@ export const AuthProvider = ({ children }) => {
               return
             }
             
-            // Verify token is still valid by calling profile endpoint
-            console.log('✅ Verifying stored token...')
-            const baseURL = process.env.REACT_APP_API_URL || 'https://upaj-flask-backend-liart.vercel.app/api';
-            const response = await fetch(`${baseURL}/auth/profile`, {
-              method: 'GET',
-              headers: {
-                'Authorization': `Bearer ${storedToken}`,
-                'Content-Type': 'application/json'
-              },
-              timeout: 10000 // 10 second timeout
-            })
-            
-            if (response.ok) {
-              const profileData = await response.json()
-              console.log('✅ Token valid, restoring auth state')
-              console.log('👤 Profile data:', profileData)
-              setToken(storedToken)
-              setUser(profileData.user || profileData.data || profileData)
-            } else {
-              console.log('❌ Token invalid (status:', response.status, '), clearing auth state')
-              // Token is invalid, clear storage
-              localStorage.removeItem('token')
-              localStorage.removeItem('user')
-              setToken(null)
-              setUser(null)
-            }
+            // Skip backend verification in frontend-only mode
+            console.log('✅ Using stored token without backend verification (frontend-only mode)')
+            setToken(storedToken)
+            setUser(userData)
           } catch (error) {
-            console.error('❌ Error during token verification:', error)
-            // If it's a network error and token looks valid, keep it but mark as offline
-            if (error.name === 'TypeError' && error.message.includes('fetch')) {
-              console.log('🌐 Network error during token verification, keeping token for offline use')
-              setToken(storedToken)
-              setUser(userData)
-            } else {
-              // For other errors (parsing, etc.), clear auth state
-              console.log('❌ Clearing auth state due to error')
-              localStorage.removeItem('token')
-              localStorage.removeItem('user')
-              setToken(null)
-              setUser(null)
-            }
+            console.error('❌ Error parsing stored user data:', error)
+            // Clear corrupted data
+            localStorage.removeItem('token')
+            localStorage.removeItem('user')
+            setToken(null)
+            setUser(null)
           }
         } else {
           console.log('💾 No stored auth data found')
@@ -189,22 +132,7 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     console.log('👋 Logging out user...')
     
-    try {
-      // Call logout API if we have a token
-      if (token) {
-        const baseURL = process.env.REACT_APP_API_URL || 'https://upaj-flask-backend-liart.vercel.app/api';
-        await fetch(`${baseURL}/auth/logout`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        })
-      }
-    } catch (error) {
-      console.error('❌ Logout API error:', error)
-      // Continue with logout even if API call fails
-    }
+    // Frontend-only logout - no backend call needed
     
     // Clear state and localStorage
     localStorage.removeItem('token')

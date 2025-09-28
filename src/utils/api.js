@@ -1,5 +1,8 @@
 import axios from 'axios';
 
+// Check if running in frontend-only mode
+const isFrontendOnly = process.env.REACT_APP_FRONTEND_ONLY === 'true';
+
 // Create axios instance with base configuration
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL || 'https://upaj-flask-backend-liart.vercel.app/api',
@@ -1026,6 +1029,12 @@ export const locationAPI = {
 
 // Utility function to check if backend is available
 export const checkBackendHealth = async () => {
+  // Return mock success in frontend-only mode
+  if (isFrontendOnly) {
+    console.log('🎭 Frontend-only mode: Returning mock backend health');
+    return { success: false, data: { status: 'frontend-only', message: 'Backend disabled' } };
+  }
+  
   try {
     // First try the health endpoint
     const baseURL = process.env.REACT_APP_API_URL || 'https://upaj-flask-backend-liart.vercel.app/api';
