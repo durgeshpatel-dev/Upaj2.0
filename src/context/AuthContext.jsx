@@ -6,7 +6,7 @@ const AuthContext = createContext()
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null)
   const [user, setUser] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false) // Start with false to prevent blocking
   const [backendAvailable, setBackendAvailable] = useState(false)
 
   // Set backend as unavailable for frontend-only deployment
@@ -17,53 +17,45 @@ export const AuthProvider = ({ children }) => {
 
   // Initialize auth state from localStorage on mount
   useEffect(() => {
-    const initializeAuth = async () => {
-      try {
-        console.log('🔄 Initializing auth state (frontend-only mode)...')
-        
-        // In frontend-only mode, don't do complex token validation
-        // Just use basic localStorage check
-        const storedToken = localStorage.getItem('token')
-        const storedUser = localStorage.getItem('user')
+    try {
+      console.log('🔄 Initializing auth state (frontend-only mode)...')
+      
+      // Synchronous initialization to prevent blocking
+      const storedToken = localStorage.getItem('token')
+      const storedUser = localStorage.getItem('user')
 
-        console.log('💾 Stored token:', storedToken ? 'Present' : 'None')
-        console.log('💾 Stored user:', storedUser ? 'Present' : 'None')
+      console.log('💾 Stored token:', storedToken ? 'Present' : 'None')
+      console.log('💾 Stored user:', storedUser ? 'Present' : 'None')
 
-        if (storedToken && storedUser) {
-          try {
-            const userData = JSON.parse(storedUser)
-            console.log('✅ Restoring auth state from localStorage')
-            setToken(storedToken)
-            setUser(userData)
-          } catch (error) {
-            console.error('❌ Error parsing stored user data:', error)
-            // Clear corrupted data
-            localStorage.removeItem('token')
-            localStorage.removeItem('user')
-            setToken(null)
-            setUser(null)
-          }
-        } else {
-          console.log('💾 No stored auth data found - user not logged in')
+      if (storedToken && storedUser) {
+        try {
+          const userData = JSON.parse(storedUser)
+          console.log('✅ Restoring auth state from localStorage')
+          setToken(storedToken)
+          setUser(userData)
+        } catch (error) {
+          console.error('❌ Error parsing stored user data:', error)
+          // Clear corrupted data
+          localStorage.removeItem('token')
+          localStorage.removeItem('user')
           setToken(null)
           setUser(null)
         }
-      } catch (error) {
-        console.error('❌ Error initializing auth:', error)
-        // Clear potentially corrupted data
-        localStorage.removeItem('token')
-        localStorage.removeItem('user')
+      } else {
+        console.log('💾 No stored auth data found - user not logged in')
         setToken(null)
         setUser(null)
-      } finally {
-        // Always set loading to false to prevent infinite loading
-        console.log('✅ Auth initialization complete')
-        setIsLoading(false)
       }
+      
+      console.log('✅ Auth initialization complete')
+    } catch (error) {
+      console.error('❌ Error initializing auth:', error)
+      // Clear potentially corrupted data
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      setToken(null)
+      setUser(null)
     }
-
-    // Small delay to ensure DOM is ready
-    setTimeout(initializeAuth, 100)
   }, [])
 
   const login = (newToken, newUser) => {
