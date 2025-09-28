@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create axios instance with base configuration
 const api = axios.create({
-  baseURL: 'http://localhost:5001/api',
+  baseURL: process.env.REACT_APP_API_URL || 'https://upaj-flask-backend-liart.vercel.app/api',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -245,7 +245,7 @@ export const predictionAPI = {
       console.log('🌾 Starting crop prediction...');
       console.log('📤 Prediction data:', predictionData);
       
-      const response = await api.post('http://localhost:5001/api/predict', predictionData);
+      const response = await api.post('/predict', predictionData);
       
       console.log('📥 Prediction response:', response);
       console.log('📥 Prediction response data:', response.data);
@@ -1028,13 +1028,16 @@ export const locationAPI = {
 export const checkBackendHealth = async () => {
   try {
     // First try the health endpoint
-    const response = await axios.get('http://localhost:5001/health', { timeout: 5000 });
+    const baseURL = process.env.REACT_APP_API_URL || 'https://upaj-flask-backend-liart.vercel.app/api';
+    const healthURL = baseURL.replace('/api', '/health');
+    const response = await axios.get(healthURL, { timeout: 5000 });
     return { success: true, data: response.data };
   } catch (error) {
     // If health endpoint fails, try a basic auth endpoint to check if backend is running
     try {
       console.log('Health endpoint failed, trying auth endpoint...');
-      const authResponse = await axios.get('http://localhost:5001/api/auth/profile', { 
+      const baseURL = process.env.REACT_APP_API_URL || 'https://upaj-flask-backend-liart.vercel.app/api';
+      const authResponse = await axios.get(`${baseURL}/auth/profile`, { 
         timeout: 3000,
         validateStatus: (status) => status < 500 // Accept 4xx but not 5xx errors
       });

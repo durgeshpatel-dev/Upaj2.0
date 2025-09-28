@@ -14,7 +14,9 @@ export const AuthProvider = ({ children }) => {
     const checkBackendAvailability = async () => {
       try {
         console.log('🔍 Checking backend availability...')
-        const response = await fetch('http://localhost:5001/health', {
+        const baseURL = process.env.REACT_APP_API_URL || 'https://upaj-flask-backend-liart.vercel.app/api';
+        const healthURL = baseURL.replace('/api', '/health');
+        const response = await fetch(healthURL, {
           method: 'GET',
           timeout: 5000 // 5 second timeout
         })
@@ -76,7 +78,8 @@ export const AuthProvider = ({ children }) => {
             
             // Verify token is still valid by calling profile endpoint
             console.log('✅ Verifying stored token...')
-            const response = await fetch('http://localhost:5001/api/auth/profile', {
+            const baseURL = process.env.REACT_APP_API_URL || 'https://upaj-flask-backend-liart.vercel.app/api';
+            const response = await fetch(`${baseURL}/auth/profile`, {
               method: 'GET',
               headers: {
                 'Authorization': `Bearer ${storedToken}`,
@@ -189,7 +192,8 @@ export const AuthProvider = ({ children }) => {
     try {
       // Call logout API if we have a token
       if (token) {
-        await fetch('http://localhost:5001/api/auth/logout', {
+        const baseURL = process.env.REACT_APP_API_URL || 'https://upaj-flask-backend-liart.vercel.app/api';
+        await fetch(`${baseURL}/auth/logout`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,

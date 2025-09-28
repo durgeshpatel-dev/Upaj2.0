@@ -43,7 +43,8 @@ const OAuthSuccess = () => {
         if (!userData && token) {
           console.log('📡 Fetching user profile with token...')
           try {
-            const response = await fetch('http://localhost:5001/api/auth/profile', {
+            const baseURL = process.env.REACT_APP_API_URL || 'https://upaj-flask-backend-liart.vercel.app/api';
+            const response = await fetch(`${baseURL}/auth/profile`, {
               headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'

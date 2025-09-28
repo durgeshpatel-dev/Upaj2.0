@@ -54,7 +54,7 @@ export const handleOAuthCallback = async () => {
  * Initiate OAuth login with specified provider
  */
 export const initiateOAuth = (provider) => {
-  const baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:5001';
+  const baseUrl = process.env.REACT_APP_API_URL || 'https://upaj-flask-backend-liart.vercel.app';
   const oauthUrl = `${baseUrl}/api/auth/${provider}`;
   
   // Store current location for redirect after auth

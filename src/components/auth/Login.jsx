@@ -91,7 +91,8 @@ const Login = () => {
   }
 
   const handleGoogleLogin = () => {
-    window.location.href = 'http://localhost:5001/api/auth/google'
+    const baseURL = process.env.REACT_APP_API_URL || 'https://upaj-flask-backend-liart.vercel.app/api';
+    window.location.href = `${baseURL}/auth/google`
   }
 
   return (
